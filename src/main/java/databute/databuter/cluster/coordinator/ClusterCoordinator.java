@@ -1,5 +1,7 @@
 package databute.databuter.cluster.coordinator;
 
+import com.google.gson.Gson;
+import databute.databuter.cluster.Cluster;
 import databute.databuter.cluster.ClusterException;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
@@ -8,6 +10,7 @@ import org.apache.curator.framework.recipes.cache.PathChildrenCache;
 import org.apache.curator.framework.recipes.cache.PathChildrenCacheEvent;
 import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.apache.curator.utils.ZKPaths;
+import org.apache.zookeeper.CreateMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,11 +22,13 @@ public class ClusterCoordinator {
 
     private PathChildrenCache cache;
 
+    private final Cluster cluster;
     private final ClusterCoordinatorConfiguration configuration;
 
     private final CuratorFramework curator;
 
-    public ClusterCoordinator(ClusterCoordinatorConfiguration configuration) {
+    public ClusterCoordinator(Cluster cluster, ClusterCoordinatorConfiguration configuration) {
+        this.cluster = checkNotNull(cluster, "cluster");
         this.configuration = checkNotNull(configuration, "configuration");
         this.curator = CuratorFrameworkFactory.builder()
                 .connectString(configuration.connectString())
@@ -73,10 +78,22 @@ public class ClusterCoordinator {
     }
 
     private void onInitialized() {
-
+        try {
+            registerClusterNode();
+        } catch (Exception e) {
+            logger.error("Failed to register cluster node.", e);
+        }
     }
 
     private void onAdded(ChildData data) {
         checkNotNull(data, "data");
+    }
+
+    private void registerClusterNode() throws Exception {
+        final String json = new Gson().toJson(cluster.toClusterNode());
+        final String path = curator.create()
+                .withMode(CreateMode.EPHEMERAL)
+                .forPath(ZKPaths.makePath(configuration.path(), "discovery", cluster.id()), json.getBytes());
+        logger.debug("Registered cluster node at {}", path);
     }
 }

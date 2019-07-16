@@ -20,13 +20,21 @@ public class Cluster {
         this.id = UUID.randomUUID().toString();
     }
 
+    public String id() {
+        return id;
+    }
+
     public void join() throws ClusterException {
         connectToCoordinator();
     }
 
     private void connectToCoordinator() throws ClusterException {
-        coordinator = new ClusterCoordinator(configuration.coordinator());
+        coordinator = new ClusterCoordinator(this, configuration.coordinator());
         coordinator.connect();
+    }
+
+    public ClusterNode toClusterNode() {
+        return new ClusterNode(id);
     }
 
     @Override
