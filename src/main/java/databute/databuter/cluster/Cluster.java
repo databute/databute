@@ -63,7 +63,7 @@ public class Cluster {
         final InetSocketAddress remoteAddress = new InetSocketAddress(node.address(), node.port());
         logger.info("Connecting to node {} at {}", node.id(), remoteAddress);
 
-        final ClusterSessionConnector connector = new ClusterSessionConnector(loopGroup, node);
+        final ClusterSessionConnector connector = new ClusterSessionConnector(loopGroup, this, node);
         connector.connect(remoteAddress);
     }
 
@@ -82,7 +82,7 @@ public class Cluster {
 
     private void bindAcceptor() {
         final InetSocketAddress localAddress = configuration.localAddress();
-        acceptor = new ClusterSessionAcceptor(loopGroup);
+        acceptor = new ClusterSessionAcceptor(loopGroup, this);
         acceptor.bind(localAddress).join();
         logger.debug("Cluster session acceptor is bound on {}", acceptor.localAddress());
     }

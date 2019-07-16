@@ -1,5 +1,6 @@
 package databute.databuter.cluster.network;
 
+import databute.databuter.cluster.Cluster;
 import databute.databuter.cluster.ClusterNode;
 import databute.databuter.cluster.handshake.HandshakeRequestMessage;
 import databute.databuter.cluster.handshake.HandshakeResponseMessageHandler;
@@ -18,22 +19,24 @@ public class OutboundClusterChannelHandler extends ChannelInboundHandlerAdapter 
 
     private ClusterSession session;
 
+    private final Cluster cluster;
     private final ClusterNode node;
 
-    public OutboundClusterChannelHandler(ClusterNode node) {
+    public OutboundClusterChannelHandler(Cluster cluster, ClusterNode node) {
+        this.cluster = checkNotNull(cluster, "cluster");
         this.node = checkNotNull(node, "node");
     }
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) {
         final SocketChannel channel = (SocketChannel) ctx.channel();
-        session = new ClusterSession(channel);
+        session = new ClusterSession(channel, cluster);
         session.node(node);
         logger.info("Active new cluster outbound session {}", session);
 
         configurePipeline(ctx);
 
-        channel.writeAndFlush(new HandshakeRequestMessage("HELLO WORLD"));
+        channel.writeAndFlush(new HandshakeRequestMessage(node.id()));
     }
 
     private void configurePipeline(ChannelHandlerContext ctx) {
