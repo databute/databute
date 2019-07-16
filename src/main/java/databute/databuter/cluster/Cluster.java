@@ -80,7 +80,7 @@ public class Cluster {
     }
 
     public ClusterNode toClusterNode() {
-        return new ClusterNode(id);
+        return new ClusterNode(id, configuration.address(), configuration.port());
     }
 
     @Override
