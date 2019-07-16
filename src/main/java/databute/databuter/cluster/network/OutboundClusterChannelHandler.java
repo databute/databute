@@ -29,7 +29,7 @@ public class OutboundClusterChannelHandler extends ChannelInboundHandlerAdapter 
     private void configurePipeline(ChannelHandlerContext ctx) {
         final ChannelPipeline pipeline = ctx.pipeline();
 
-        pipeline.addLast(new HandshakeMessageHandler());
+        pipeline.addLast(new HandshakeMessageHandler(session));
     }
 
     @Override
