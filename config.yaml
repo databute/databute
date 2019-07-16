@@ -1,4 +1,6 @@
 cluster:
+  address: 'localhost'
+  port: 9090
   coordinator:
     address: 'localhost'
     port: 2181
