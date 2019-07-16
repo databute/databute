@@ -3,6 +3,8 @@ package databute.databuter.cluster.coordinator;
 import com.google.gson.Gson;
 import databute.databuter.cluster.Cluster;
 import databute.databuter.cluster.ClusterException;
+import databute.databuter.cluster.ClusterNode;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.framework.recipes.cache.ChildData;
@@ -87,6 +89,20 @@ public class ClusterCoordinator {
 
     private void onAdded(ChildData data) {
         checkNotNull(data, "data");
+
+        final String json = new String(data.getData());
+        final ClusterNode node = new Gson().fromJson(json, ClusterNode.class);
+
+        if (StringUtils.equals(cluster.id(), node.id())) {
+            // 로컬 노드
+            return;
+        }
+        if (cluster.isRegisteredNode(node)) {
+            // 이미 등록된 노드
+            return;
+        }
+
+        cluster.registerNode(node);
     }
 
     private void registerClusterNode() throws Exception {
