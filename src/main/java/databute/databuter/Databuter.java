@@ -2,6 +2,8 @@ package databute.databuter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import databute.databuter.cluster.Cluster;
+import databute.databuter.cluster.ClusterException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,6 +19,7 @@ public final class Databuter {
     private static final Databuter instance = new Databuter();
 
     private DatabuterConfiguration configuration;
+    private Cluster cluster;
 
     private Databuter() {
         super();
@@ -26,10 +29,12 @@ public final class Databuter {
         return instance;
     }
 
-    private void start() throws IOException {
+    private void start() throws IOException, ClusterException {
         logger.info("Starting Databuter at {}", Instant.now());
 
         loadConfiguration();
+
+        joinCluster();
     }
 
     private void loadConfiguration() throws IOException {
@@ -41,6 +46,13 @@ public final class Databuter {
         configuration = mapper.readValue(configurationFile, DatabuterConfiguration.class);
         logger.info("Loaded configuration from {}", configurationPath.toAbsolutePath());
         logger.debug("Loaded configuration: {}", configuration);
+    }
+
+    private void joinCluster() throws ClusterException {
+        logger.debug("Joining cluster...");
+
+        cluster = new Cluster(configuration.cluster());
+        cluster.join();
     }
 
     public static void main(String[] args) {

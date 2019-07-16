@@ -1,24 +1,23 @@
-package databute.databuter;
+package databute.databuter.cluster.coordinator;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.MoreObjects;
-import databute.databuter.cluster.ClusterConfiguration;
 
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
-public class DatabuterConfiguration {
+public class ClusterCoordinatorConfiguration {
 
-    @JsonProperty("cluster")
-    private ClusterConfiguration cluster;
+    @JsonProperty("address")
+    private String address;
 
-    public ClusterConfiguration cluster() {
-        return cluster;
-    }
+    @JsonProperty("port")
+    private int port;
 
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-                .add("cluster", cluster)
+                .add("address", address)
+                .add("port", port)
                 .toString();
     }
 }

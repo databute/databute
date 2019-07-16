@@ -1,1 +1,4 @@
-foo: bar
+cluster:
+  coordinator:
+    address: 'localhost'
+    port: 2181
