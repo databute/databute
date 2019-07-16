@@ -1,6 +1,6 @@
 package databute.databuter.cluster.network;
 
-import databute.databuter.cluster.handshake.HandshakeMessageHandler;
+import databute.databuter.cluster.handshake.HandshakeRequestMessageHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.channel.ChannelPipeline;
@@ -26,7 +26,7 @@ public class InboundClusterChannelHandler extends ChannelInboundHandlerAdapter {
     private void configurePipeline(ChannelHandlerContext ctx) {
         final ChannelPipeline pipeline = ctx.pipeline();
 
-        pipeline.addLast(new HandshakeMessageHandler(session));
+        pipeline.addLast(new HandshakeRequestMessageHandler(session));
     }
 
     @Override

@@ -7,11 +7,11 @@ import databute.databuter.network.message.MessageCode;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public class HandshakeMessage implements Message {
+public class HandshakeRequestMessage implements Message {
 
     private final String id;
 
-    public HandshakeMessage(String id) {
+    public HandshakeRequestMessage(String id) {
         this.id = checkNotNull(id, "id");
     }
 

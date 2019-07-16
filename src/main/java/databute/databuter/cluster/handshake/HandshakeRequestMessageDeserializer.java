@@ -5,13 +5,13 @@ import databute.databuter.network.packet.Packet;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public class HandshakeMessageDeserializer implements MessageDeserializer<HandshakeMessage> {
+public class HandshakeRequestMessageDeserializer implements MessageDeserializer<HandshakeRequestMessage> {
 
     @Override
-    public HandshakeMessage deserialize(Packet packet) {
+    public HandshakeRequestMessage deserialize(Packet packet) {
         checkNotNull(packet, "packet");
 
         final String id = packet.readString();
-        return new HandshakeMessage(id);
+        return new HandshakeRequestMessage(id);
     }
 }

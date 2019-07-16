@@ -6,10 +6,10 @@ import databute.databuter.network.packet.Packet;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public class HandshakeMessageSerializer implements MessageSerializer<HandshakeMessage> {
+public class HandshakeRequestMessageSerializer implements MessageSerializer<HandshakeRequestMessage> {
 
     @Override
-    public Packet serialize(HandshakeMessage handshake) {
+    public Packet serialize(HandshakeRequestMessage handshake) {
         checkNotNull(handshake, "handshake");
 
         final Packet packet = new BufferedPacket();

@@ -1,8 +1,8 @@
 package databute.databuter.cluster.network;
 
 import com.google.common.collect.Maps;
-import databute.databuter.cluster.handshake.HandshakeMessageDeserializer;
-import databute.databuter.cluster.handshake.HandshakeMessageSerializer;
+import databute.databuter.cluster.handshake.HandshakeRequestMessageDeserializer;
+import databute.databuter.cluster.handshake.HandshakeRequestMessageSerializer;
 import databute.databuter.network.AbstractSessionAcceptor;
 import databute.databuter.network.message.MessageCode;
 import databute.databuter.network.message.MessageCodeResolver;
@@ -31,10 +31,10 @@ public class ClusterSessionAcceptor extends AbstractSessionAcceptor {
         this.resolver = new ClusterMessageCodeResolver();
 
         this.serializers = Maps.newHashMap();
-        this.serializers.put(ClusterMessageCode.HANDSHAKE, new HandshakeMessageSerializer());
+        this.serializers.put(ClusterMessageCode.HANDSHAKE, new HandshakeRequestMessageSerializer());
 
         this.deserializers = Maps.newHashMap();
-        this.deserializers.put(ClusterMessageCode.HANDSHAKE, new HandshakeMessageDeserializer());
+        this.deserializers.put(ClusterMessageCode.HANDSHAKE, new HandshakeRequestMessageDeserializer());
     }
 
     @Override
