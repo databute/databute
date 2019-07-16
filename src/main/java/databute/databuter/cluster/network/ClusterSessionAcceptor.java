@@ -1,6 +1,8 @@
 package databute.databuter.cluster.network;
 
 import databute.databuter.network.AbstractSessionAcceptor;
+import databute.databuter.network.packet.codec.ByteToPacketDecoder;
+import databute.databuter.network.packet.codec.PacketToByteEncoder;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
@@ -19,6 +21,9 @@ public class ClusterSessionAcceptor extends AbstractSessionAcceptor {
             @Override
             protected void initChannel(SocketChannel channel) {
                 final ChannelPipeline pipeline = channel.pipeline();
+
+                pipeline.addLast(new PacketToByteEncoder());
+                pipeline.addLast(new ByteToPacketDecoder());
 
                 pipeline.addLast(new InboundClusterChannelHandler());
             }
