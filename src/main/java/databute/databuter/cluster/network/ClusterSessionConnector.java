@@ -1,6 +1,8 @@
 package databute.databuter.cluster.network;
 
 import com.google.common.collect.Maps;
+import databute.databuter.cluster.handshake.HandshakeMessageDeserializer;
+import databute.databuter.cluster.handshake.HandshakeMessageSerializer;
 import databute.databuter.network.AbstractSessionConnector;
 import databute.databuter.network.message.MessageCode;
 import databute.databuter.network.message.MessageCodeResolver;
@@ -27,8 +29,12 @@ public class ClusterSessionConnector extends AbstractSessionConnector {
     public ClusterSessionConnector(EventLoopGroup loopGroup) {
         super(loopGroup);
         this.resolver = new ClusterMessageCodeResolver();
+
         this.serializers = Maps.newHashMap();
+        this.serializers.put(ClusterMessageCode.HANDSHAKE, new HandshakeMessageSerializer());
+
         this.deserializers = Maps.newHashMap();
+        this.deserializers.put(ClusterMessageCode.HANDSHAKE, new HandshakeMessageDeserializer());
     }
 
     @Override

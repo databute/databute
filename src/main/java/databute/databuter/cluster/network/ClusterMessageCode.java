@@ -4,7 +4,7 @@ import databute.databuter.network.message.MessageCode;
 
 public enum ClusterMessageCode implements MessageCode {
 
-    ;
+    HANDSHAKE(0);
 
     private final int value;
 
