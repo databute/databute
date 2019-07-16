@@ -4,6 +4,7 @@ import com.google.common.base.MoreObjects;
 import com.google.common.collect.Maps;
 import databute.databuter.cluster.coordinator.ClusterCoordinator;
 import databute.databuter.cluster.network.ClusterSessionAcceptor;
+import databute.databuter.cluster.network.ClusterSessionConnector;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import org.slf4j.Logger;
@@ -52,6 +53,18 @@ public class Cluster {
         } else {
             logger.info("Registered node {}", node.id());
         }
+
+        connectToNode(node);
+    }
+
+    private void connectToNode(ClusterNode node) {
+        checkNotNull(node, "node");
+
+        final InetSocketAddress remoteAddress = new InetSocketAddress(node.address(), node.port());
+        logger.info("Connecting to node {} at {}", node.id(), remoteAddress);
+
+        final ClusterSessionConnector connector = new ClusterSessionConnector(loopGroup);
+        connector.connect(remoteAddress);
     }
 
     public boolean isRegisteredNode(ClusterNode node) {
