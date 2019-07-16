@@ -1,6 +1,10 @@
 package databute.databuter.cluster.network;
 
 import com.google.common.collect.Maps;
+import databute.databuter.cluster.Cluster;
+import databute.databuter.cluster.ClusterNode;
+import databute.databuter.cluster.handshake.HandshakeRequestMessageSerializer;
+import databute.databuter.cluster.handshake.HandshakeResponseMessageDeserializer;
 import databute.databuter.network.AbstractSessionConnector;
 import databute.databuter.network.message.MessageCode;
 import databute.databuter.network.message.MessageCodeResolver;
@@ -18,17 +22,28 @@ import io.netty.channel.socket.SocketChannel;
 
 import java.util.Map;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 public class ClusterSessionConnector extends AbstractSessionConnector {
+
+    private final Cluster cluster;
+    private final ClusterNode node;
 
     private final MessageCodeResolver resolver;
     private final Map<MessageCode, MessageSerializer> serializers;
     private final Map<MessageCode, MessageDeserializer> deserializers;
 
-    public ClusterSessionConnector(EventLoopGroup loopGroup) {
+    public ClusterSessionConnector(EventLoopGroup loopGroup, Cluster cluster, ClusterNode node) {
         super(loopGroup);
+        this.cluster = checkNotNull(cluster, "cluster");
+        this.node = checkNotNull(node, "node");
         this.resolver = new ClusterMessageCodeResolver();
+
         this.serializers = Maps.newHashMap();
+        this.serializers.put(ClusterMessageCode.HANDSHAKE, new HandshakeRequestMessageSerializer());
+
         this.deserializers = Maps.newHashMap();
+        this.deserializers.put(ClusterMessageCode.HANDSHAKE, new HandshakeResponseMessageDeserializer());
     }
 
     @Override
@@ -44,7 +59,7 @@ public class ClusterSessionConnector extends AbstractSessionConnector {
                 pipeline.addLast(new MessageToPacketEncoder(serializers));
                 pipeline.addLast(new PacketToMessageDecoder(resolver, deserializers));
 
-                pipeline.addLast(new OutboundClusterChannelHandler());
+                pipeline.addLast(new OutboundClusterChannelHandler(cluster, node));
             }
         };
     }

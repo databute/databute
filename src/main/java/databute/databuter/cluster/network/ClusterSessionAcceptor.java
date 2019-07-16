@@ -1,6 +1,9 @@
 package databute.databuter.cluster.network;
 
 import com.google.common.collect.Maps;
+import databute.databuter.cluster.Cluster;
+import databute.databuter.cluster.handshake.HandshakeRequestMessageDeserializer;
+import databute.databuter.cluster.handshake.HandshakeResponseMessageSerializer;
 import databute.databuter.network.AbstractSessionAcceptor;
 import databute.databuter.network.message.MessageCode;
 import databute.databuter.network.message.MessageCodeResolver;
@@ -18,17 +21,26 @@ import io.netty.channel.socket.SocketChannel;
 
 import java.util.Map;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 public class ClusterSessionAcceptor extends AbstractSessionAcceptor {
+
+    private final Cluster cluster;
 
     private final MessageCodeResolver resolver;
     private final Map<MessageCode, MessageSerializer> serializers;
     private final Map<MessageCode, MessageDeserializer> deserializers;
 
-    public ClusterSessionAcceptor(EventLoopGroup loopGroup) {
+    public ClusterSessionAcceptor(EventLoopGroup loopGroup, Cluster cluster) {
         super(loopGroup, loopGroup);
+        this.cluster = checkNotNull(cluster, "cluster");
         this.resolver = new ClusterMessageCodeResolver();
+
         this.serializers = Maps.newHashMap();
+        this.serializers.put(ClusterMessageCode.HANDSHAKE, new HandshakeResponseMessageSerializer());
+
         this.deserializers = Maps.newHashMap();
+        this.deserializers.put(ClusterMessageCode.HANDSHAKE, new HandshakeRequestMessageDeserializer());
     }
 
     @Override
@@ -44,7 +56,7 @@ public class ClusterSessionAcceptor extends AbstractSessionAcceptor {
                 pipeline.addLast(new MessageToPacketEncoder(serializers));
                 pipeline.addLast(new PacketToMessageDecoder(resolver, deserializers));
 
-                pipeline.addLast(new InboundClusterChannelHandler());
+                pipeline.addLast(new InboundClusterChannelHandler(cluster));
             }
         };
     }
