@@ -2,3 +2,5 @@ cluster:
   coordinator:
     address: 'localhost'
     port: 2181
+    baseSleepTimeMs: 1000
+    maxRetries: 8
