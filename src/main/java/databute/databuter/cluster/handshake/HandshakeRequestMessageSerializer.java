@@ -9,11 +9,11 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public class HandshakeRequestMessageSerializer implements MessageSerializer<HandshakeRequestMessage> {
 
     @Override
-    public Packet serialize(HandshakeRequestMessage handshake) {
-        checkNotNull(handshake, "handshake");
+    public Packet serialize(HandshakeRequestMessage handshakeRequest) {
+        checkNotNull(handshakeRequest, "handshakeRequest");
 
         final Packet packet = new BufferedPacket();
-        packet.writeString(handshake.id());
+        packet.writeString(handshakeRequest.id());
         return packet;
     }
 }

@@ -16,13 +16,13 @@ public class HandshakeRequestMessageHandler extends ClusterMessageHandler<Handsh
     }
 
     @Override
-    protected void channelRead0(ChannelHandlerContext ctx, HandshakeRequestMessage handshake) throws Exception {
-        logger.debug("Read handshake {}", handshake);
+    protected void channelRead0(ChannelHandlerContext ctx, HandshakeRequestMessage handshakeRequest) {
+        logger.debug("Read handshake request {}", handshakeRequest);
 
-        if (StringUtils.equals(session().cluster().id(), handshake.id())) {
+        if (StringUtils.equals(session().cluster().id(), handshakeRequest.id())) {
             ctx.writeAndFlush(new HandshakeResponseMessage());
         } else {
-            logger.warn("Detected invalid handshake request from {} to {}.", handshake.id(), session().cluster().id());
+            logger.warn("Detected invalid handshake request from {} to {}.", handshakeRequest.id(), session().cluster().id());
             ctx.close().addListener(future -> logger.warn("Closed invalid session {}", session()));
         }
     }
