@@ -19,6 +19,14 @@ public class ClusterConfiguration {
     @JsonProperty("coordinator")
     private ClusterCoordinatorConfiguration coordinator;
 
+    public String address() {
+        return address;
+    }
+
+    public int port() {
+        return port;
+    }
+
     public InetSocketAddress localAddress() {
         return new InetSocketAddress(address, port);
     }
