@@ -1,6 +1,7 @@
 package databute.databuter.cluster.network;
 
 import com.google.common.collect.Maps;
+import databute.databuter.cluster.ClusterNode;
 import databute.databuter.cluster.handshake.HandshakeMessageDeserializer;
 import databute.databuter.cluster.handshake.HandshakeMessageSerializer;
 import databute.databuter.network.AbstractSessionConnector;
@@ -20,14 +21,19 @@ import io.netty.channel.socket.SocketChannel;
 
 import java.util.Map;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 public class ClusterSessionConnector extends AbstractSessionConnector {
+
+    private final ClusterNode node;
 
     private final MessageCodeResolver resolver;
     private final Map<MessageCode, MessageSerializer> serializers;
     private final Map<MessageCode, MessageDeserializer> deserializers;
 
-    public ClusterSessionConnector(EventLoopGroup loopGroup) {
+    public ClusterSessionConnector(EventLoopGroup loopGroup, ClusterNode node) {
         super(loopGroup);
+        this.node = checkNotNull(node, "node");
         this.resolver = new ClusterMessageCodeResolver();
 
         this.serializers = Maps.newHashMap();
@@ -50,7 +56,7 @@ public class ClusterSessionConnector extends AbstractSessionConnector {
                 pipeline.addLast(new MessageToPacketEncoder(serializers));
                 pipeline.addLast(new PacketToMessageDecoder(resolver, deserializers));
 
-                pipeline.addLast(new OutboundClusterChannelHandler());
+                pipeline.addLast(new OutboundClusterChannelHandler(node));
             }
         };
     }

@@ -63,7 +63,7 @@ public class Cluster {
         final InetSocketAddress remoteAddress = new InetSocketAddress(node.address(), node.port());
         logger.info("Connecting to node {} at {}", node.id(), remoteAddress);
 
-        final ClusterSessionConnector connector = new ClusterSessionConnector(loopGroup);
+        final ClusterSessionConnector connector = new ClusterSessionConnector(loopGroup, node);
         connector.connect(remoteAddress);
     }
 
