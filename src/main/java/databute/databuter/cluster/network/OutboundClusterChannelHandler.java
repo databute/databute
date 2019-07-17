@@ -36,7 +36,7 @@ public class OutboundClusterChannelHandler extends ChannelInboundHandlerAdapter 
 
         configurePipeline(ctx);
 
-        channel.writeAndFlush(new HandshakeRequestMessage(node.id()));
+        session.send(new HandshakeRequestMessage(node.id()));
     }
 
     private void configurePipeline(ChannelHandlerContext ctx) {

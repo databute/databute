@@ -1,5 +1,7 @@
 package databute.databuter.network;
 
+import databute.databuter.network.message.Message;
+import io.netty.channel.ChannelFuture;
 import io.netty.channel.socket.SocketChannel;
 
 import java.net.InetSocketAddress;
@@ -31,5 +33,11 @@ public abstract class AbstractSession implements Session {
     @Override
     public final InetSocketAddress remoteAddress() {
         return remoteAddress;
+    }
+
+    @Override
+    public final ChannelFuture send(Message message) {
+        checkNotNull(message, "message");
+        return channel.writeAndFlush(message);
     }
 }
