@@ -21,7 +21,7 @@ public class HandshakeRequestMessageHandler extends ClusterMessageHandler<Handsh
         logger.debug("Read handshake request {}", handshakeRequest);
 
         if (StringUtils.equals(session().cluster().id(), handshakeRequest.id())) {
-            ctx.writeAndFlush(new HandshakeResponseMessage());
+            session().send(new HandshakeResponseMessage());
         } else {
             logger.warn("Detected invalid handshake request from {} to {}.", handshakeRequest.id(), session().cluster().id());
             session().close().addListener(future -> logger.warn("Closed invalid session {}", session()));
