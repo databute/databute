@@ -24,7 +24,7 @@ public class HandshakeRequestMessageHandler extends ClusterMessageHandler<Handsh
             ctx.writeAndFlush(new HandshakeResponseMessage());
         } else {
             logger.warn("Detected invalid handshake request from {} to {}.", handshakeRequest.id(), session().cluster().id());
-            ctx.close().addListener(future -> logger.warn("Closed invalid session {}", session()));
+            session().close().addListener(future -> logger.warn("Closed invalid session {}", session()));
         }
     }
 }
