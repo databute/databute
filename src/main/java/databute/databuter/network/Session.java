@@ -14,6 +14,8 @@ public interface Session {
 
     InetSocketAddress remoteAddress();
 
+    ChannelFuture close();
+
     ChannelFuture send(Message message);
 
 }

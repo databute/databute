@@ -36,6 +36,11 @@ public abstract class AbstractSession implements Session {
     }
 
     @Override
+    public final ChannelFuture close() {
+        return channel.close();
+    }
+
+    @Override
     public final ChannelFuture send(Message message) {
         checkNotNull(message, "message");
         return channel.writeAndFlush(message);
