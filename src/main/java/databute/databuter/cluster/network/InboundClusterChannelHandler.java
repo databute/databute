@@ -1,7 +1,7 @@
 package databute.databuter.cluster.network;
 
 import databute.databuter.cluster.Cluster;
-import databute.databuter.cluster.handshake.HandshakeRequestMessageHandler;
+import databute.databuter.cluster.handshake.request.HandshakeRequestMessageHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.channel.ChannelPipeline;

@@ -1,5 +1,6 @@
-package databute.databuter.cluster.handshake;
+package databute.databuter.cluster.handshake.request;
 
+import databute.databuter.cluster.handshake.response.HandshakeResponseMessage;
 import databute.databuter.cluster.network.ClusterMessageHandler;
 import databute.databuter.cluster.network.ClusterSession;
 import io.netty.channel.ChannelHandlerContext;
