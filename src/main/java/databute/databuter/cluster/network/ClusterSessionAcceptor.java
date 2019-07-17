@@ -2,8 +2,8 @@ package databute.databuter.cluster.network;
 
 import com.google.common.collect.Maps;
 import databute.databuter.cluster.Cluster;
-import databute.databuter.cluster.handshake.HandshakeRequestMessageDeserializer;
-import databute.databuter.cluster.handshake.HandshakeResponseMessageSerializer;
+import databute.databuter.cluster.handshake.request.HandshakeRequestMessageDeserializer;
+import databute.databuter.cluster.handshake.response.HandshakeResponseMessageSerializer;
 import databute.databuter.network.AbstractSessionAcceptor;
 import databute.databuter.network.message.MessageCode;
 import databute.databuter.network.message.MessageCodeResolver;

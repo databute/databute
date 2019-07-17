@@ -1,4 +1,4 @@
-package databute.databuter.cluster.handshake;
+package databute.databuter.cluster.handshake.response;
 
 import databute.databuter.network.message.MessageSerializer;
 import databute.databuter.network.packet.BufferedPacket;
