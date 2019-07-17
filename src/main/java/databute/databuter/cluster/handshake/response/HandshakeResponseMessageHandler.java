@@ -1,4 +1,4 @@
-package databute.databuter.cluster.handshake;
+package databute.databuter.cluster.handshake.response;
 
 import databute.databuter.cluster.network.ClusterMessageHandler;
 import databute.databuter.cluster.network.ClusterSession;
