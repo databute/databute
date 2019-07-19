@@ -37,10 +37,10 @@ public class ClusterSessionAcceptor extends AbstractSessionAcceptor {
         this.resolver = new ClusterMessageCodeResolver();
 
         this.serializers = Maps.newHashMap();
-        this.serializers.put(ClusterMessageCode.HANDSHAKE, new HandshakeResponseMessageSerializer());
+        this.serializers.put(ClusterMessageCode.HANDSHAKE_RESPONSE, new HandshakeResponseMessageSerializer());
 
         this.deserializers = Maps.newHashMap();
-        this.deserializers.put(ClusterMessageCode.HANDSHAKE, new HandshakeRequestMessageDeserializer());
+        this.deserializers.put(ClusterMessageCode.HANDSHAKE_REQUEST, new HandshakeRequestMessageDeserializer());
     }
 
     @Override
