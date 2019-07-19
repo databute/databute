@@ -9,7 +9,7 @@ public class HandshakeResponseMessage implements Message {
 
     @Override
     public MessageCode messageCode() {
-        return ClusterMessageCode.HANDSHAKE;
+        return ClusterMessageCode.HANDSHAKE_RESPONSE;
     }
 
     @Override

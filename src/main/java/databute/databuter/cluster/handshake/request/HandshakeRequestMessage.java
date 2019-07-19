@@ -17,7 +17,7 @@ public class HandshakeRequestMessage implements Message {
 
     @Override
     public MessageCode messageCode() {
-        return ClusterMessageCode.HANDSHAKE;
+        return ClusterMessageCode.HANDSHAKE_REQUEST;
     }
 
     public String id() {
