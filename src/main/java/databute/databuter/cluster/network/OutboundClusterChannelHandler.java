@@ -31,7 +31,6 @@ public class OutboundClusterChannelHandler extends ChannelInboundHandlerAdapter 
     public void channelActive(ChannelHandlerContext ctx) {
         final SocketChannel channel = (SocketChannel) ctx.channel();
         session = new ClusterSession(channel, cluster);
-        session.remoteNode(remoteNode);
         logger.info("Active new cluster outbound session {}", session);
 
         remoteNode.session(session);
