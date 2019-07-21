@@ -3,7 +3,7 @@ package databute.databuter.cluster.coordinator;
 import com.google.gson.Gson;
 import databute.databuter.cluster.Cluster;
 import databute.databuter.cluster.ClusterException;
-import databute.databuter.cluster.ClusterNode;
+import databute.databuter.cluster.node.ClusterNodeConfiguration;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
@@ -91,21 +91,22 @@ public class ClusterCoordinator {
         checkNotNull(data, "data");
 
         final String json = new String(data.getData());
-        final ClusterNode node = new Gson().fromJson(json, ClusterNode.class);
+        final ClusterNodeConfiguration nodeConfiguration = new Gson().fromJson(json, ClusterNodeConfiguration.class);
+        final RemoteClusterNode remoteNode = new RemoteClusterNode(nodeConfiguration, cluster);
 
-        if (StringUtils.equals(cluster.id(), node.id())) {
+        if (StringUtils.equals(cluster.id(), remoteNode.id())) {
             // 로컬 노드
             return;
         }
 
-        final boolean added = cluster.nodeGroup().add(node);
+        final boolean added = cluster.remoteNodeGroup().add(remoteNode);
         if (added) {
-            cluster.connectToNode(node);
+            remoteNode.connect();
         }
     }
 
     private void registerClusterNode() throws Exception {
-        final String json = new Gson().toJson(cluster.toClusterNode());
+        final String json = new Gson().toJson(cluster.localNode().configuration());
         final String path = curator.create()
                 .withMode(CreateMode.EPHEMERAL)
                 .forPath(ZKPaths.makePath(configuration.path(), "discovery", cluster.id()), json.getBytes());

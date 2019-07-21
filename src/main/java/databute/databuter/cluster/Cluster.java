@@ -2,8 +2,9 @@ package databute.databuter.cluster;
 
 import com.google.common.base.MoreObjects;
 import databute.databuter.cluster.coordinator.ClusterCoordinator;
+import databute.databuter.cluster.coordinator.RemoteClusterNodeGroup;
 import databute.databuter.cluster.network.ClusterSessionAcceptor;
-import databute.databuter.cluster.network.ClusterSessionConnector;
+import databute.databuter.cluster.node.ClusterNodeConfiguration;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import org.slf4j.Logger;
@@ -25,31 +26,35 @@ public class Cluster {
 
     private final String id;
     private final EventLoopGroup loopGroup;
-    private final ClusterNodeGroup nodeGroup;
+    private final LocalClusterNode localNode;
+    private final RemoteClusterNodeGroup remoteNodeGroup;
 
     public Cluster(ClusterConfiguration configuration) {
         this.configuration = checkNotNull(configuration, "configuration");
         this.id = UUID.randomUUID().toString();
         this.loopGroup = new NioEventLoopGroup();
-        this.nodeGroup = new ClusterNodeGroup();
+        this.localNode = new LocalClusterNode(ClusterNodeConfiguration.builder()
+                .id(id)
+                .address(configuration.address())
+                .port(configuration.port())
+                .build());
+        this.remoteNodeGroup = new RemoteClusterNodeGroup();
     }
 
     public String id() {
         return id;
     }
 
-    public ClusterNodeGroup nodeGroup() {
-        return nodeGroup;
+    public EventLoopGroup loopGroup() {
+        return loopGroup;
     }
 
-    public void connectToNode(ClusterNode node) {
-        checkNotNull(node, "node");
+    public LocalClusterNode localNode() {
+        return localNode;
+    }
 
-        final InetSocketAddress remoteAddress = new InetSocketAddress(node.address(), node.port());
-        logger.info("Connecting to node {} at {}", node.id(), remoteAddress);
-
-        final ClusterSessionConnector connector = new ClusterSessionConnector(loopGroup, this, node);
-        connector.connect(remoteAddress);
+    public RemoteClusterNodeGroup remoteNodeGroup() {
+        return remoteNodeGroup;
     }
 
     public void join() throws ClusterException {
@@ -67,10 +72,6 @@ public class Cluster {
     private void connectToCoordinator() throws ClusterException {
         coordinator = new ClusterCoordinator(this, configuration.coordinator());
         coordinator.connect();
-    }
-
-    public ClusterNode toClusterNode() {
-        return new ClusterNode(id, configuration.address(), configuration.port());
     }
 
     @Override
