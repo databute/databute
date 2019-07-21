@@ -2,6 +2,7 @@ package databute.databuter.cluster.coordinator;
 
 import com.google.common.base.MoreObjects;
 import databute.databuter.cluster.Cluster;
+import databute.databuter.cluster.network.ClusterSession;
 import databute.databuter.cluster.network.ClusterSessionConnector;
 import databute.databuter.cluster.node.AbstractClusterNode;
 import databute.databuter.cluster.node.ClusterNodeConfiguration;
@@ -16,11 +17,22 @@ public class RemoteClusterNode extends AbstractClusterNode {
 
     private static final Logger logger = LoggerFactory.getLogger(RemoteClusterNode.class);
 
+    private ClusterSession session;
+
     private final Cluster cluster;
 
     public RemoteClusterNode(ClusterNodeConfiguration configuration, Cluster cluster) {
         super(configuration);
         this.cluster = checkNotNull(cluster, "cluster");
+    }
+
+    public ClusterSession session() {
+        return session;
+    }
+
+    public RemoteClusterNode session(ClusterSession session) {
+        this.session = checkNotNull(session, "session");
+        return this;
     }
 
     public void connect() {
@@ -37,6 +49,7 @@ public class RemoteClusterNode extends AbstractClusterNode {
     public String toString() {
         return MoreObjects.toStringHelper(this)
                 .add("configuration", configuration())
+                .add("session", session)
                 .toString();
     }
 }

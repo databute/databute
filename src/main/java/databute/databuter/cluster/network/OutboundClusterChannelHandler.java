@@ -34,6 +34,8 @@ public class OutboundClusterChannelHandler extends ChannelInboundHandlerAdapter 
         session.remoteNode(remoteNode);
         logger.info("Active new cluster outbound session {}", session);
 
+        remoteNode.session(session);
+
         configurePipeline(ctx);
 
         session.send(new HandshakeRequestMessage(remoteNode.id()));
