@@ -49,5 +49,7 @@ public class OutboundClusterChannelHandler extends ChannelInboundHandlerAdapter 
     @Override
     public void channelInactive(ChannelHandlerContext ctx) {
         logger.info("Inactive cluster outbound session {}", session);
+
+        cluster.remoteNodeGroup().remove(remoteNode);
     }
 }

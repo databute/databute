@@ -32,4 +32,24 @@ public class RemoteClusterNodeGroup {
 
         return added;
     }
+
+    public boolean remove(RemoteClusterNode remoteNode) {
+        return remove(checkNotNull(remoteNode, "remoteNode").id());
+    }
+
+    public boolean remove(String id) {
+        checkNotNull(id, "id");
+
+        final RemoteClusterNode remoteNode = remoteNodes.remove(id);
+        final boolean removed = (remoteNode != null);
+        if (removed) {
+            if (logger.isDebugEnabled()) {
+                logger.debug("Removed remote cluster node {}", remoteNode);
+            } else {
+                logger.info("Removed remote cluster node {}", remoteNode.id());
+            }
+        }
+
+        return removed;
+    }
 }
