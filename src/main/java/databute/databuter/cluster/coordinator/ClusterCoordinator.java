@@ -97,12 +97,11 @@ public class ClusterCoordinator {
             // 로컬 노드
             return;
         }
-        if (cluster.isRegisteredNode(node)) {
-            // 이미 등록된 노드
-            return;
-        }
 
-        cluster.registerNode(node);
+        final boolean added = cluster.nodeGroup().add(node);
+        if (added) {
+            cluster.connectToNode(node);
+        }
     }
 
     private void registerClusterNode() throws Exception {
