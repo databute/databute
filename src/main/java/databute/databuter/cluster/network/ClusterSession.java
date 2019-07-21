@@ -2,7 +2,7 @@ package databute.databuter.cluster.network;
 
 import com.google.common.base.MoreObjects;
 import databute.databuter.cluster.Cluster;
-import databute.databuter.cluster.ClusterNode;
+import databute.databuter.cluster.coordinator.RemoteClusterNode;
 import databute.databuter.network.AbstractSession;
 import io.netty.channel.socket.SocketChannel;
 
@@ -10,7 +10,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 public class ClusterSession extends AbstractSession {
 
-    private ClusterNode node;
+    private RemoteClusterNode remoteNode;
 
     private final Cluster cluster;
 
@@ -23,12 +23,12 @@ public class ClusterSession extends AbstractSession {
         return cluster;
     }
 
-    public ClusterNode node() {
-        return node;
+    public RemoteClusterNode remoteNode() {
+        return remoteNode;
     }
 
-    public ClusterSession node(ClusterNode node) {
-        this.node = checkNotNull(node, "node");
+    public ClusterSession remoteNode(RemoteClusterNode remoteNode) {
+        this.remoteNode = checkNotNull(remoteNode, "remoteNode");
         return this;
     }
 
@@ -36,7 +36,7 @@ public class ClusterSession extends AbstractSession {
     public String toString() {
         return MoreObjects.toStringHelper(this)
                 .add("channel", channel())
-                .add("node", node)
+                .add("remoteNode", remoteNode)
                 .toString();
     }
 }
