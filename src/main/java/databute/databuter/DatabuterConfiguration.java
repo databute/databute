@@ -18,6 +18,9 @@ public class DatabuterConfiguration {
     @JsonProperty("client")
     private ClientConfiguration client;
 
+    @JsonProperty("zooKeeper")
+    private ZooKeeperConfiguration zooKeeper;
+
     @JsonProperty("cluster")
     private ClusterConfiguration cluster;
 
@@ -33,6 +36,10 @@ public class DatabuterConfiguration {
         return client;
     }
 
+    public ZooKeeperConfiguration zooKeeper() {
+        return zooKeeper;
+    }
+
     public ClusterConfiguration cluster() {
         return cluster;
     }
@@ -43,6 +50,7 @@ public class DatabuterConfiguration {
                 .add("bucketMemorySize", bucketMemorySize)
                 .add("gaurdMemorySize", guardMemorySize)
                 .add("client", client)
+                .add("zooKeeper", zooKeeper)
                 .add("cluster", cluster)
                 .toString();
     }

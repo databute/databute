@@ -1,4 +1,4 @@
-package databute.databuter.cluster.coordinator;
+package databute.databuter;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -6,16 +6,13 @@ import com.google.common.base.MoreObjects;
 import org.apache.commons.lang3.StringUtils;
 
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
-public class ClusterCoordinatorConfiguration {
+public class ZooKeeperConfiguration {
 
     @JsonProperty("address")
     private String address;
 
     @JsonProperty("port")
     private int port;
-
-    @JsonProperty("path")
-    private String path;
 
     @JsonProperty("baseSleepTimeMs")
     private int baseSleepTimeMs;
@@ -25,10 +22,6 @@ public class ClusterCoordinatorConfiguration {
 
     public String connectString() {
         return StringUtils.joinWith(":", address, port);
-    }
-
-    public String path() {
-        return path;
     }
 
     public int baseSleepTimeMs() {
@@ -44,7 +37,6 @@ public class ClusterCoordinatorConfiguration {
         return MoreObjects.toStringHelper(this)
                 .add("address", address)
                 .add("port", port)
-                .add("path", path)
                 .add("baseSleepTimeMs", baseSleepTimeMs)
                 .add("maxRetries", maxRetries)
                 .toString();

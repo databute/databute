@@ -8,6 +8,7 @@ import databute.databuter.cluster.network.ClusterSessionAcceptor;
 import databute.databuter.cluster.node.ClusterNodeConfiguration;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
+import org.apache.curator.framework.CuratorFramework;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,6 +25,7 @@ public class Cluster {
     private ClusterCoordinator coordinator;
 
     private final ClusterConfiguration configuration;
+    private final CuratorFramework curator;
 
     private final String id;
     private final EventLoopGroup loopGroup;
@@ -32,8 +34,9 @@ public class Cluster {
     //TODO(@nono5546):coordinator 리팩토링 때 삭제
     private final BucketGroup bucketGroup;
 
-    public Cluster(ClusterConfiguration configuration, BucketGroup bucketGroup) {
+    public Cluster(ClusterConfiguration configuration, CuratorFramework curator, BucketGroup bucketGroup) {
         this.configuration = checkNotNull(configuration, "configuration");
+        this.curator = checkNotNull(curator, "curator");
         this.id = UUID.randomUUID().toString();
         this.loopGroup = new NioEventLoopGroup();
         this.localNode = new LocalClusterNode(ClusterNodeConfiguration.builder()
@@ -48,6 +51,10 @@ public class Cluster {
 
     public String id() {
         return id;
+    }
+
+    public ClusterConfiguration configuration() {
+        return configuration;
     }
 
     public EventLoopGroup loopGroup() {
@@ -75,7 +82,7 @@ public class Cluster {
     }
 
     private void connectToCoordinator() throws ClusterException {
-        coordinator = new ClusterCoordinator(this, configuration.coordinator(), bucketGroup);
+        coordinator = new ClusterCoordinator(this, curator, bucketGroup);
         coordinator.connect();
     }
 
