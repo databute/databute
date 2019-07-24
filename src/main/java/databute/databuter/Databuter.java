@@ -41,7 +41,6 @@ public final class Databuter {
         makeBucket();
 
         joinCluster();
-
     }
 
     private void loadConfiguration() throws IOException {

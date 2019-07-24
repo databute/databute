@@ -25,14 +25,14 @@ public class BucketGroup implements Iterable<Bucket> {
     }
 
     public boolean add(Bucket bucket) {
-        checkNotNull(bucket, "remoteNode");
+        checkNotNull(bucket, "bucket");
 
         final boolean added = (buckets.putIfAbsent(bucket.id(), bucket) == null);
         if (added) {
             if (logger.isDebugEnabled()) {
-                logger.debug("Added remote cluster node {}", bucket);
+                logger.debug("Added bucket {}", bucket);
             } else {
-                logger.info("Added remote cluster node {}", bucket.id());
+                logger.info("Added bucket {}", bucket.id());
             }
         }
 
@@ -40,19 +40,19 @@ public class BucketGroup implements Iterable<Bucket> {
     }
 
     public boolean remove(Bucket bucket) {
-        return remove(checkNotNull(bucket, "remoteNode").id());
+        return remove(checkNotNull(bucket, "bucket").id());
     }
 
     public boolean remove(String id) {
         checkNotNull(id, "id");
 
-        final Bucket remoteNode = buckets.remove(id);
-        final boolean removed = (remoteNode != null);
+        final Bucket bucket = buckets.remove(id);
+        final boolean removed = (bucket != null);
         if (removed) {
             if (logger.isDebugEnabled()) {
-                logger.debug("Removed remote cluster node {}", remoteNode);
+                logger.debug("Removed bucket {}", bucket);
             } else {
-                logger.info("Removed remote cluster node {}", remoteNode.id());
+                logger.info("Removed bucket {}", bucket.id());
             }
         }
 

@@ -29,7 +29,6 @@ public class DatabuterConfiguration {
         return cluster;
     }
 
-
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)

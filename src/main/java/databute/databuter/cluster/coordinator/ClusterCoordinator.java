@@ -32,7 +32,6 @@ public class ClusterCoordinator {
 
     private final CuratorFramework curator;
 
-
     public ClusterCoordinator(Cluster cluster, ClusterCoordinatorConfiguration configuration, BucketGroup bucketGroup) {
         this.cluster = checkNotNull(cluster, "cluster");
         this.configuration = checkNotNull(configuration, "configuration");
@@ -123,8 +122,7 @@ public class ClusterCoordinator {
                 .forPath(ZKPaths.makePath(configuration.path(), "discovery", cluster.id()), json.getBytes());
         logger.debug("Registered cluster node at {}", path);
     }
-
-
+    
     private void registerBucketGroup() throws Exception {
         for (Bucket bucket : bucketGroup) {
             final String json = new Gson().toJson(bucket);
@@ -135,5 +133,4 @@ public class ClusterCoordinator {
             logger.debug("Registered Bucket node at {}", path);
         }
     }
-
 }

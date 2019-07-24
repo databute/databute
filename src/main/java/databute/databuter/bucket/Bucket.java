@@ -8,7 +8,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 public class Bucket {
 
-    private String id;
+    private final String id;
 
     public Bucket(){
         this.id = UUID.randomUUID().toString();
@@ -16,12 +16,6 @@ public class Bucket {
 
     public String id() {
         return id;
-    }
-
-    public Bucket id(String id) {
-        this.id = checkNotNull(id ,"id");
-        Runtime.getRuntime().totalMemory();
-        return this;
     }
 
     @Override
