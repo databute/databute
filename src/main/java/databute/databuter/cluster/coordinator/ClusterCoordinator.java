@@ -122,7 +122,7 @@ public class ClusterCoordinator {
                 .forPath(ZKPaths.makePath(configuration.path(), "discovery", cluster.id()), json.getBytes());
         logger.debug("Registered cluster node at {}", path);
     }
-    
+
     private void registerBucketGroup() throws Exception {
         for (Bucket bucket : bucketGroup) {
             final String json = new Gson().toJson(bucket);

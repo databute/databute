@@ -1,7 +1,6 @@
 package databute.databuter.cluster;
 
 import com.google.common.base.MoreObjects;
-import databute.databuter.bucket.Bucket;
 import databute.databuter.bucket.BucketGroup;
 import databute.databuter.cluster.coordinator.ClusterCoordinator;
 import databute.databuter.cluster.coordinator.RemoteClusterNodeGroup;

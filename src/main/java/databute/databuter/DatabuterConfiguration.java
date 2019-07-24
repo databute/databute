@@ -24,7 +24,7 @@ public class DatabuterConfiguration {
     public int guardMemorySizeMb() {
         return guardMemorySize * 1024 * 1024;
     }
-  
+
     public int bucketMemorySizeMb() {
         return bucketMemorySize * 1024 * 1024;
     }
