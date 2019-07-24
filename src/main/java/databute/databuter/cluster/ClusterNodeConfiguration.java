@@ -1,4 +1,4 @@
-package databute.databuter.cluster.node;
+package databute.databuter.cluster;
 
 import com.google.common.base.MoreObjects;
 

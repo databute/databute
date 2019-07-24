@@ -1,11 +1,11 @@
-package databute.databuter.cluster.coordinator;
+package databute.databuter.cluster.remote;
 
 import com.google.common.base.MoreObjects;
+import databute.databuter.cluster.AbstractClusterNode;
 import databute.databuter.cluster.ClusterCoordinator;
+import databute.databuter.cluster.ClusterNodeConfiguration;
 import databute.databuter.cluster.network.ClusterSession;
 import databute.databuter.cluster.network.ClusterSessionConnector;
-import databute.databuter.cluster.node.AbstractClusterNode;
-import databute.databuter.cluster.node.ClusterNodeConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

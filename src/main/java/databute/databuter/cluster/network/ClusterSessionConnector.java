@@ -2,9 +2,9 @@ package databute.databuter.cluster.network;
 
 import com.google.common.collect.Maps;
 import databute.databuter.cluster.ClusterCoordinator;
-import databute.databuter.cluster.coordinator.RemoteClusterNode;
 import databute.databuter.cluster.handshake.request.HandshakeRequestMessageSerializer;
 import databute.databuter.cluster.handshake.response.HandshakeResponseMessageDeserializer;
+import databute.databuter.cluster.remote.RemoteClusterNode;
 import databute.databuter.network.AbstractSessionConnector;
 import databute.databuter.network.message.MessageCode;
 import databute.databuter.network.message.MessageCodeResolver;

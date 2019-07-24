@@ -1,4 +1,4 @@
-package databute.databuter.cluster.coordinator;
+package databute.databuter.cluster.remote;
 
 import com.google.common.collect.Maps;
 import org.slf4j.Logger;

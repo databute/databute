@@ -1,9 +1,9 @@
 package databute.databuter.cluster.network;
 
 import databute.databuter.cluster.ClusterCoordinator;
-import databute.databuter.cluster.coordinator.RemoteClusterNode;
 import databute.databuter.cluster.handshake.request.HandshakeRequestMessage;
 import databute.databuter.cluster.handshake.response.HandshakeResponseMessageHandler;
+import databute.databuter.cluster.remote.RemoteClusterNode;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.channel.ChannelPipeline;

@@ -1,4 +1,4 @@
-package databute.databuter.cluster.node;
+package databute.databuter.cluster;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 

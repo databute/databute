@@ -4,10 +4,10 @@ import com.google.common.base.MoreObjects;
 import com.google.gson.Gson;
 import databute.databuter.Databuter;
 import databute.databuter.ZooKeeperConfiguration;
-import databute.databuter.cluster.coordinator.RemoteClusterNode;
-import databute.databuter.cluster.coordinator.RemoteClusterNodeGroup;
+import databute.databuter.cluster.local.LocalClusterNode;
 import databute.databuter.cluster.network.ClusterSessionAcceptor;
-import databute.databuter.cluster.node.ClusterNodeConfiguration;
+import databute.databuter.cluster.remote.RemoteClusterNode;
+import databute.databuter.cluster.remote.RemoteClusterNodeGroup;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import org.apache.commons.lang3.StringUtils;
@@ -88,7 +88,7 @@ public class ClusterCoordinator {
             cache = new PathChildrenCache(Databuter.instance().curator(), path, true);
             cache.getListenable().addListener(this::onCacheEvent);
             cache.start(PathChildrenCache.StartMode.POST_INITIALIZED_EVENT);
-            logger.debug("Registered cluster coordinator's cache event listener at {}", path);
+            logger.debug("Registered cluster remote's cache event listener at {}", path);
         } catch (Exception e) {
             throw new ClusterException("Failed to register cache event listener.", e);
         }
