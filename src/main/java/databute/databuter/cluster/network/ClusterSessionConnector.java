@@ -1,7 +1,7 @@
 package databute.databuter.cluster.network;
 
 import com.google.common.collect.Maps;
-import databute.databuter.cluster.Cluster;
+import databute.databuter.cluster.ClusterCoordinator;
 import databute.databuter.cluster.coordinator.RemoteClusterNode;
 import databute.databuter.cluster.handshake.request.HandshakeRequestMessageSerializer;
 import databute.databuter.cluster.handshake.response.HandshakeResponseMessageDeserializer;
@@ -26,16 +26,16 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 public class ClusterSessionConnector extends AbstractSessionConnector {
 
-    private final Cluster cluster;
+    private final ClusterCoordinator clusterCoordinator;
     private final RemoteClusterNode remoteNode;
 
     private final MessageCodeResolver resolver;
     private final Map<MessageCode, MessageSerializer> serializers;
     private final Map<MessageCode, MessageDeserializer> deserializers;
 
-    public ClusterSessionConnector(EventLoopGroup loopGroup, Cluster cluster, RemoteClusterNode remoteNode) {
+    public ClusterSessionConnector(EventLoopGroup loopGroup, ClusterCoordinator clusterCoordinator, RemoteClusterNode remoteNode) {
         super(loopGroup);
-        this.cluster = checkNotNull(cluster, "cluster");
+        this.clusterCoordinator = checkNotNull(clusterCoordinator, "clusterCoordinator");
         this.remoteNode = checkNotNull(remoteNode, "remoteNode");
         this.resolver = new ClusterMessageCodeResolver();
 
@@ -59,7 +59,7 @@ public class ClusterSessionConnector extends AbstractSessionConnector {
                 pipeline.addLast(new MessageToPacketEncoder(serializers));
                 pipeline.addLast(new PacketToMessageDecoder(resolver, deserializers));
 
-                pipeline.addLast(new OutboundClusterChannelHandler(cluster, remoteNode));
+                pipeline.addLast(new OutboundClusterChannelHandler(clusterCoordinator, remoteNode));
             }
         };
     }

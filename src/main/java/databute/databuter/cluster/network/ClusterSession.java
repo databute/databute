@@ -1,7 +1,7 @@
 package databute.databuter.cluster.network;
 
 import com.google.common.base.MoreObjects;
-import databute.databuter.cluster.Cluster;
+import databute.databuter.cluster.ClusterCoordinator;
 import databute.databuter.network.AbstractSession;
 import io.netty.channel.socket.SocketChannel;
 
@@ -9,15 +9,15 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 public class ClusterSession extends AbstractSession {
 
-    private final Cluster cluster;
+    private final ClusterCoordinator clusterCoordinator;
 
-    public ClusterSession(SocketChannel channel, Cluster cluster) {
+    public ClusterSession(SocketChannel channel, ClusterCoordinator clusterCoordinator) {
         super(channel);
-        this.cluster = checkNotNull(cluster, "cluster");
+        this.clusterCoordinator = checkNotNull(clusterCoordinator, "clusterCoordinator");
     }
 
-    public Cluster cluster() {
-        return cluster;
+    public ClusterCoordinator cluster() {
+        return clusterCoordinator;
     }
 
     @Override

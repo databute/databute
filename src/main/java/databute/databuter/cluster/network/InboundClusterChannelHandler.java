@@ -1,6 +1,6 @@
 package databute.databuter.cluster.network;
 
-import databute.databuter.cluster.Cluster;
+import databute.databuter.cluster.ClusterCoordinator;
 import databute.databuter.cluster.handshake.request.HandshakeRequestMessageHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
@@ -17,16 +17,16 @@ public class InboundClusterChannelHandler extends ChannelInboundHandlerAdapter {
 
     private ClusterSession session;
 
-    private final Cluster cluster;
+    private final ClusterCoordinator clusterCoordinator;
 
-    public InboundClusterChannelHandler(Cluster cluster) {
-        this.cluster = checkNotNull(cluster, "cluster");
+    public InboundClusterChannelHandler(ClusterCoordinator clusterCoordinator) {
+        this.clusterCoordinator = checkNotNull(clusterCoordinator, "clusterCoordinator");
     }
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) {
         final SocketChannel channel = (SocketChannel) ctx.channel();
-        session = new ClusterSession(channel, cluster);
+        session = new ClusterSession(channel, clusterCoordinator);
         logger.info("Active new cluster inbound session {}", session);
 
         configurePipeline(ctx);

@@ -1,6 +1,6 @@
 package databute.databuter.cluster.network;
 
-import databute.databuter.cluster.Cluster;
+import databute.databuter.cluster.ClusterCoordinator;
 import databute.databuter.cluster.coordinator.RemoteClusterNode;
 import databute.databuter.cluster.handshake.request.HandshakeRequestMessage;
 import databute.databuter.cluster.handshake.response.HandshakeResponseMessageHandler;
@@ -19,18 +19,18 @@ public class OutboundClusterChannelHandler extends ChannelInboundHandlerAdapter 
 
     private ClusterSession session;
 
-    private final Cluster cluster;
+    private final ClusterCoordinator clusterCoordinator;
     private final RemoteClusterNode remoteNode;
 
-    public OutboundClusterChannelHandler(Cluster cluster, RemoteClusterNode remoteNode) {
-        this.cluster = checkNotNull(cluster, "cluster");
+    public OutboundClusterChannelHandler(ClusterCoordinator clusterCoordinator, RemoteClusterNode remoteNode) {
+        this.clusterCoordinator = checkNotNull(clusterCoordinator, "clusterCoordinator");
         this.remoteNode = checkNotNull(remoteNode, "remoteNode");
     }
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) {
         final SocketChannel channel = (SocketChannel) ctx.channel();
-        session = new ClusterSession(channel, cluster);
+        session = new ClusterSession(channel, clusterCoordinator);
         logger.info("Active new cluster outbound session {}", session);
 
         remoteNode.session(session);
@@ -50,6 +50,6 @@ public class OutboundClusterChannelHandler extends ChannelInboundHandlerAdapter 
     public void channelInactive(ChannelHandlerContext ctx) {
         logger.info("Inactive cluster outbound session {}", session);
 
-        cluster.remoteNodeGroup().remove(remoteNode);
+        clusterCoordinator.remoteNodeGroup().remove(remoteNode);
     }
 }
