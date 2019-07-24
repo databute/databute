@@ -1,5 +1,6 @@
-address: 'localhost'
-port: 2423
+client:
+  address: 'localhost'
+  port: 2423
 cluster:
   address: 'localhost'
   port: 9092

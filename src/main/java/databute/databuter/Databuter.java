@@ -61,7 +61,9 @@ public final class Databuter {
     }
 
     private void bindClientAcceptor() {
-        final InetSocketAddress localAddress = new InetSocketAddress(configuration.address(), configuration.port());
+        final String address = configuration.client().address();
+        final int port = configuration.client().port();
+        final InetSocketAddress localAddress = new InetSocketAddress(address, port);
         clientAcceptor = new ClientSessionAcceptor();
         clientAcceptor.bind(localAddress).join();
         logger.debug("Client session acceptor is bound on {}", clientAcceptor.localAddress());
