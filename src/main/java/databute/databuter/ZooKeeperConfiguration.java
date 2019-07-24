@@ -14,6 +14,9 @@ public class ZooKeeperConfiguration {
     @JsonProperty("port")
     private int port;
 
+    @JsonProperty("path")
+    private String path;
+
     @JsonProperty("baseSleepTimeMs")
     private int baseSleepTimeMs;
 
@@ -22,6 +25,10 @@ public class ZooKeeperConfiguration {
 
     public String connectString() {
         return StringUtils.joinWith(":", address, port);
+    }
+
+    public String path() {
+        return path;
     }
 
     public int baseSleepTimeMs() {
@@ -37,6 +44,7 @@ public class ZooKeeperConfiguration {
         return MoreObjects.toStringHelper(this)
                 .add("address", address)
                 .add("port", port)
+                .add("path", path)
                 .add("baseSleepTimeMs", baseSleepTimeMs)
                 .add("maxRetries", maxRetries)
                 .toString();

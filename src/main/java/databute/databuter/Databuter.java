@@ -40,6 +40,10 @@ public final class Databuter {
         return instance;
     }
 
+    public DatabuterConfiguration configuration() {
+        return configuration;
+    }
+
     public CuratorFramework curator() {
         return curator;
     }

@@ -2,6 +2,7 @@ package databute.databuter.cluster.coordinator;
 
 import com.google.gson.Gson;
 import databute.databuter.Databuter;
+import databute.databuter.ZooKeeperConfiguration;
 import databute.databuter.bucket.Bucket;
 import databute.databuter.bucket.BucketGroup;
 import databute.databuter.cluster.Cluster;
@@ -27,10 +28,12 @@ public class ClusterCoordinator {
 
     private final Cluster cluster;
     private final BucketGroup bucketGroup;
+    private final ZooKeeperConfiguration zooKeeperConfiguration;
 
     public ClusterCoordinator(Cluster cluster, BucketGroup bucketGroup) {
         this.cluster = checkNotNull(cluster, "cluster");
         this.bucketGroup = bucketGroup;
+        this.zooKeeperConfiguration = Databuter.instance().configuration().zooKeeper();
     }
 
     public void connect() throws ClusterException {
@@ -42,7 +45,7 @@ public class ClusterCoordinator {
     }
 
     private void registerCacheEventListener() throws Exception {
-        final String path = ZKPaths.makePath(cluster.configuration().path(), "discovery");
+        final String path = ZKPaths.makePath(zooKeeperConfiguration.path(), "discovery");
 
         cache = new PathChildrenCache(Databuter.instance().curator(), path, true);
         cache.getListenable().addListener(this::onCacheEvent);
@@ -96,7 +99,7 @@ public class ClusterCoordinator {
 
     private void registerClusterNode() throws Exception {
         final String json = new Gson().toJson(cluster.localNode().configuration());
-        final String path = ZKPaths.makePath(cluster.configuration().path(), "discovery", cluster.id());
+        final String path = ZKPaths.makePath(zooKeeperConfiguration.path(), "discovery", cluster.id());
         final String createdPath = Databuter.instance().curator()
                 .create()
                 .withMode(CreateMode.EPHEMERAL)
@@ -107,7 +110,7 @@ public class ClusterCoordinator {
     private void registerBucketGroup() throws Exception {
         for (Bucket bucket : bucketGroup) {
             final String json = new Gson().toJson(bucket);
-            final String path = ZKPaths.makePath(cluster.configuration().path(), "bucket", bucket.id());
+            final String path = ZKPaths.makePath(zooKeeperConfiguration.path(), "bucket", bucket.id());
             final String createdPath = Databuter.instance().curator()
                     .create()
                     .creatingParentContainersIfNeeded()

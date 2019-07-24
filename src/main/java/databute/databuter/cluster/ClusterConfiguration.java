@@ -15,9 +15,6 @@ public class ClusterConfiguration {
     @JsonProperty("port")
     private int port;
 
-    @JsonProperty("path")
-    private String path;
-
     public String address() {
         return address;
     }
@@ -30,16 +27,11 @@ public class ClusterConfiguration {
         return new InetSocketAddress(address, port);
     }
 
-    public String path() {
-        return path;
-    }
-
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
                 .add("address", address)
                 .add("port", port)
-                .add("path", path)
                 .toString();
     }
 }
