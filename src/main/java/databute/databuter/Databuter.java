@@ -2,6 +2,9 @@ package databute.databuter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import databute.databuter.bucket.Bucket;
+import databute.databuter.bucket.BucketException;
+import databute.databuter.bucket.BucketGroup;
 import databute.databuter.client.network.ClientSessionAcceptor;
 import databute.databuter.cluster.Cluster;
 import databute.databuter.cluster.ClusterException;
@@ -19,6 +22,7 @@ public final class Databuter {
 
     private static final Logger logger = LoggerFactory.getLogger(Databuter.class);
     private static final Databuter instance = new Databuter();
+    private static final BucketGroup bucketGroup = new BucketGroup();
 
     private DatabuterConfiguration configuration;
     private Cluster cluster;
@@ -32,10 +36,12 @@ public final class Databuter {
         return instance;
     }
 
-    private void start() throws IOException, ClusterException {
+    private void start() throws IOException, ClusterException, BucketException {
         logger.info("Starting Databuter at {}", Instant.now());
 
         loadConfiguration();
+
+        makeBucket();
 
         joinCluster();
 
@@ -56,8 +62,23 @@ public final class Databuter {
     private void joinCluster() throws ClusterException {
         logger.debug("Joining cluster...");
 
-        cluster = new Cluster(configuration.cluster());
+        cluster = new Cluster(configuration.cluster(), bucketGroup);
         cluster.join();
+    }
+
+    private void makeBucket() throws BucketException {
+        final long availableMemory = Runtime.getRuntime().totalMemory() - configuration.guardMemorySizeMb();
+        final long bucketCount = availableMemory / configuration.bucketMemorySizeMb();
+
+        logger.debug("Making {} bucket...", bucketCount);
+
+        for (int i = 0; i < bucketCount; ++i) {
+            final Bucket bucket = new Bucket();
+            final boolean added = bucketGroup.add(bucket);
+            if (!added) {
+                throw new BucketException("Found duplcated bucket " + bucket);
+            }
+        }
     }
 
     private void bindClientAcceptor() {

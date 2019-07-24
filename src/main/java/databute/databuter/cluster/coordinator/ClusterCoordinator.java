@@ -1,6 +1,8 @@
 package databute.databuter.cluster.coordinator;
 
 import com.google.gson.Gson;
+import databute.databuter.bucket.Bucket;
+import databute.databuter.bucket.BucketGroup;
 import databute.databuter.cluster.Cluster;
 import databute.databuter.cluster.ClusterException;
 import databute.databuter.cluster.node.ClusterNodeConfiguration;
@@ -26,16 +28,18 @@ public class ClusterCoordinator {
 
     private final Cluster cluster;
     private final ClusterCoordinatorConfiguration configuration;
+    private final BucketGroup bucketGroup;
 
     private final CuratorFramework curator;
 
-    public ClusterCoordinator(Cluster cluster, ClusterCoordinatorConfiguration configuration) {
+    public ClusterCoordinator(Cluster cluster, ClusterCoordinatorConfiguration configuration, BucketGroup bucketGroup) {
         this.cluster = checkNotNull(cluster, "cluster");
         this.configuration = checkNotNull(configuration, "configuration");
         this.curator = CuratorFrameworkFactory.builder()
                 .connectString(configuration.connectString())
                 .retryPolicy(new ExponentialBackoffRetry(configuration.baseSleepTimeMs(), configuration.maxRetries()))
                 .build();
+        this.bucketGroup = bucketGroup;
     }
 
     public void connect() throws ClusterException {
@@ -85,6 +89,12 @@ public class ClusterCoordinator {
         } catch (Exception e) {
             logger.error("Failed to register cluster node.", e);
         }
+
+        try {
+            registerBucketGroup();
+        } catch (Exception e) {
+            logger.error("Failed to register bucket group.", e);
+        }
     }
 
     private void onAdded(ChildData data) {
@@ -111,5 +121,16 @@ public class ClusterCoordinator {
                 .withMode(CreateMode.EPHEMERAL)
                 .forPath(ZKPaths.makePath(configuration.path(), "discovery", cluster.id()), json.getBytes());
         logger.debug("Registered cluster node at {}", path);
+    }
+    
+    private void registerBucketGroup() throws Exception {
+        for (Bucket bucket : bucketGroup) {
+            final String json = new Gson().toJson(bucket);
+            final String path = curator.create()
+                    .creatingParentContainersIfNeeded()
+                    .withMode(CreateMode.EPHEMERAL)
+                    .forPath(ZKPaths.makePath(configuration.path(), "bucket", bucket.id()), json.getBytes());
+            logger.debug("Registered Bucket node at {}", path);
+        }
     }
 }

@@ -1,3 +1,5 @@
+guardMemorySize: 32
+bucketMemorySize: 32
 client:
   address: 'localhost'
   port: 2421
