@@ -2,6 +2,9 @@ package databute.databuter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import databute.databuter.bucket.Bucket;
+import databute.databuter.bucket.BucketException;
+import databute.databuter.bucket.BucketGroup;
 import databute.databuter.cluster.Cluster;
 import databute.databuter.cluster.ClusterException;
 import org.slf4j.Logger;
@@ -20,6 +23,7 @@ public final class Databuter {
 
     private DatabuterConfiguration configuration;
     private Cluster cluster;
+    private BucketGroup bucketGroup;
 
     private Databuter() {
         super();
@@ -29,12 +33,14 @@ public final class Databuter {
         return instance;
     }
 
-    private void start() throws IOException, ClusterException {
+    private void start() throws IOException, ClusterException, BucketException {
         logger.info("Starting Databuter at {}", Instant.now());
 
         loadConfiguration();
 
         joinCluster();
+
+        makeBucket();
     }
 
     private void loadConfiguration() throws IOException {
@@ -53,6 +59,21 @@ public final class Databuter {
 
         cluster = new Cluster(configuration.cluster());
         cluster.join();
+    }
+
+    private void makeBucket() throws BucketException {
+        final long availableMemory = Runtime.getRuntime().totalMemory() - configuration.guardMemorySizeMb();
+        final long bucketCount = availableMemory / (configuration.bucketMemorySizeMb());
+
+        logger.debug("Making {} bucket...", bucketCount);
+
+        for (int i = 0; i < bucketCount; ++i) {
+            final Bucket bucket = new Bucket();
+            final boolean added = bucketGroup.add(bucket);
+            if (!added) {
+                throw new BucketException("Found duplcated bucket " + bucket);
+            }
+        }
     }
 
     public static void main(String[] args) {
