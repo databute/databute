@@ -7,7 +7,7 @@ import databute.databuter.bucket.BucketCoordinator;
 import databute.databuter.bucket.BucketException;
 import databute.databuter.bucket.BucketGroup;
 import databute.databuter.client.network.ClientSessionAcceptor;
-import databute.databuter.cluster.Cluster;
+import databute.databuter.cluster.ClusterCoordinator;
 import databute.databuter.cluster.ClusterException;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
@@ -29,7 +29,7 @@ public final class Databuter {
 
     private DatabuterConfiguration configuration;
     private CuratorFramework curator;
-    private Cluster cluster;
+    private ClusterCoordinator clusterCoordinator;
     private BucketGroup bucketGroup;
     private BucketCoordinator bucketCoordinator;
     private ClientSessionAcceptor clientAcceptor;
@@ -60,7 +60,7 @@ public final class Databuter {
         makeBucket();
         startBucketCoordinator();
 
-        joinCluster();
+        startClusterCoordinator();
 
         bindClientAcceptor();
     }
@@ -88,13 +88,6 @@ public final class Databuter {
         logger.debug("Connected with the ZooKeeper at {}.", curator.getZookeeperClient().getCurrentConnectionString());
     }
 
-    private void joinCluster() throws ClusterException {
-        logger.debug("Joining cluster...");
-
-        cluster = new Cluster(configuration.cluster());
-        cluster.join();
-    }
-
     private void makeBucket() throws BucketException {
         final long availableMemory = Runtime.getRuntime().totalMemory() - configuration.guardMemorySizeMb();
         final long bucketCount = availableMemory / configuration.bucketMemorySizeMb();
@@ -114,6 +107,11 @@ public final class Databuter {
     private void startBucketCoordinator() throws BucketException {
         bucketCoordinator = new BucketCoordinator(bucketGroup);
         bucketCoordinator.start();
+    }
+
+    private void startClusterCoordinator() throws ClusterException {
+        clusterCoordinator = new ClusterCoordinator(configuration.cluster());
+        clusterCoordinator.start();
     }
 
     private void bindClientAcceptor() {

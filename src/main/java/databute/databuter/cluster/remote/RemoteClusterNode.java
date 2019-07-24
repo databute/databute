@@ -1,11 +1,11 @@
-package databute.databuter.cluster.coordinator;
+package databute.databuter.cluster.remote;
 
 import com.google.common.base.MoreObjects;
-import databute.databuter.cluster.Cluster;
+import databute.databuter.cluster.AbstractClusterNode;
+import databute.databuter.cluster.ClusterCoordinator;
+import databute.databuter.cluster.ClusterNodeConfiguration;
 import databute.databuter.cluster.network.ClusterSession;
 import databute.databuter.cluster.network.ClusterSessionConnector;
-import databute.databuter.cluster.node.AbstractClusterNode;
-import databute.databuter.cluster.node.ClusterNodeConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,11 +19,11 @@ public class RemoteClusterNode extends AbstractClusterNode {
 
     private ClusterSession session;
 
-    private final Cluster cluster;
+    private final ClusterCoordinator clusterCoordinator;
 
-    public RemoteClusterNode(ClusterNodeConfiguration configuration, Cluster cluster) {
+    public RemoteClusterNode(ClusterNodeConfiguration configuration, ClusterCoordinator clusterCoordinator) {
         super(configuration);
-        this.cluster = checkNotNull(cluster, "cluster");
+        this.clusterCoordinator = checkNotNull(clusterCoordinator, "clusterCoordinator");
     }
 
     public ClusterSession session() {
@@ -41,7 +41,7 @@ public class RemoteClusterNode extends AbstractClusterNode {
         final InetSocketAddress remoteAddress = new InetSocketAddress(address, port);
         logger.info("Connecting to remote cluster node {} at {}", id(), remoteAddress);
 
-        ClusterSessionConnector connector = new ClusterSessionConnector(cluster.loopGroup(), cluster, this);
+        ClusterSessionConnector connector = new ClusterSessionConnector(clusterCoordinator.loopGroup(), clusterCoordinator, this);
         connector.connect(remoteAddress);
     }
 
