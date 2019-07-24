@@ -1,8 +1,6 @@
 package databute.databuter.cluster;
 
 import com.google.common.base.MoreObjects;
-import databute.databuter.bucket.Bucket;
-import databute.databuter.bucket.BucketGroup;
 import databute.databuter.cluster.coordinator.ClusterCoordinator;
 import databute.databuter.cluster.coordinator.RemoteClusterNodeGroup;
 import databute.databuter.cluster.network.ClusterSessionAcceptor;
@@ -30,10 +28,8 @@ public class Cluster {
     private final EventLoopGroup loopGroup;
     private final LocalClusterNode localNode;
     private final RemoteClusterNodeGroup remoteNodeGroup;
-    //TODO(@nono5546):coordinator 리팩토링 때 삭제
-    private final BucketGroup bucketGroup;
 
-    public Cluster(ClusterConfiguration configuration, BucketGroup bucketGroup) {
+    public Cluster(ClusterConfiguration configuration) {
         this.configuration = checkNotNull(configuration, "configuration");
         this.id = UUID.randomUUID().toString();
         this.loopGroup = new NioEventLoopGroup();
@@ -43,12 +39,14 @@ public class Cluster {
                 .port(configuration.port())
                 .build());
         this.remoteNodeGroup = new RemoteClusterNodeGroup();
-        //TODO(@nono5546):coordinator 리팩토링 때 삭제
-        this.bucketGroup = bucketGroup;
     }
 
     public String id() {
         return id;
+    }
+
+    public ClusterConfiguration configuration() {
+        return configuration;
     }
 
     public EventLoopGroup loopGroup() {
@@ -76,7 +74,7 @@ public class Cluster {
     }
 
     private void connectToCoordinator() throws ClusterException {
-        coordinator = new ClusterCoordinator(this, configuration.coordinator(), bucketGroup);
+        coordinator = new ClusterCoordinator(this);
         coordinator.connect();
     }
 

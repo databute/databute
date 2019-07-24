@@ -3,11 +3,15 @@ package databute.databuter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import databute.databuter.bucket.Bucket;
+import databute.databuter.bucket.BucketCoordinator;
 import databute.databuter.bucket.BucketException;
 import databute.databuter.bucket.BucketGroup;
 import databute.databuter.client.network.ClientSessionAcceptor;
 import databute.databuter.cluster.Cluster;
 import databute.databuter.cluster.ClusterException;
+import org.apache.curator.framework.CuratorFramework;
+import org.apache.curator.framework.CuratorFrameworkFactory;
+import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,10 +26,12 @@ public final class Databuter {
 
     private static final Logger logger = LoggerFactory.getLogger(Databuter.class);
     private static final Databuter instance = new Databuter();
-    private static final BucketGroup bucketGroup = new BucketGroup();
 
     private DatabuterConfiguration configuration;
+    private CuratorFramework curator;
     private Cluster cluster;
+    private BucketGroup bucketGroup;
+    private BucketCoordinator bucketCoordinator;
     private ClientSessionAcceptor clientAcceptor;
 
     private Databuter() {
@@ -36,12 +42,23 @@ public final class Databuter {
         return instance;
     }
 
-    private void start() throws IOException, ClusterException, BucketException {
+    public DatabuterConfiguration configuration() {
+        return configuration;
+    }
+
+    public CuratorFramework curator() {
+        return curator;
+    }
+
+    private void start() throws Exception {
         logger.info("Starting Databuter at {}", Instant.now());
 
         loadConfiguration();
 
+        connectToZooKeeper();
+
         makeBucket();
+        startBucketCoordinator();
 
         joinCluster();
 
@@ -59,10 +76,22 @@ public final class Databuter {
         logger.debug("Loaded configuration: {}", configuration);
     }
 
+    private void connectToZooKeeper() throws InterruptedException {
+        final int baseSleepTimeMs = configuration.zooKeeper().baseSleepTimeMs();
+        final int maxRetries = configuration.zooKeeper().maxRetries();
+        curator = CuratorFrameworkFactory.builder()
+                .connectString(configuration.zooKeeper().connectString())
+                .retryPolicy(new ExponentialBackoffRetry(baseSleepTimeMs, maxRetries))
+                .build();
+        curator.start();
+        curator.blockUntilConnected();
+        logger.debug("Connected with the ZooKeeper at {}.", curator.getZookeeperClient().getCurrentConnectionString());
+    }
+
     private void joinCluster() throws ClusterException {
         logger.debug("Joining cluster...");
 
-        cluster = new Cluster(configuration.cluster(), bucketGroup);
+        cluster = new Cluster(configuration.cluster());
         cluster.join();
     }
 
@@ -72,6 +101,7 @@ public final class Databuter {
 
         logger.debug("Making {} bucket...", bucketCount);
 
+        bucketGroup = new BucketGroup();
         for (int i = 0; i < bucketCount; ++i) {
             final Bucket bucket = new Bucket();
             final boolean added = bucketGroup.add(bucket);
@@ -79,6 +109,11 @@ public final class Databuter {
                 throw new BucketException("Found duplcated bucket " + bucket);
             }
         }
+    }
+
+    private void startBucketCoordinator() throws BucketException {
+        bucketCoordinator = new BucketCoordinator(bucketGroup);
+        bucketCoordinator.start();
     }
 
     private void bindClientAcceptor() {

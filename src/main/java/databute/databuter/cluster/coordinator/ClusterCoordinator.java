@@ -1,18 +1,16 @@
 package databute.databuter.cluster.coordinator;
 
 import com.google.gson.Gson;
-import databute.databuter.bucket.Bucket;
-import databute.databuter.bucket.BucketGroup;
+import databute.databuter.Databuter;
+import databute.databuter.ZooKeeperConfiguration;
 import databute.databuter.cluster.Cluster;
 import databute.databuter.cluster.ClusterException;
 import databute.databuter.cluster.node.ClusterNodeConfiguration;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.curator.framework.CuratorFramework;
-import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.framework.recipes.cache.ChildData;
 import org.apache.curator.framework.recipes.cache.PathChildrenCache;
 import org.apache.curator.framework.recipes.cache.PathChildrenCacheEvent;
-import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.apache.curator.utils.ZKPaths;
 import org.apache.zookeeper.CreateMode;
 import org.slf4j.Logger;
@@ -27,27 +25,14 @@ public class ClusterCoordinator {
     private PathChildrenCache cache;
 
     private final Cluster cluster;
-    private final ClusterCoordinatorConfiguration configuration;
-    private final BucketGroup bucketGroup;
+    private final ZooKeeperConfiguration zooKeeperConfiguration;
 
-    private final CuratorFramework curator;
-
-    public ClusterCoordinator(Cluster cluster, ClusterCoordinatorConfiguration configuration, BucketGroup bucketGroup) {
+    public ClusterCoordinator(Cluster cluster) {
         this.cluster = checkNotNull(cluster, "cluster");
-        this.configuration = checkNotNull(configuration, "configuration");
-        this.curator = CuratorFrameworkFactory.builder()
-                .connectString(configuration.connectString())
-                .retryPolicy(new ExponentialBackoffRetry(configuration.baseSleepTimeMs(), configuration.maxRetries()))
-                .build();
-        this.bucketGroup = bucketGroup;
+        this.zooKeeperConfiguration = Databuter.instance().configuration().zooKeeper();
     }
 
     public void connect() throws ClusterException {
-        try {
-            connectToZooKeeper();
-        } catch (InterruptedException e) {
-            throw new ClusterException("Failed to connect to the ZooKeeper.", e);
-        }
         try {
             registerCacheEventListener();
         } catch (Exception e) {
@@ -55,17 +40,10 @@ public class ClusterCoordinator {
         }
     }
 
-    private void connectToZooKeeper() throws InterruptedException {
-        logger.debug("Connecting to the ZooKeeper...");
-        curator.start();
-        curator.blockUntilConnected();
-        logger.debug("Connected with the ZooKeeper.");
-    }
-
     private void registerCacheEventListener() throws Exception {
-        final String path = ZKPaths.makePath(configuration.path(), "discovery");
+        final String path = ZKPaths.makePath(zooKeeperConfiguration.path(), "discovery");
 
-        cache = new PathChildrenCache(curator, path, true);
+        cache = new PathChildrenCache(Databuter.instance().curator(), path, true);
         cache.getListenable().addListener(this::onCacheEvent);
         cache.start(PathChildrenCache.StartMode.POST_INITIALIZED_EVENT);
         logger.debug("Registered cache event listener at {}", path);
@@ -89,12 +67,6 @@ public class ClusterCoordinator {
         } catch (Exception e) {
             logger.error("Failed to register cluster node.", e);
         }
-
-        try {
-            registerBucketGroup();
-        } catch (Exception e) {
-            logger.error("Failed to register bucket group.", e);
-        }
     }
 
     private void onAdded(ChildData data) {
@@ -117,20 +89,11 @@ public class ClusterCoordinator {
 
     private void registerClusterNode() throws Exception {
         final String json = new Gson().toJson(cluster.localNode().configuration());
-        final String path = curator.create()
+        final String path = ZKPaths.makePath(zooKeeperConfiguration.path(), "discovery", cluster.id());
+        final String createdPath = Databuter.instance().curator()
+                .create()
                 .withMode(CreateMode.EPHEMERAL)
-                .forPath(ZKPaths.makePath(configuration.path(), "discovery", cluster.id()), json.getBytes());
-        logger.debug("Registered cluster node at {}", path);
-    }
-    
-    private void registerBucketGroup() throws Exception {
-        for (Bucket bucket : bucketGroup) {
-            final String json = new Gson().toJson(bucket);
-            final String path = curator.create()
-                    .creatingParentContainersIfNeeded()
-                    .withMode(CreateMode.EPHEMERAL)
-                    .forPath(ZKPaths.makePath(configuration.path(), "bucket", bucket.id()), json.getBytes());
-            logger.debug("Registered Bucket node at {}", path);
-        }
+                .forPath(path, json.getBytes());
+        logger.debug("Registered cluster node at {}", createdPath);
     }
 }

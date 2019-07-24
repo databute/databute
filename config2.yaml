@@ -6,9 +6,9 @@ client:
 cluster:
   address: 'localhost'
   port: 9092
-  coordinator:
-    address: 'localhost'
-    port: 2181
-    path: 'databuter'
-    baseSleepTimeMs: 1000
-    maxRetries: 8
+zooKeeper:
+  address: 'localhost'
+  port: 2181
+  path: 'databuter'
+  baseSleepTimeMs: 1000
+  maxRetries: 8

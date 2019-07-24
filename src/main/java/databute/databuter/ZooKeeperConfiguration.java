@@ -1,4 +1,4 @@
-package databute.databuter.cluster.coordinator;
+package databute.databuter;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -6,7 +6,7 @@ import com.google.common.base.MoreObjects;
 import org.apache.commons.lang3.StringUtils;
 
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
-public class ClusterCoordinatorConfiguration {
+public class ZooKeeperConfiguration {
 
     @JsonProperty("address")
     private String address;
