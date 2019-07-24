@@ -1,5 +1,8 @@
 guardMemorySize: 32
 bucketMemorySize: 32
+client:
+  address: 'localhost'
+  port: 2422
 cluster:
   address: 'localhost'
   port: 9091
