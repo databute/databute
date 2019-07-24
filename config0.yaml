@@ -1,3 +1,5 @@
+address: 'localhost'
+port: 2421
 cluster:
   address: 'localhost'
   port: 9090
