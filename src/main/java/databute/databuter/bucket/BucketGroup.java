@@ -4,17 +4,24 @@ import com.google.common.collect.Maps;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Iterator;
 import java.util.Map;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public class BucketGroup {
+public class BucketGroup implements Iterable<Bucket> {
+
     private static final Logger logger = LoggerFactory.getLogger(BucketGroup.class);
 
     private final Map<String, Bucket> buckets;
 
     public BucketGroup() {
         this.buckets = Maps.newConcurrentMap();
+    }
+
+    @Override
+    public Iterator<Bucket> iterator() {
+        return buckets.values().iterator();
     }
 
     public boolean add(Bucket bucket) {

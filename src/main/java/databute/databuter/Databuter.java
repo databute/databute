@@ -20,10 +20,10 @@ public final class Databuter {
 
     private static final Logger logger = LoggerFactory.getLogger(Databuter.class);
     private static final Databuter instance = new Databuter();
+    private static final BucketGroup bucketGroup = new BucketGroup();
 
     private DatabuterConfiguration configuration;
     private Cluster cluster;
-    private BucketGroup bucketGroup;
 
     private Databuter() {
         super();
@@ -38,9 +38,10 @@ public final class Databuter {
 
         loadConfiguration();
 
+        makeBucket();
+
         joinCluster();
 
-        makeBucket();
     }
 
     private void loadConfiguration() throws IOException {
@@ -57,13 +58,13 @@ public final class Databuter {
     private void joinCluster() throws ClusterException {
         logger.debug("Joining cluster...");
 
-        cluster = new Cluster(configuration.cluster());
+        cluster = new Cluster(configuration.cluster(), bucketGroup);
         cluster.join();
     }
 
     private void makeBucket() throws BucketException {
         final long availableMemory = Runtime.getRuntime().totalMemory() - configuration.guardMemorySizeMb();
-        final long bucketCount = availableMemory / (configuration.bucketMemorySizeMb());
+        final long bucketCount = availableMemory / configuration.bucketMemorySizeMb();
 
         logger.debug("Making {} bucket...", bucketCount);
 
