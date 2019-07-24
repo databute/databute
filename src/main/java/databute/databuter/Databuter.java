@@ -2,6 +2,7 @@ package databute.databuter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import databute.databuter.client.network.ClientSessionAcceptor;
 import databute.databuter.cluster.Cluster;
 import databute.databuter.cluster.ClusterException;
 import org.slf4j.Logger;
@@ -9,6 +10,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.InetSocketAddress;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Instant;
@@ -20,6 +22,7 @@ public final class Databuter {
 
     private DatabuterConfiguration configuration;
     private Cluster cluster;
+    private ClientSessionAcceptor clientAcceptor;
 
     private Databuter() {
         super();
@@ -35,6 +38,8 @@ public final class Databuter {
         loadConfiguration();
 
         joinCluster();
+
+        bindClientAcceptor();
     }
 
     private void loadConfiguration() throws IOException {
@@ -53,6 +58,15 @@ public final class Databuter {
 
         cluster = new Cluster(configuration.cluster());
         cluster.join();
+    }
+
+    private void bindClientAcceptor() {
+        final String address = configuration.client().address();
+        final int port = configuration.client().port();
+        final InetSocketAddress localAddress = new InetSocketAddress(address, port);
+        clientAcceptor = new ClientSessionAcceptor();
+        clientAcceptor.bind(localAddress).join();
+        logger.debug("Client session acceptor is bound on {}", clientAcceptor.localAddress());
     }
 
     public static void main(String[] args) {
