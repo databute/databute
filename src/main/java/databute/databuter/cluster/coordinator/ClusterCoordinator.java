@@ -1,6 +1,7 @@
 package databute.databuter.cluster.coordinator;
 
 import com.google.gson.Gson;
+import databute.databuter.Databuter;
 import databute.databuter.bucket.Bucket;
 import databute.databuter.bucket.BucketGroup;
 import databute.databuter.cluster.Cluster;
@@ -25,12 +26,10 @@ public class ClusterCoordinator {
     private PathChildrenCache cache;
 
     private final Cluster cluster;
-    private final CuratorFramework curator;
     private final BucketGroup bucketGroup;
 
-    public ClusterCoordinator(Cluster cluster, CuratorFramework curator, BucketGroup bucketGroup) {
+    public ClusterCoordinator(Cluster cluster, BucketGroup bucketGroup) {
         this.cluster = checkNotNull(cluster, "cluster");
-        this.curator = checkNotNull(curator, "curator");
         this.bucketGroup = bucketGroup;
     }
 
@@ -45,7 +44,7 @@ public class ClusterCoordinator {
     private void registerCacheEventListener() throws Exception {
         final String path = ZKPaths.makePath(cluster.configuration().path(), "discovery");
 
-        cache = new PathChildrenCache(curator, path, true);
+        cache = new PathChildrenCache(Databuter.instance().curator(), path, true);
         cache.getListenable().addListener(this::onCacheEvent);
         cache.start(PathChildrenCache.StartMode.POST_INITIALIZED_EVENT);
         logger.debug("Registered cache event listener at {}", path);
@@ -98,7 +97,8 @@ public class ClusterCoordinator {
     private void registerClusterNode() throws Exception {
         final String json = new Gson().toJson(cluster.localNode().configuration());
         final String path = ZKPaths.makePath(cluster.configuration().path(), "discovery", cluster.id());
-        final String createdPath = curator.create()
+        final String createdPath = Databuter.instance().curator()
+                .create()
                 .withMode(CreateMode.EPHEMERAL)
                 .forPath(path, json.getBytes());
         logger.debug("Registered cluster node at {}", createdPath);
@@ -108,7 +108,8 @@ public class ClusterCoordinator {
         for (Bucket bucket : bucketGroup) {
             final String json = new Gson().toJson(bucket);
             final String path = ZKPaths.makePath(cluster.configuration().path(), "bucket", bucket.id());
-            final String createdPath = curator.create()
+            final String createdPath = Databuter.instance().curator()
+                    .create()
                     .creatingParentContainersIfNeeded()
                     .withMode(CreateMode.EPHEMERAL)
                     .forPath(path, json.getBytes());

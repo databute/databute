@@ -40,6 +40,10 @@ public final class Databuter {
         return instance;
     }
 
+    public CuratorFramework curator() {
+        return curator;
+    }
+
     private void start() throws Exception {
         logger.info("Starting Databuter at {}", Instant.now());
 
@@ -80,7 +84,7 @@ public final class Databuter {
     private void joinCluster() throws ClusterException {
         logger.debug("Joining cluster...");
 
-        cluster = new Cluster(configuration.cluster(), curator, bucketGroup);
+        cluster = new Cluster(configuration.cluster(), bucketGroup);
         cluster.join();
     }
 
