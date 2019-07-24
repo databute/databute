@@ -3,6 +3,7 @@ package databute.databuter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import databute.databuter.bucket.Bucket;
+import databute.databuter.bucket.BucketCoordinator;
 import databute.databuter.bucket.BucketException;
 import databute.databuter.bucket.BucketGroup;
 import databute.databuter.client.network.ClientSessionAcceptor;
@@ -25,11 +26,12 @@ public final class Databuter {
 
     private static final Logger logger = LoggerFactory.getLogger(Databuter.class);
     private static final Databuter instance = new Databuter();
-    private static final BucketGroup bucketGroup = new BucketGroup();
 
     private DatabuterConfiguration configuration;
     private CuratorFramework curator;
     private Cluster cluster;
+    private BucketGroup bucketGroup;
+    private BucketCoordinator bucketCoordinator;
     private ClientSessionAcceptor clientAcceptor;
 
     private Databuter() {
@@ -56,6 +58,7 @@ public final class Databuter {
         connectToZooKeeper();
 
         makeBucket();
+        startBucketCoordinator();
 
         joinCluster();
 
@@ -88,7 +91,7 @@ public final class Databuter {
     private void joinCluster() throws ClusterException {
         logger.debug("Joining cluster...");
 
-        cluster = new Cluster(configuration.cluster(), bucketGroup);
+        cluster = new Cluster(configuration.cluster());
         cluster.join();
     }
 
@@ -98,6 +101,7 @@ public final class Databuter {
 
         logger.debug("Making {} bucket...", bucketCount);
 
+        bucketGroup = new BucketGroup();
         for (int i = 0; i < bucketCount; ++i) {
             final Bucket bucket = new Bucket();
             final boolean added = bucketGroup.add(bucket);
@@ -105,6 +109,11 @@ public final class Databuter {
                 throw new BucketException("Found duplcated bucket " + bucket);
             }
         }
+    }
+
+    private void startBucketCoordinator() throws BucketException {
+        bucketCoordinator = new BucketCoordinator(bucketGroup);
+        bucketCoordinator.start();
     }
 
     private void bindClientAcceptor() {

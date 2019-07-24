@@ -3,8 +3,6 @@ package databute.databuter.cluster.coordinator;
 import com.google.gson.Gson;
 import databute.databuter.Databuter;
 import databute.databuter.ZooKeeperConfiguration;
-import databute.databuter.bucket.Bucket;
-import databute.databuter.bucket.BucketGroup;
 import databute.databuter.cluster.Cluster;
 import databute.databuter.cluster.ClusterException;
 import databute.databuter.cluster.node.ClusterNodeConfiguration;
@@ -27,12 +25,10 @@ public class ClusterCoordinator {
     private PathChildrenCache cache;
 
     private final Cluster cluster;
-    private final BucketGroup bucketGroup;
     private final ZooKeeperConfiguration zooKeeperConfiguration;
 
-    public ClusterCoordinator(Cluster cluster, BucketGroup bucketGroup) {
+    public ClusterCoordinator(Cluster cluster) {
         this.cluster = checkNotNull(cluster, "cluster");
-        this.bucketGroup = bucketGroup;
         this.zooKeeperConfiguration = Databuter.instance().configuration().zooKeeper();
     }
 
@@ -71,12 +67,6 @@ public class ClusterCoordinator {
         } catch (Exception e) {
             logger.error("Failed to register cluster node.", e);
         }
-
-        try {
-            registerBucketGroup();
-        } catch (Exception e) {
-            logger.error("Failed to register bucket group.", e);
-        }
     }
 
     private void onAdded(ChildData data) {
@@ -105,18 +95,5 @@ public class ClusterCoordinator {
                 .withMode(CreateMode.EPHEMERAL)
                 .forPath(path, json.getBytes());
         logger.debug("Registered cluster node at {}", createdPath);
-    }
-
-    private void registerBucketGroup() throws Exception {
-        for (Bucket bucket : bucketGroup) {
-            final String json = new Gson().toJson(bucket);
-            final String path = ZKPaths.makePath(zooKeeperConfiguration.path(), "bucket", bucket.id());
-            final String createdPath = Databuter.instance().curator()
-                    .create()
-                    .creatingParentContainersIfNeeded()
-                    .withMode(CreateMode.EPHEMERAL)
-                    .forPath(path, json.getBytes());
-            logger.debug("Registered Bucket node at {}", createdPath);
-        }
     }
 }
