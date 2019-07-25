@@ -10,20 +10,17 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public class Bucket {
 
     private final String id;
+    private final BucketConfiguration configuration;
 
-    private String masterClusterId;
-    private String backUpClusterId;
 
     public Bucket() {
-        this.id = UUID.randomUUID().toString();
-        this.masterClusterId = Databuter.instance().id();
+        this(new BucketConfiguration(UUID.randomUUID().toString(), Databuter.instance().id()));
     }
 
     public Bucket(BucketConfiguration configuration) {
         checkNotNull(configuration, "configuration");
         this.id = configuration.id();
-        this.masterClusterId = configuration.masterClusterId();
-        this.backUpClusterId = configuration.backupClusterId();
+        this.configuration = configuration;
     }
 
     public String id() {
@@ -31,20 +28,26 @@ public class Bucket {
     }
 
     public String backUpClusterId() {
-        return backUpClusterId;
+        return configuration.backupClusterId();
+    }
+
+    public BucketConfiguration configuration() {
+        return configuration;
     }
 
     public Bucket backUpClusterId(String backupClusterId) {
-        this.backUpClusterId = backupClusterId;
+        configuration.backupClusterId(backupClusterId);
         return this;
+    }
+
+    public void updateConfiguration(BucketConfiguration configuration) {
+        configuration = configuration;
     }
 
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-                .add("id", id)
-                .add("masterClusterId", masterClusterId)
-                .add("backupClusterId", backUpClusterId)
+                .add("configuration", configuration)
                 .toString();
     }
 }

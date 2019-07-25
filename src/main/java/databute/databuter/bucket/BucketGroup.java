@@ -24,6 +24,10 @@ public class BucketGroup implements Iterable<Bucket> {
         return buckets.values().iterator();
     }
 
+    public Bucket find(String id) {
+        return buckets.get(id);
+    }
+
     public boolean add(Bucket bucket) {
         checkNotNull(bucket, "bucket");
 
@@ -57,5 +61,9 @@ public class BucketGroup implements Iterable<Bucket> {
         }
 
         return removed;
+    }
+
+    public boolean has(String id) {
+        return buckets.containsKey(id);
     }
 }
