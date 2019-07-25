@@ -94,7 +94,7 @@ public class BucketCoordinator {
             return;
         }
 
-        bucketGroup.add(new Bucket(addedBucketConfiguration));
+        bucketGroup.add(new RemoteBucket(addedBucketConfiguration));
     }
 
     //TODO(@nono5546):업데이트 구현 후 테스트.
@@ -106,7 +106,8 @@ public class BucketCoordinator {
 
         final Bucket bucket = bucketGroup.find(updatedBucketConfiguration.id());
         if (bucket == null) {
-            bucketGroup.add(new Bucket(updatedBucketConfiguration));
+            //TODO(@nono5546):에러 발생할 수 있음.
+            bucketGroup.add(new RemoteBucket(updatedBucketConfiguration));
         } else {
             bucket.updateConfiguration(updatedBucketConfiguration);
         }
@@ -135,7 +136,7 @@ public class BucketCoordinator {
     }
 
     private void updateBackupBucket(Bucket bucket) throws Exception {
-        final String json = new Gson().toJson(bucket);
+        final String json = new Gson().toJson(bucket.configuration());
         final String path = ZKPaths.makePath(zooKeeperConfiguration.path(), "bucket", bucket.id());
 
         Databuter.instance().curator()
@@ -148,7 +149,7 @@ public class BucketCoordinator {
         logger.debug("Making {} bucket...", availableBucketCount.get());
 
         while (availableBucketCount.get() > 0) {
-            final Bucket bucket = new Bucket();
+            final Bucket bucket = new LocalBucket();
             final boolean added = bucketGroup.add(bucket);
             if (!added) {
                 throw new BucketException("Found duplcated bucket " + bucket);
