@@ -6,6 +6,7 @@ import databute.databuter.bucket.BucketCoordinator;
 import databute.databuter.bucket.BucketException;
 import databute.databuter.bucket.BucketGroup;
 import databute.databuter.client.network.ClientSessionAcceptor;
+import databute.databuter.client.network.ClientSessionGroup;
 import databute.databuter.cluster.ClusterCoordinator;
 import databute.databuter.cluster.ClusterException;
 import org.apache.curator.framework.CuratorFramework;
@@ -36,13 +37,19 @@ public final class Databuter {
     private final String id;
     private final BucketGroup remoteBucketGroup = new BucketGroup();
     private final BucketGroup localBucketGroup = new BucketGroup();
-    
+    private final ClientSessionGroup clientSessionGroup;
+
     private Databuter() {
         this.id = UUID.randomUUID().toString();
+        this.clientSessionGroup = new ClientSessionGroup();
     }
 
     public static Databuter instance() {
         return instance;
+    }
+
+    public ClientSessionGroup clientSessionGroup() {
+        return clientSessionGroup;
     }
 
     public DatabuterConfiguration configuration() {

@@ -1,6 +1,7 @@
 package databute.databuter.client.network;
 
 import com.google.common.collect.Maps;
+import databute.databuter.client.register.RegisterMessageDeserializer;
 import databute.databuter.network.AbstractSessionAcceptor;
 import databute.databuter.network.message.MessageCode;
 import databute.databuter.network.message.MessageCodeResolver;
@@ -31,6 +32,7 @@ public class ClientSessionAcceptor extends AbstractSessionAcceptor {
         this.serializers = Maps.newHashMap();
 
         this.deserializers = Maps.newHashMap();
+        this.deserializers.put(ClientMessageCode.REGISTER, new RegisterMessageDeserializer());
     }
 
     @Override
