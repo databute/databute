@@ -1,5 +1,6 @@
 package databute.databuter.client.network;
 
+import databute.databuter.Databuter;
 import databute.databuter.client.register.RegisterMessageHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
@@ -19,6 +20,8 @@ public class ClientChannelHandler extends ChannelInboundHandlerAdapter {
         final SocketChannel channel = (SocketChannel) ctx.channel();
         session = new ClientSession(channel);
         logger.info("Active new client session {}", session);
+
+        Databuter.instance().clientSessionGroup().add(session);
 
         configurePipeline(ctx);
     }
