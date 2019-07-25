@@ -21,6 +21,8 @@ import java.net.InetSocketAddress;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Instant;
+import java.util.List;
+import java.util.UUID;
 
 public final class Databuter {
 
@@ -34,8 +36,10 @@ public final class Databuter {
     private BucketCoordinator bucketCoordinator;
     private ClientSessionAcceptor clientAcceptor;
 
+    private final String id;
+
     private Databuter() {
-        super();
+        this.id = UUID.randomUUID().toString();
     }
 
     public static Databuter instance() {
@@ -50,6 +54,14 @@ public final class Databuter {
         return curator;
     }
 
+    public String id() {
+        return id;
+    }
+
+    public ClusterCoordinator clusterCoordinator() {
+        return clusterCoordinator;
+    }
+
     private void start() throws Exception {
         logger.info("Starting Databuter at {}", Instant.now());
 
@@ -57,7 +69,6 @@ public final class Databuter {
 
         connectToZooKeeper();
 
-        makeBucket();
         startBucketCoordinator();
 
         startClusterCoordinator();
@@ -88,29 +99,14 @@ public final class Databuter {
         logger.debug("Connected with the ZooKeeper at {}.", curator.getZookeeperClient().getCurrentConnectionString());
     }
 
-    private void makeBucket() throws BucketException {
-        final long availableMemory = Runtime.getRuntime().totalMemory() - configuration.guardMemorySizeMb();
-        final long bucketCount = availableMemory / configuration.bucketMemorySizeMb();
-
-        logger.debug("Making {} bucket...", bucketCount);
-
-        bucketGroup = new BucketGroup();
-        for (int i = 0; i < bucketCount; ++i) {
-            final Bucket bucket = new Bucket();
-            final boolean added = bucketGroup.add(bucket);
-            if (!added) {
-                throw new BucketException("Found duplcated bucket " + bucket);
-            }
-        }
-    }
 
     private void startBucketCoordinator() throws BucketException {
-        bucketCoordinator = new BucketCoordinator(bucketGroup);
+        bucketCoordinator = new BucketCoordinator();
         bucketCoordinator.start();
     }
 
     private void startClusterCoordinator() throws ClusterException {
-        clusterCoordinator = new ClusterCoordinator(configuration.cluster());
+        clusterCoordinator = new ClusterCoordinator(configuration.cluster(),id);
         clusterCoordinator.start();
     }
 

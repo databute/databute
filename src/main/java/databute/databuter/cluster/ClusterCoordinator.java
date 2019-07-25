@@ -40,9 +40,9 @@ public class ClusterCoordinator {
     private final RemoteClusterNodeGroup remoteNodeGroup;
     private final ZooKeeperConfiguration zooKeeperConfiguration;
 
-    public ClusterCoordinator(ClusterConfiguration configuration) {
+    public ClusterCoordinator(ClusterConfiguration configuration, String id) {
         this.configuration = checkNotNull(configuration, "configuration");
-        this.id = UUID.randomUUID().toString();
+        this.id = id;
         this.loopGroup = new NioEventLoopGroup();
         this.localNode = new LocalClusterNode(ClusterNodeConfiguration.builder()
                 .id(id)
