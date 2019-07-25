@@ -1,6 +1,7 @@
 package databute.databuter.client.network;
 
 import com.google.common.collect.Maps;
+import databute.databuter.network.message.Message;
 import io.netty.channel.ChannelId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,6 +64,12 @@ public class ClientSessionGroup {
             return added;
         } else {
             return false;
+        }
+    }
+
+    public void broadcastToListeningSession(Message message) {
+        for (ClientSession listeningSession : listeningSessions.values()) {
+            listeningSession.send(message);
         }
     }
 }

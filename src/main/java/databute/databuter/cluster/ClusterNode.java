@@ -6,4 +6,8 @@ public interface ClusterNode {
 
     ClusterNodeConfiguration configuration();
 
+    String address();
+
+    int port();
+
 }

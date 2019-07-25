@@ -1,14 +1,21 @@
 package databute.databuter.cluster.remote;
 
 import com.google.common.collect.Maps;
+import databute.databuter.Databuter;
+import databute.databuter.client.cluster.add.AddClusterNodeMessage;
+import databute.databuter.client.cluster.remove.RemoveClusterNodeMessage;
+import databute.databuter.client.network.ClientSessionGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Iterator;
 import java.util.Map;
+import java.util.Spliterator;
+import java.util.function.Consumer;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public class RemoteClusterNodeGroup {
+public class RemoteClusterNodeGroup implements Iterable<RemoteClusterNode> {
 
     private static final Logger logger = LoggerFactory.getLogger(RemoteClusterNodeGroup.class);
 
@@ -16,6 +23,21 @@ public class RemoteClusterNodeGroup {
 
     public RemoteClusterNodeGroup() {
         this.remoteNodes = Maps.newConcurrentMap();
+    }
+
+    @Override
+    public Iterator<RemoteClusterNode> iterator() {
+        return remoteNodes.values().iterator();
+    }
+
+    @Override
+    public void forEach(Consumer<? super RemoteClusterNode> action) {
+        remoteNodes.values().forEach(action);
+    }
+
+    @Override
+    public Spliterator<RemoteClusterNode> spliterator() {
+        return remoteNodes.values().spliterator();
     }
 
     public boolean add(RemoteClusterNode remoteNode) {
@@ -28,9 +50,20 @@ public class RemoteClusterNodeGroup {
             } else {
                 logger.info("Added remote cluster node {}", remoteNode.id());
             }
+
+            broadcastRemoteNodeAdded(remoteNode);
         }
 
         return added;
+    }
+
+    private void broadcastRemoteNodeAdded(RemoteClusterNode remoteNode) {
+        final ClientSessionGroup clientSessionGroup = Databuter.instance().clientSessionGroup();
+        clientSessionGroup.broadcastToListeningSession(AddClusterNodeMessage.builder()
+                .id(remoteNode.id())
+                .address(remoteNode.address())
+                .port(remoteNode.port())
+                .build());
     }
 
     public boolean remove(RemoteClusterNode remoteNode) {
@@ -48,8 +81,15 @@ public class RemoteClusterNodeGroup {
             } else {
                 logger.info("Removed remote cluster node {}", remoteNode.id());
             }
+
+            broadcastRemoteNodeRemoved(remoteNode);
         }
 
         return removed;
+    }
+
+    private void broadcastRemoteNodeRemoved(RemoteClusterNode remoteNode) {
+        final ClientSessionGroup clientSessionGroup = Databuter.instance().clientSessionGroup();
+        clientSessionGroup.broadcastToListeningSession(new RemoveClusterNodeMessage(remoteNode.id()));
     }
 }

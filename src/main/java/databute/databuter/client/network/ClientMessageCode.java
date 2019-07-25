@@ -4,7 +4,9 @@ import databute.databuter.network.message.MessageCode;
 
 public enum ClientMessageCode implements MessageCode {
 
-    REGISTER(0);
+    REGISTER(0),
+    ADD_CLUSTER_NODE(1),
+    REMOVE_CLUSTER_NODE(2);
 
     private final int value;
 
