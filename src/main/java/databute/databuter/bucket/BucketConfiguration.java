@@ -4,8 +4,6 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.MoreObjects;
 
-import java.net.InetSocketAddress;
-
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 public class BucketConfiguration {
 
@@ -35,7 +33,7 @@ public class BucketConfiguration {
         return MoreObjects.toStringHelper(this)
                 .add("id", id)
                 .add("masterClusterId", masterClusterId)
-                .add("backupClusterId",backupClusterId)
+                .add("backupClusterId", backupClusterId)
                 .toString();
     }
 }

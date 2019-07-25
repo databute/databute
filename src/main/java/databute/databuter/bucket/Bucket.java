@@ -19,7 +19,7 @@ public class Bucket {
         this.masterClusterId = Databuter.instance().id();
     }
 
-    public Bucket(BucketConfiguration configuration){
+    public Bucket(BucketConfiguration configuration) {
         checkNotNull(configuration, "configuration");
         this.id = configuration.id();
         this.masterClusterId = configuration.masterClusterId();
@@ -43,8 +43,8 @@ public class Bucket {
     public String toString() {
         return MoreObjects.toStringHelper(this)
                 .add("id", id)
-                .add("masterClusterId",masterClusterId)
-                .add("backupClusterId",backupClusterId)
+                .add("masterClusterId", masterClusterId)
+                .add("backupClusterId", backupClusterId)
                 .toString();
     }
 }

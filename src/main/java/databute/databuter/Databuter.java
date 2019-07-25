@@ -2,7 +2,6 @@ package databute.databuter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
-import databute.databuter.bucket.Bucket;
 import databute.databuter.bucket.BucketCoordinator;
 import databute.databuter.bucket.BucketException;
 import databute.databuter.bucket.BucketGroup;
@@ -21,7 +20,6 @@ import java.net.InetSocketAddress;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Instant;
-import java.util.List;
 import java.util.UUID;
 
 public final class Databuter {
@@ -106,7 +104,7 @@ public final class Databuter {
     }
 
     private void startClusterCoordinator() throws ClusterException {
-        clusterCoordinator = new ClusterCoordinator(configuration.cluster(),id);
+        clusterCoordinator = new ClusterCoordinator(configuration.cluster(), id);
         clusterCoordinator.start();
     }
 
