@@ -35,8 +35,7 @@ public final class Databuter {
     private ClientSessionAcceptor clientAcceptor;
 
     private final String id;
-    private final BucketGroup remoteBucketGroup = new BucketGroup();
-    private final BucketGroup localBucketGroup = new BucketGroup();
+    private final BucketGroup bucketGroup = new BucketGroup();
     private final ClientSessionGroup clientSessionGroup;
 
     private Databuter() {
@@ -107,7 +106,7 @@ public final class Databuter {
 
 
     private void startBucketCoordinator() throws BucketException {
-        bucketCoordinator = new BucketCoordinator(localBucketGroup, remoteBucketGroup);
+        bucketCoordinator = new BucketCoordinator(bucketGroup);
         bucketCoordinator.start();
     }
 
