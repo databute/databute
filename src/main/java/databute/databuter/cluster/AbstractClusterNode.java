@@ -22,4 +22,14 @@ public abstract class AbstractClusterNode implements ClusterNode {
     public final ClusterNodeConfiguration configuration() {
         return configuration;
     }
+
+    @Override
+    public final String address() {
+        return configuration.address();
+    }
+
+    @Override
+    public final int port() {
+        return configuration.port();
+    }
 }
