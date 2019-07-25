@@ -3,6 +3,7 @@ package databute.databuter.cluster.remote;
 import com.google.common.collect.Maps;
 import databute.databuter.Databuter;
 import databute.databuter.client.cluster.add.AddClusterNodeMessage;
+import databute.databuter.client.cluster.remove.RemoveClusterNodeMessage;
 import databute.databuter.client.network.ClientSessionGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -80,8 +81,15 @@ public class RemoteClusterNodeGroup implements Iterable<RemoteClusterNode> {
             } else {
                 logger.info("Removed remote cluster node {}", remoteNode.id());
             }
+
+            broadcastRemoteNodeRemovedMessage(remoteNode);
         }
 
         return removed;
+    }
+
+    private void broadcastRemoteNodeRemovedMessage(RemoteClusterNode remoteNode) {
+        final ClientSessionGroup clientSessionGroup = Databuter.instance().clientSessionGroup();
+        clientSessionGroup.broadcastToListeningSession(new RemoveClusterNodeMessage(remoteNode.id()));
     }
 }
