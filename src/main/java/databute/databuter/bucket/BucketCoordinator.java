@@ -70,26 +70,9 @@ public class BucketCoordinator {
                 onAdded(event.getData());
                 break;
             case CHILD_UPDATED:
-                logger.debug("child added.");
+                onUpdated(event.getData());
                 break;
         }
-    }
-
-    private void onAdded(ChildData data) {
-        checkNotNull(data, "data");
-
-        final String json = new String(data.getData());
-        final BucketConfiguration nodeConfiguration = new Gson().fromJson(json, BucketConfiguration.class);
-        final Bucket backupBucket = new Bucket(nodeConfiguration);
-
-        for (Bucket bucket : localBucketGroup) {
-            if (StringUtils.equals(bucket.id(), backupBucket.id())) {
-                //로컬 버킷
-                return;
-            }
-        }
-
-        remoteBucketGroup.add(backupBucket);
     }
 
     private void onInitialized() {
@@ -100,6 +83,37 @@ public class BucketCoordinator {
         } catch (BucketException e) {
             logger.error("Failed making Bucket.", e);
         }
+    }
+
+    private void onAdded(ChildData data) {
+        checkNotNull(data, "data");
+
+        final String json = new String(data.getData());
+        final BucketConfiguration bucketConfiguration = new Gson().fromJson(json, BucketConfiguration.class);
+        final Bucket addedBucket = new Bucket(bucketConfiguration);
+
+        if (localBucketGroup.has(addedBucket.id())) {
+            //로컬 버킷
+            return;
+        }
+
+        remoteBucketGroup.add(addedBucket);
+    }
+
+    //TODO(@nono5546):업데이트 구현 후 테스트.
+    private void onUpdated(ChildData data) {
+        checkNotNull(data, "data");
+
+        final String json = new String(data.getData());
+        final BucketConfiguration bucketConfiguration = new Gson().fromJson(json, BucketConfiguration.class);
+        final Bucket updatedBucket = new Bucket(bucketConfiguration);
+
+        if (localBucketGroup.has(updatedBucket.id())) {
+            //로컬 버킷
+            return;
+        }
+
+        remoteBucketGroup.update(updatedBucket);
     }
 
     private void addBackUpBucketIfNeeded() {
@@ -155,7 +169,7 @@ public class BucketCoordinator {
     }
 
     private void registerBucketGroup(Bucket bucket) throws Exception {
-        final String json = new Gson().toJson(bucket);
+        final String json = new Gson().toJson(bucket.configuration());
         final String path = ZKPaths.makePath(zooKeeperConfiguration.path(), "bucket", bucket.id());
         final String createdPath = Databuter.instance().curator()
                 .create()

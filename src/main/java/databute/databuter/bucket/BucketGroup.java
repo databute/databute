@@ -58,4 +58,17 @@ public class BucketGroup implements Iterable<Bucket> {
 
         return removed;
     }
+
+    public boolean has(String id) {
+        return buckets.containsKey(id);
+    }
+
+    public void update(Bucket bucket) {
+        if (!has(bucket.id())) {
+            buckets.putIfAbsent(bucket.id(), bucket);
+
+            return;
+        }
+        buckets.get(bucket.id()).updateConfiguration(bucket.configuration());
+    }
 }
