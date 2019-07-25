@@ -12,7 +12,6 @@ public class Bucket {
     private final String id;
     private final BucketConfiguration configuration;
 
-
     public Bucket() {
         this(new BucketConfiguration(UUID.randomUUID().toString(), Databuter.instance().id()));
     }
@@ -41,7 +40,7 @@ public class Bucket {
     }
 
     public void updateConfiguration(BucketConfiguration configuration) {
-        configuration = configuration;
+        configuration.update(configuration);
     }
 
     @Override

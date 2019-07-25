@@ -25,7 +25,9 @@ public class BucketGroup implements Iterable<Bucket> {
     }
 
     public Bucket find(String id) {
-        return buckets.get(id);
+        Bucket bucket = buckets.get(id);
+
+        return bucket;
     }
 
     public boolean add(Bucket bucket) {
