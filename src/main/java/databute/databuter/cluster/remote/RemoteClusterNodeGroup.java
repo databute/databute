@@ -51,13 +51,13 @@ public class RemoteClusterNodeGroup implements Iterable<RemoteClusterNode> {
                 logger.info("Added remote cluster node {}", remoteNode.id());
             }
 
-            broadcastRemoteNodeAddedMessage(remoteNode);
+            broadcastRemoteNodeAdded(remoteNode);
         }
 
         return added;
     }
 
-    private void broadcastRemoteNodeAddedMessage(RemoteClusterNode remoteNode) {
+    private void broadcastRemoteNodeAdded(RemoteClusterNode remoteNode) {
         final ClientSessionGroup clientSessionGroup = Databuter.instance().clientSessionGroup();
         clientSessionGroup.broadcastToListeningSession(AddClusterNodeMessage.builder()
                 .id(remoteNode.id())
@@ -82,13 +82,13 @@ public class RemoteClusterNodeGroup implements Iterable<RemoteClusterNode> {
                 logger.info("Removed remote cluster node {}", remoteNode.id());
             }
 
-            broadcastRemoteNodeRemovedMessage(remoteNode);
+            broadcastRemoteNodeRemoved(remoteNode);
         }
 
         return removed;
     }
 
-    private void broadcastRemoteNodeRemovedMessage(RemoteClusterNode remoteNode) {
+    private void broadcastRemoteNodeRemoved(RemoteClusterNode remoteNode) {
         final ClientSessionGroup clientSessionGroup = Databuter.instance().clientSessionGroup();
         clientSessionGroup.broadcastToListeningSession(new RemoveClusterNodeMessage(remoteNode.id()));
     }
