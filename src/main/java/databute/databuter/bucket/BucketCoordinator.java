@@ -111,7 +111,12 @@ public class BucketCoordinator {
             return;
         }
 
-        remoteBucketGroup.update(new Bucket(updatedBucketConfiguration));
+        final Bucket bucket = remoteBucketGroup.find(updatedBucketConfiguration.id());
+        if (bucket == null) {
+            remoteBucketGroup.add(new Bucket(updatedBucketConfiguration));
+        } else {
+            bucket.updateConfiguration(updatedBucketConfiguration);
+        }
     }
 
     private void addBackUpBucketIfNeeded() {
