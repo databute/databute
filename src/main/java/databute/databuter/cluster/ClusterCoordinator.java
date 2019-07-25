@@ -21,7 +21,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.InetSocketAddress;
-import java.util.UUID;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -40,9 +39,9 @@ public class ClusterCoordinator {
     private final RemoteClusterNodeGroup remoteNodeGroup;
     private final ZooKeeperConfiguration zooKeeperConfiguration;
 
-    public ClusterCoordinator(ClusterConfiguration configuration) {
+    public ClusterCoordinator(ClusterConfiguration configuration, String id) {
         this.configuration = checkNotNull(configuration, "configuration");
-        this.id = UUID.randomUUID().toString();
+        this.id = checkNotNull(id, "id");
         this.loopGroup = new NioEventLoopGroup();
         this.localNode = new LocalClusterNode(ClusterNodeConfiguration.builder()
                 .id(id)

@@ -2,7 +2,6 @@ package databute.databuter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
-import databute.databuter.bucket.Bucket;
 import databute.databuter.bucket.BucketCoordinator;
 import databute.databuter.bucket.BucketException;
 import databute.databuter.bucket.BucketGroup;
@@ -21,6 +20,7 @@ import java.net.InetSocketAddress;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Instant;
+import java.util.UUID;
 
 public final class Databuter {
 
@@ -30,12 +30,15 @@ public final class Databuter {
     private DatabuterConfiguration configuration;
     private CuratorFramework curator;
     private ClusterCoordinator clusterCoordinator;
-    private BucketGroup bucketGroup;
     private BucketCoordinator bucketCoordinator;
     private ClientSessionAcceptor clientAcceptor;
 
+    private final String id;
+    private final BucketGroup remoteBucketGroup = new BucketGroup();
+    private final BucketGroup localBucketGroup = new BucketGroup();
+    
     private Databuter() {
-        super();
+        this.id = UUID.randomUUID().toString();
     }
 
     public static Databuter instance() {
@@ -50,6 +53,14 @@ public final class Databuter {
         return curator;
     }
 
+    public String id() {
+        return id;
+    }
+
+    public ClusterCoordinator clusterCoordinator() {
+        return clusterCoordinator;
+    }
+
     private void start() throws Exception {
         logger.info("Starting Databuter at {}", Instant.now());
 
@@ -57,7 +68,6 @@ public final class Databuter {
 
         connectToZooKeeper();
 
-        makeBucket();
         startBucketCoordinator();
 
         startClusterCoordinator();
@@ -88,29 +98,14 @@ public final class Databuter {
         logger.debug("Connected with the ZooKeeper at {}.", curator.getZookeeperClient().getCurrentConnectionString());
     }
 
-    private void makeBucket() throws BucketException {
-        final long availableMemory = Runtime.getRuntime().totalMemory() - configuration.guardMemorySizeMb();
-        final long bucketCount = availableMemory / configuration.bucketMemorySizeMb();
-
-        logger.debug("Making {} bucket...", bucketCount);
-
-        bucketGroup = new BucketGroup();
-        for (int i = 0; i < bucketCount; ++i) {
-            final Bucket bucket = new Bucket();
-            final boolean added = bucketGroup.add(bucket);
-            if (!added) {
-                throw new BucketException("Found duplcated bucket " + bucket);
-            }
-        }
-    }
 
     private void startBucketCoordinator() throws BucketException {
-        bucketCoordinator = new BucketCoordinator(bucketGroup);
+        bucketCoordinator = new BucketCoordinator(localBucketGroup, remoteBucketGroup);
         bucketCoordinator.start();
     }
 
     private void startClusterCoordinator() throws ClusterException {
-        clusterCoordinator = new ClusterCoordinator(configuration.cluster());
+        clusterCoordinator = new ClusterCoordinator(configuration.cluster(), id);
         clusterCoordinator.start();
     }
 
