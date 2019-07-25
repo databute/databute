@@ -15,6 +15,7 @@ public class RegisterMessageHandler extends ClientMessageHandler<RegisterMessage
 
     @Override
     public void handle(RegisterMessage register) {
-        logger.debug("Read register message: {}", register);
+        session().startListen();
+        logger.debug("Session {} is listening update.", session());
     }
 }
