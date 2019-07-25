@@ -30,12 +30,13 @@ public final class Databuter {
     private DatabuterConfiguration configuration;
     private CuratorFramework curator;
     private ClusterCoordinator clusterCoordinator;
-    private BucketGroup bucketGroup;
     private BucketCoordinator bucketCoordinator;
     private ClientSessionAcceptor clientAcceptor;
 
     private final String id;
-
+    private final BucketGroup remoteBucketGroup = new BucketGroup();
+    private final BucketGroup localBucketGroup = new BucketGroup();
+    
     private Databuter() {
         this.id = UUID.randomUUID().toString();
     }
@@ -99,7 +100,7 @@ public final class Databuter {
 
 
     private void startBucketCoordinator() throws BucketException {
-        bucketCoordinator = new BucketCoordinator();
+        bucketCoordinator = new BucketCoordinator(localBucketGroup, remoteBucketGroup);
         bucketCoordinator.start();
     }
 

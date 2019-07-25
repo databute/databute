@@ -28,9 +28,9 @@ public class BucketCoordinator {
     private final AtomicLong availableBucketCount;
     private final ZooKeeperConfiguration zooKeeperConfiguration;
 
-    public BucketCoordinator() {
-        this.remoteBucketGroup = new BucketGroup();
-        this.localBucketGroup = new BucketGroup();
+    public BucketCoordinator(BucketGroup remoteBucketGroup, BucketGroup localBucketGroup) {
+        this.remoteBucketGroup = remoteBucketGroup;
+        this.localBucketGroup = localBucketGroup;
         this.availableBucketCount = new AtomicLong();
         this.zooKeeperConfiguration = Databuter.instance().configuration().zooKeeper();
     }
@@ -61,7 +61,7 @@ public class BucketCoordinator {
     }
 
     @SuppressWarnings("unused")
-    private void onCacheEvent(CuratorFramework curator, PathChildrenCacheEvent event) throws BucketException {
+    private void onCacheEvent(CuratorFramework curator, PathChildrenCacheEvent event){
         switch (event.getType()) {
             case INITIALIZED:
                 onInitialized();
@@ -92,21 +92,25 @@ public class BucketCoordinator {
         remoteBucketGroup.add(backupBucket);
     }
 
-    private void onInitialized() throws BucketException {
-        fillNoBackupBucket();
+    private void onInitialized() {
+        addBackUpBucketIfNeeded();
 
-        makeBucket();
+        try {
+            makeBucket();
+        } catch (BucketException e) {
+            logger.error("Failed making Bucket.",e);
+        }
     }
 
-    private void fillNoBackupBucket() {
+    private void addBackUpBucketIfNeeded() {
         for (Bucket bucket : remoteBucketGroup) {
             if (availableBucketCount.get() <= 0) {
                 break;
             }
 
-            if (StringUtils.isEmpty(bucket.backupClusterId())) {
+            if (StringUtils.isEmpty(bucket.backUpClusterId())) {
                 try {
-                    bucket.backupClusterId(Databuter.instance().id());
+                    bucket.backUpClusterId(Databuter.instance().id());
 
                     localBucketGroup.add(bucket);
 

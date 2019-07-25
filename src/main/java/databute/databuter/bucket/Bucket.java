@@ -12,7 +12,7 @@ public class Bucket {
     private final String id;
 
     private String masterClusterId;
-    private String backupClusterId;
+    private String backUpClusterId;
 
     public Bucket() {
         this.id = UUID.randomUUID().toString();
@@ -23,19 +23,19 @@ public class Bucket {
         checkNotNull(configuration, "configuration");
         this.id = configuration.id();
         this.masterClusterId = configuration.masterClusterId();
-        this.backupClusterId = configuration.backupClusterId();
+        this.backUpClusterId = configuration.backupClusterId();
     }
 
     public String id() {
         return id;
     }
 
-    public String backupClusterId() {
-        return backupClusterId;
+    public String backUpClusterId() {
+        return backUpClusterId;
     }
 
-    public Bucket backupClusterId(String backupClusterId) {
-        this.backupClusterId = backupClusterId;
+    public Bucket backUpClusterId(String backupClusterId) {
+        this.backUpClusterId = backupClusterId;
         return this;
     }
 
@@ -44,7 +44,7 @@ public class Bucket {
         return MoreObjects.toStringHelper(this)
                 .add("id", id)
                 .add("masterClusterId", masterClusterId)
-                .add("backupClusterId", backupClusterId)
+                .add("backupClusterId", backUpClusterId)
                 .toString();
     }
 }

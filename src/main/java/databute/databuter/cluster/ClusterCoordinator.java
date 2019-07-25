@@ -41,7 +41,7 @@ public class ClusterCoordinator {
 
     public ClusterCoordinator(ClusterConfiguration configuration, String id) {
         this.configuration = checkNotNull(configuration, "configuration");
-        this.id = id;
+        this.id = checkNotNull(id,"id");
         this.loopGroup = new NioEventLoopGroup();
         this.localNode = new LocalClusterNode(ClusterNodeConfiguration.builder()
                 .id(id)
