@@ -61,7 +61,7 @@ public class BucketCoordinator {
     }
 
     @SuppressWarnings("unused")
-    private void onCacheEvent(CuratorFramework curator, PathChildrenCacheEvent event){
+    private void onCacheEvent(CuratorFramework curator, PathChildrenCacheEvent event) {
         switch (event.getType()) {
             case INITIALIZED:
                 onInitialized();
@@ -98,7 +98,7 @@ public class BucketCoordinator {
         try {
             makeBucket();
         } catch (BucketException e) {
-            logger.error("Failed making Bucket.",e);
+            logger.error("Failed making Bucket.", e);
         }
     }
 
