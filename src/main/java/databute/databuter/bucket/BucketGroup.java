@@ -63,12 +63,12 @@ public class BucketGroup implements Iterable<Bucket> {
         return buckets.containsKey(id);
     }
 
-    public void update(Bucket bucket) {
-        if (!has(bucket.id())) {
-            buckets.putIfAbsent(bucket.id(), bucket);
+    public void update(BucketConfiguration configuration) {
+        if (!has(configuration.id())) {
+            buckets.putIfAbsent(configuration.id(), new Bucket(configuration));
 
             return;
         }
-        buckets.get(bucket.id()).updateConfiguration(bucket.configuration());
+        buckets.get(configuration.id()).updateConfiguration(configuration);
     }
 }

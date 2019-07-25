@@ -89,15 +89,14 @@ public class BucketCoordinator {
         checkNotNull(data, "data");
 
         final String json = new String(data.getData());
-        final BucketConfiguration bucketConfiguration = new Gson().fromJson(json, BucketConfiguration.class);
-        final Bucket addedBucket = new Bucket(bucketConfiguration);
+        final BucketConfiguration addedBucketConfiguration = new Gson().fromJson(json, BucketConfiguration.class);
 
-        if (localBucketGroup.has(addedBucket.id())) {
+        if (localBucketGroup.has(addedBucketConfiguration.id())) {
             //로컬 버킷
             return;
         }
 
-        remoteBucketGroup.add(addedBucket);
+        remoteBucketGroup.add(new Bucket(addedBucketConfiguration));
     }
 
     //TODO(@nono5546):업데이트 구현 후 테스트.
@@ -105,15 +104,14 @@ public class BucketCoordinator {
         checkNotNull(data, "data");
 
         final String json = new String(data.getData());
-        final BucketConfiguration bucketConfiguration = new Gson().fromJson(json, BucketConfiguration.class);
-        final Bucket updatedBucket = new Bucket(bucketConfiguration);
+        final BucketConfiguration updatedBucketConfiguration = new Gson().fromJson(json, BucketConfiguration.class);
 
-        if (localBucketGroup.has(updatedBucket.id())) {
+        if (localBucketGroup.has(updatedBucketConfiguration.id())) {
             //로컬 버킷
             return;
         }
 
-        remoteBucketGroup.update(updatedBucket);
+        remoteBucketGroup.update(new Bucket(updatedBucketConfiguration));
     }
 
     private void addBackUpBucketIfNeeded() {
