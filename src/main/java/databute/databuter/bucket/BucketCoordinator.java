@@ -23,14 +23,12 @@ public class BucketCoordinator {
 
     private PathChildrenCache cache;
 
-    private final BucketGroup remoteBucketGroup;
-    private final BucketGroup localBucketGroup;
+    private final BucketGroup bucketGroup;
     private final AtomicLong availableBucketCount;
     private final ZooKeeperConfiguration zooKeeperConfiguration;
 
-    public BucketCoordinator(BucketGroup remoteBucketGroup, BucketGroup localBucketGroup) {
-        this.remoteBucketGroup = remoteBucketGroup;
-        this.localBucketGroup = localBucketGroup;
+    public BucketCoordinator(BucketGroup bucketGroup) {
+        this.bucketGroup = bucketGroup;
         this.availableBucketCount = new AtomicLong();
         this.zooKeeperConfiguration = Databuter.instance().configuration().zooKeeper();
     }
@@ -91,12 +89,12 @@ public class BucketCoordinator {
         final String json = new String(data.getData());
         final BucketConfiguration addedBucketConfiguration = new Gson().fromJson(json, BucketConfiguration.class);
 
-        if (localBucketGroup.has(addedBucketConfiguration.id())) {
+        if (bucketGroup.has(addedBucketConfiguration.id())) {
             //로컬 버킷
             return;
         }
 
-        remoteBucketGroup.add(new Bucket(addedBucketConfiguration));
+        bucketGroup.add(new Bucket(addedBucketConfiguration));
     }
 
     //TODO(@nono5546):업데이트 구현 후 테스트.
@@ -106,21 +104,16 @@ public class BucketCoordinator {
         final String json = new String(data.getData());
         final BucketConfiguration updatedBucketConfiguration = new Gson().fromJson(json, BucketConfiguration.class);
 
-        if (localBucketGroup.has(updatedBucketConfiguration.id())) {
-            //로컬 버킷
-            return;
-        }
-
-        final Bucket bucket = remoteBucketGroup.find(updatedBucketConfiguration.id());
+        final Bucket bucket = bucketGroup.find(updatedBucketConfiguration.id());
         if (bucket == null) {
-            remoteBucketGroup.add(new Bucket(updatedBucketConfiguration));
+            bucketGroup.add(new Bucket(updatedBucketConfiguration));
         } else {
             bucket.updateConfiguration(updatedBucketConfiguration);
         }
     }
 
     private void addBackUpBucketIfNeeded() {
-        for (Bucket bucket : remoteBucketGroup) {
+        for (Bucket bucket : bucketGroup) {
             if (availableBucketCount.get() <= 0) {
                 break;
             }
@@ -129,7 +122,7 @@ public class BucketCoordinator {
                 try {
                     bucket.backUpClusterId(Databuter.instance().id());
 
-                    localBucketGroup.add(bucket);
+                    bucketGroup.add(bucket);
 
                     updateBackupBucket(bucket);
 
@@ -156,13 +149,13 @@ public class BucketCoordinator {
 
         while (availableBucketCount.get() > 0) {
             final Bucket bucket = new Bucket();
-            final boolean added = localBucketGroup.add(bucket);
+            final boolean added = bucketGroup.add(bucket);
             if (!added) {
                 throw new BucketException("Found duplcated bucket " + bucket);
             }
 
             try {
-                registerBucketGroup(bucket);
+                registerBucket(bucket);
             } catch (Exception e) {
                 throw new BucketException("Failed to register master bucket " + bucket, e);
             }
@@ -171,7 +164,7 @@ public class BucketCoordinator {
         }
     }
 
-    private void registerBucketGroup(Bucket bucket) throws Exception {
+    private void registerBucket(Bucket bucket) throws Exception {
         final String json = new Gson().toJson(bucket.configuration());
         final String path = ZKPaths.makePath(zooKeeperConfiguration.path(), "bucket", bucket.id());
         final String createdPath = Databuter.instance().curator()
