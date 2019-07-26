@@ -21,12 +21,12 @@ public abstract class Bucket {
         return configuration;
     }
 
-    public String masterClusterId() {
-        return configuration.masterClusterId();
+    public String masterNodeId() {
+        return configuration.masterNodeId();
     }
 
-    public String backUpClusterId() {
-        return configuration.backupClusterId();
+    public String backupNodeId() {
+        return configuration.backupNodeId();
     }
 
     public void updateConfiguration(BucketConfiguration configuration) {
