@@ -67,9 +67,20 @@ public class BucketGroup implements Iterable<Bucket> {
             } else {
                 logger.info("Removed bucket {}", bucket.id());
             }
+
+            broadcastBucketRemoved(bucket);
         }
 
         return removed;
+    }
+
+    private void broadcastBucketRemoved(Bucket bucket) {
+        final ClientSessionGroup clientSessionGroup = Databuter.instance().clientSessionGroup();
+        clientSessionGroup.broadcastToListeningSession(BucketNotificationMessage.removed()
+                .id(bucket.id())
+                .activeNodeId(bucket.activeNodeId())
+                .standbyNodeId(bucket.standbyNodeId())
+                .build());
     }
 
     public boolean has(String id) {
