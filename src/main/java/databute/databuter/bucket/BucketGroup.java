@@ -1,6 +1,9 @@
 package databute.databuter.bucket;
 
 import com.google.common.collect.Maps;
+import databute.databuter.Databuter;
+import databute.databuter.bucket.notification.add.BucketAddedNotificationMessage;
+import databute.databuter.client.network.ClientSessionGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,7 +35,21 @@ public class BucketGroup implements Iterable<Bucket> {
         checkNotNull(bucket, "bucket");
 
         // TODO(@ghkim3221): 중복되는 버킷을 발견한 경우 예외 throws
-        return (buckets.putIfAbsent(bucket.id(), bucket) == null);
+        final boolean added = (buckets.putIfAbsent(bucket.id(), bucket) == null);
+        if (added) {
+            broadcastBucketAdded(bucket);
+        }
+
+        return added;
+    }
+
+    private void broadcastBucketAdded(Bucket bucket) {
+        final ClientSessionGroup clientSessionGroup = Databuter.instance().clientSessionGroup();
+        clientSessionGroup.broadcastToListeningSession(BucketAddedNotificationMessage.builder()
+                .id(bucket.id())
+                .activeNodeId(bucket.activeNodeId())
+                .standbyNodeId(bucket.standbyNodeId())
+                .build());
     }
 
     public boolean remove(Bucket bucket) {
