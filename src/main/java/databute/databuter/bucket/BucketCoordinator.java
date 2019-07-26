@@ -26,13 +26,13 @@ public class BucketCoordinator {
     private PathChildrenCache cache;
 
     private final BucketGroup bucketGroup;
-    private final AtomicLong availableBucketCount;
     private final ZooKeeperConfiguration zooKeeperConfiguration;
+    private final AtomicLong availableBucketCount;
 
-    public BucketCoordinator(BucketGroup bucketGroup) {
-        this.bucketGroup = bucketGroup;
-        this.availableBucketCount = new AtomicLong();
+    public BucketCoordinator() {
+        this.bucketGroup = Databuter.instance().bucketGroup();
         this.zooKeeperConfiguration = Databuter.instance().configuration().zooKeeper();
+        this.availableBucketCount = new AtomicLong();
     }
 
     public void start() throws BucketException {
