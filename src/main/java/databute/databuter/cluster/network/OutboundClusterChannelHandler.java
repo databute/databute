@@ -1,8 +1,8 @@
 package databute.databuter.cluster.network;
 
-import com.google.gson.Gson;
 import databute.databuter.Databuter;
 import databute.databuter.bucket.Bucket;
+import databute.databuter.bucket.local.LocalBucket;
 import databute.databuter.cluster.ClusterCoordinator;
 import databute.databuter.cluster.handshake.request.HandshakeRequestMessage;
 import databute.databuter.cluster.handshake.response.HandshakeResponseMessageHandler;
@@ -11,8 +11,6 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.SocketChannel;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.curator.utils.ZKPaths;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -59,33 +57,27 @@ public class OutboundClusterChannelHandler extends ChannelInboundHandlerAdapter 
 
         clusterCoordinator.remoteNodeGroup().remove(remoteNode);
 
+        //TODO(@nono5546):BucketCoordinator가 하도록 리팩토링.
         for (Bucket bucket : Databuter.instance().bucketGroup()) {
-            if (StringUtils.equals(bucket.activeNodeId(), Databuter.instance().id())) {
-                if (StringUtils.equals(bucket.standbyNodeId(), remoteNode.id())) {
-                    bucket.configuration().standbyNodeId(null);
-
-                    ctx.executor().submit((Callable<Void>) () -> {
-                        updateToZookeeper(bucket);
-                        return null;
-                    }).addListener(future -> {
-                        if (future.isSuccess()) {
-                            logger.debug("Sucess remove bucket {}.", bucket.id());
-                        } else {
-                            logger.error("Fail remove bucket {}.", bucket.id(), future.cause());
-                        }
-                    });
+            if (bucket instanceof LocalBucket) {
+                final LocalBucket localBucket = (LocalBucket) bucket;
+                if (localBucket.configuration().isActiveBy(Databuter.instance().id()) &&
+                        localBucket.configuration().isStandbyBy(remoteNode.id())) {
+                    ctx.executor()
+                            .submit((Callable<Void>) () -> {
+                                localBucket.configuration().standbyNodeId(null);
+                                localBucket.update();
+                                return null;
+                            })
+                            .addListener(future -> {
+                                if (future.isSuccess()) {
+                                    logger.info("Removed standby node of bucket {}.", localBucket.id());
+                                } else {
+                                    logger.error("Failed to remove standby node of bucket {}", bucket.id(), future.cause());
+                                }
+                            });
                 }
             }
         }
-    }
-
-    private void updateToZookeeper(Bucket bucket) throws Exception {
-        final String json2 = new Gson().toJson(bucket.configuration());
-        final String zookeeperPath =Databuter.instance().configuration().zooKeeper().path();
-        final String path = ZKPaths.makePath(zookeeperPath, "bucket", bucket.id());
-
-        Databuter.instance().curator()
-                .setData()
-                .forPath(path, json2.getBytes());
     }
 }
