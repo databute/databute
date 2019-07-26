@@ -11,7 +11,6 @@ import org.apache.curator.framework.recipes.cache.ChildData;
 import org.apache.curator.framework.recipes.cache.PathChildrenCache;
 import org.apache.curator.framework.recipes.cache.PathChildrenCacheEvent;
 import org.apache.curator.utils.ZKPaths;
-import org.apache.zookeeper.CreateMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -75,29 +74,7 @@ public class BucketCoordinator {
 
     private void onInitialized() {
         while (availableBucketCount.get() > 0) {
-            try {
-                final String nodeId = Databuter.instance().id();
-                final BucketConfiguration bucketConfiguration = new BucketConfiguration().activeNodeId(nodeId);
-                final Bucket localBucket = new LocalBucket(bucketConfiguration);
-
-                final String json = new Gson().toJson(localBucket.configuration());
-                final String path = ZKPaths.makePath(zooKeeperConfiguration.path(), "bucket", localBucket.id());
-                final String createdPath = Databuter.instance().curator()
-                        .create()
-                        .creatingParentContainersIfNeeded()
-                        .withMode(CreateMode.PERSISTENT)
-                        .forPath(path, json.getBytes());
-
-                final boolean added = bucketGroup.add(localBucket);
-                if (added) {
-                    final long remainingBucketCount = availableBucketCount.decrementAndGet();
-                    logger.info("Added local active bucket {}. {} buckets are remaining.", localBucket.id(), remainingBucketCount);
-                } else {
-                    logger.error("Failed to add local active bucket {}", localBucket);
-                }
-            } catch (Exception e) {
-                logger.error("Failed to register local active bucket to the ZooKeeper.", e);
-            }
+            createLocalActiveBucket();
         }
     }
 
@@ -123,44 +100,14 @@ public class BucketCoordinator {
 
         if (availableBucketCount.get() > 0) {
             if (StringUtils.isEmpty(bucketConfiguration.standbyNodeId())) {
-                try {
-                    bucketConfiguration.standbyNodeId(nodeId);
-                    final Bucket localBucket = new LocalBucket(bucketConfiguration);
-
-                    final String json2 = new Gson().toJson(localBucket.configuration());
-                    final String path = ZKPaths.makePath(zooKeeperConfiguration.path(), "bucket", localBucket.id());
-                    Databuter.instance().curator()
-                            .setData()
-                            .forPath(path, json2.getBytes());
-
-                    final boolean added = bucketGroup.add(localBucket);
-                    if (added) {
-                        final long remainingBucketCount = availableBucketCount.decrementAndGet();
-                        logger.info("Added local standby bucket {}. {} buckets are remaining.",
-                                localBucket.id(), remainingBucketCount);
-                    } else {
-                        logger.error("Failed to add local standby bucket {}", localBucket);
-                    }
-                } catch (Exception e) {
-                    logger.error("Failed to register local standby bucket to the ZooKeeper.", e);
-                }
+                createLocalStandbyBucket(bucketConfiguration);
             } else {
-                final Bucket remoteBucket = new RemoteBucket(bucketConfiguration);
-                final boolean added = bucketGroup.add(remoteBucket);
-                if (added) {
-                    logger.info("Added remote bucket {} because it is already high available.", remoteBucket.id());
-                } else {
-                    logger.error("Failed to add remote bucket {}", remoteBucket);
-                }
+                final RemoteBucket remoteBucket = createRemoteBucket(bucketConfiguration);
+                logger.info("Added remote bucket {} because it is already high available.", remoteBucket.id());
             }
         } else {
-            final Bucket remoteBucket = new RemoteBucket(bucketConfiguration);
-            final boolean added = bucketGroup.add(remoteBucket);
-            if (added) {
-                logger.info("Added remote bucket {} because available bucket count is zero.", remoteBucket.id());
-            } else {
-                logger.error("Failed to add remote bucket {}", remoteBucket);
-            }
+            final RemoteBucket remoteBucket = createRemoteBucket(bucketConfiguration);
+            logger.info("Added remote bucket {} because available bucket count is zero.", remoteBucket.id());
         }
     }
 
@@ -180,5 +127,57 @@ public class BucketCoordinator {
 
         bucket.configuration().update(bucketConfiguration);
         logger.info("Updated bucket {}.", bucket.id());
+    }
+
+    private void createLocalActiveBucket() {
+        final String nodeId = Databuter.instance().id();
+        final BucketConfiguration bucketConfiguration = new BucketConfiguration().activeNodeId(nodeId);
+
+        final LocalBucket localBucket = createLocalBucket(bucketConfiguration);
+        logger.info("Created local active bucket {}.", localBucket.id());
+
+        try {
+            final String path = localBucket.save();
+            logger.debug("Saved local active bucket {} to the ZooKeeper with path {}", localBucket.id(), path);
+        } catch (BucketException e) {
+            logger.error("Failed to create local active bucket.", e);
+
+            bucketGroup.remove(localBucket);
+        }
+    }
+
+    private void createLocalStandbyBucket(BucketConfiguration bucketConfiguration) {
+        final String nodeId = Databuter.instance().id();
+
+        bucketConfiguration.standbyNodeId(nodeId);
+        final LocalBucket localBucket = createLocalBucket(bucketConfiguration);
+        logger.info("Created local standby bucket {}.", localBucket.id());
+
+        try {
+            localBucket.update();
+            logger.info("Updated local standby bucket {} to the ZooKeeper.", localBucket.id());
+        } catch (BucketException e) {
+            logger.error("Failed to update local standby bucket.", e);
+
+            // TODO(@ghkim3221): ZooKeeper에 업데이트가 실패한다면 어떻게 처리할 것인가?
+            bucketGroup.remove(localBucket);
+        }
+    }
+
+    private LocalBucket createLocalBucket(BucketConfiguration bucketConfiguration) {
+        final LocalBucket localBucket = new LocalBucket(bucketConfiguration);
+
+        bucketGroup.add(localBucket);
+        availableBucketCount.decrementAndGet();
+
+        return localBucket;
+    }
+
+    private RemoteBucket createRemoteBucket(BucketConfiguration bucketConfiguration) {
+        final RemoteBucket remoteBucket = new RemoteBucket(bucketConfiguration);
+
+        bucketGroup.add(remoteBucket);
+
+        return remoteBucket;
     }
 }
