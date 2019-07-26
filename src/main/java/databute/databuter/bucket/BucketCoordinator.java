@@ -25,14 +25,18 @@ public class BucketCoordinator {
     private final BucketGroup bucketGroup;
     private final ZooKeeperConfiguration zooKeeperConfiguration;
     private final AtomicLong availableBucketCount;
+    private final SharedBucketFactor bucketFactor;
 
     public BucketCoordinator() {
         this.bucketGroup = Databuter.instance().bucketGroup();
         this.zooKeeperConfiguration = Databuter.instance().configuration().zooKeeper();
         this.availableBucketCount = new AtomicLong();
+        this.bucketFactor = new SharedBucketFactor();
     }
 
     public void start() throws BucketException {
+        bucketFactor.start();
+
         calculateAvailableBucketCount();
 
         registerCacheEvenetListener();
@@ -139,12 +143,15 @@ public class BucketCoordinator {
         try {
             final String path = localBucket.save();
             logger.debug("Saved local active bucket {} to the ZooKeeper with path {}", localBucket.id(), path);
+
+            logger.debug("BucketFactor : {} ", bucketFactor.getAndIncreaseBucketFactor());
         } catch (BucketException e) {
             logger.error("Failed to create local active bucket.", e);
 
             bucketGroup.remove(localBucket);
         }
     }
+
 
     private void createLocalStandbyBucket(BucketConfiguration bucketConfiguration) {
         final String nodeId = Databuter.instance().id();
