@@ -17,8 +17,6 @@ import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.atomic.AtomicLong;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 public class BucketCoordinator {
 
     private static final Logger logger = LoggerFactory.getLogger(BucketCoordinator.class);
@@ -86,7 +84,9 @@ public class BucketCoordinator {
     }
 
     private void onAdded(ChildData data) {
-        checkNotNull(data, "data");
+        if (data == null) {
+            return;
+        }
 
         final String json = new String(data.getData());
         final BucketConfiguration addedBucketConfiguration = new Gson().fromJson(json, BucketConfiguration.class);
@@ -101,7 +101,9 @@ public class BucketCoordinator {
 
     //TODO(@nono5546):업데이트 구현 후 테스트.
     private void onUpdated(ChildData data) {
-        checkNotNull(data, "data");
+        if (data == null) {
+            return;
+        }
 
         final String json = new String(data.getData());
         final BucketConfiguration updatedBucketConfiguration = new Gson().fromJson(json, BucketConfiguration.class);
