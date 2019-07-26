@@ -2,9 +2,8 @@ package databute.databuter.cluster.remote;
 
 import com.google.common.collect.Maps;
 import databute.databuter.Databuter;
-import databute.databuter.client.cluster.add.AddClusterNodeMessage;
-import databute.databuter.client.cluster.remove.RemoveClusterNodeMessage;
 import databute.databuter.client.network.ClientSessionGroup;
+import databute.databuter.cluster.notification.ClusterNotificationMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -59,7 +58,7 @@ public class RemoteClusterNodeGroup implements Iterable<RemoteClusterNode> {
 
     private void broadcastRemoteNodeAdded(RemoteClusterNode remoteNode) {
         final ClientSessionGroup clientSessionGroup = Databuter.instance().clientSessionGroup();
-        clientSessionGroup.broadcastToListeningSession(AddClusterNodeMessage.builder()
+        clientSessionGroup.broadcastToListeningSession(ClusterNotificationMessage.added()
                 .id(remoteNode.id())
                 .address(remoteNode.address())
                 .port(remoteNode.port())
@@ -90,6 +89,10 @@ public class RemoteClusterNodeGroup implements Iterable<RemoteClusterNode> {
 
     private void broadcastRemoteNodeRemoved(RemoteClusterNode remoteNode) {
         final ClientSessionGroup clientSessionGroup = Databuter.instance().clientSessionGroup();
-        clientSessionGroup.broadcastToListeningSession(new RemoveClusterNodeMessage(remoteNode.id()));
+        clientSessionGroup.broadcastToListeningSession(ClusterNotificationMessage.removed()
+                .id(remoteNode.id())
+                .address(remoteNode.address())
+                .port(remoteNode.port())
+                .build());
     }
 }
