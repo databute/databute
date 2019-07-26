@@ -3,6 +3,8 @@ package databute.databuter.bucket;
 import com.google.gson.Gson;
 import databute.databuter.Databuter;
 import databute.databuter.ZooKeeperConfiguration;
+import databute.databuter.bucket.local.LocalBucket;
+import databute.databuter.bucket.remote.RemoteBucket;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.recipes.cache.ChildData;

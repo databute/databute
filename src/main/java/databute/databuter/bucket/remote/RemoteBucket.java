@@ -1,4 +1,7 @@
-package databute.databuter.bucket;
+package databute.databuter.bucket.remote;
+
+import databute.databuter.bucket.Bucket;
+import databute.databuter.bucket.BucketConfiguration;
 
 public class RemoteBucket extends Bucket {
     //TODO(@nono5546)
