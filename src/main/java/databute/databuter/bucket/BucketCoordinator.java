@@ -152,7 +152,6 @@ public class BucketCoordinator {
         }
     }
 
-
     private void createLocalStandbyBucket(BucketConfiguration bucketConfiguration) {
         final String nodeId = Databuter.instance().id();
 
