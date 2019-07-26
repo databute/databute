@@ -19,8 +19,20 @@ public class BucketConfiguration {
     @JsonProperty("standbyNodeId")
     private String standbyNodeId;
 
+    @JsonProperty("bucketFactor")
+    private int bucketFactor;
+
     public BucketConfiguration() {
         this.id = UUID.randomUUID().toString();
+    }
+
+    public int bucketFactor() {
+        return bucketFactor;
+    }
+
+    public BucketConfiguration bucketFactor(int bucketFactor) {
+        this.bucketFactor = bucketFactor;
+        return this;
     }
 
     public String id() {
@@ -75,6 +87,7 @@ public class BucketConfiguration {
                 .add("id", id)
                 .add("activeNodeId", activeNodeId)
                 .add("standbyNodeId", standbyNodeId)
+                .add("bucketFactor", bucketFactor)
                 .toString();
     }
 }

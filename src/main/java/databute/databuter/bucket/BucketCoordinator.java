@@ -155,11 +155,14 @@ public class BucketCoordinator {
         final LocalBucket localBucket = createLocalBucket(bucketConfiguration);
         logger.info("Created local active bucket {}.", localBucket.id());
 
+
         try {
+            final int factor = bucketFactor.getAndIncreaseBucketFactor();
+            localBucket.configuration().bucketFactor(factor);
+            logger.info("Assigned factor {} to bucket {}", factor, localBucket.id());
+
             final String path = localBucket.save();
             logger.debug("Saved local active bucket {} to the ZooKeeper with path {}", localBucket.id(), path);
-
-            logger.debug("BucketFactor : {} ", bucketFactor.getAndIncreaseBucketFactor());
         } catch (BucketException e) {
             logger.error("Failed to create local active bucket.", e);
 
