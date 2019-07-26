@@ -123,7 +123,8 @@ public class BucketCoordinator {
 
             if (StringUtils.isEmpty(bucket.backUpClusterId())) {
                 try {
-                    bucket.backUpClusterId(Databuter.instance().id());
+                    final String nodeId = Databuter.instance().id();
+                    bucket.configuration().backupClusterId(nodeId);
 
                     bucketGroup.add(bucket);
 
@@ -151,7 +152,9 @@ public class BucketCoordinator {
         logger.debug("Making {} bucket...", availableBucketCount.get());
 
         while (availableBucketCount.get() > 0) {
-            final Bucket bucket = new LocalBucket();
+            final String nodeId = Databuter.instance().id();
+            final BucketConfiguration bucketConfiguration = new BucketConfiguration().masterClusterId(nodeId);
+            final Bucket bucket = new LocalBucket(bucketConfiguration);
             final boolean added = bucketGroup.add(bucket);
             if (!added) {
                 throw new BucketException("Found duplcated bucket " + bucket);

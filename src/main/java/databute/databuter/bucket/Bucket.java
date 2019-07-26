@@ -1,19 +1,11 @@
 package databute.databuter.bucket;
 
-import databute.databuter.Databuter;
-
-import java.util.UUID;
-
 import static com.google.common.base.Preconditions.checkNotNull;
 
 public abstract class Bucket {
 
     private final String id;
     private final BucketConfiguration configuration;
-
-    protected Bucket() {
-        this(new BucketConfiguration(UUID.randomUUID().toString(), Databuter.instance().id()));
-    }
 
     protected Bucket(BucketConfiguration configuration) {
         checkNotNull(configuration, "configuration");
@@ -29,13 +21,12 @@ public abstract class Bucket {
         return configuration;
     }
 
-    public String backUpClusterId() {
-        return configuration.backupClusterId();
+    public String masterClusterId() {
+        return configuration.masterClusterId();
     }
 
-    public Bucket backUpClusterId(String backupClusterId) {
-        configuration.backupClusterId(backupClusterId);
-        return this;
+    public String backUpClusterId() {
+        return configuration.backupClusterId();
     }
 
     public void updateConfiguration(BucketConfiguration configuration) {
