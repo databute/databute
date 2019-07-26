@@ -83,40 +83,6 @@ public class BucketCoordinator {
         }
     }
 
-    private void onAdded(ChildData data) {
-        if (data == null) {
-            return;
-        }
-
-        final String json = new String(data.getData());
-        final BucketConfiguration addedBucketConfiguration = new Gson().fromJson(json, BucketConfiguration.class);
-
-        if (bucketGroup.has(addedBucketConfiguration.id())) {
-            //로컬 버킷
-            return;
-        }
-
-        bucketGroup.add(new RemoteBucket(addedBucketConfiguration));
-    }
-
-    //TODO(@nono5546):업데이트 구현 후 테스트.
-    private void onUpdated(ChildData data) {
-        if (data == null) {
-            return;
-        }
-
-        final String json = new String(data.getData());
-        final BucketConfiguration updatedBucketConfiguration = new Gson().fromJson(json, BucketConfiguration.class);
-
-        final Bucket bucket = bucketGroup.find(updatedBucketConfiguration.id());
-        if (bucket == null) {
-            //TODO(@nono5546):에러 발생할 수 있음.
-            bucketGroup.add(new RemoteBucket(updatedBucketConfiguration));
-        } else {
-            bucket.updateConfiguration(updatedBucketConfiguration);
-        }
-    }
-
     private void addBackUpBucketIfNeeded() {
         for (Bucket bucket : bucketGroup) {
             if (availableBucketCount.get() <= 0) {
@@ -181,5 +147,39 @@ public class BucketCoordinator {
                 .withMode(CreateMode.EPHEMERAL)
                 .forPath(path, json.getBytes());
         logger.debug("Registered bucket {} at {}", bucket.id(), createdPath);
+    }
+
+    private void onAdded(ChildData data) {
+        if (data == null) {
+            return;
+        }
+
+        final String json = new String(data.getData());
+        final BucketConfiguration addedBucketConfiguration = new Gson().fromJson(json, BucketConfiguration.class);
+
+        if (bucketGroup.has(addedBucketConfiguration.id())) {
+            //로컬 버킷
+            return;
+        }
+
+        bucketGroup.add(new RemoteBucket(addedBucketConfiguration));
+    }
+
+    //TODO(@nono5546):업데이트 구현 후 테스트.
+    private void onUpdated(ChildData data) {
+        if (data == null) {
+            return;
+        }
+
+        final String json = new String(data.getData());
+        final BucketConfiguration updatedBucketConfiguration = new Gson().fromJson(json, BucketConfiguration.class);
+
+        final Bucket bucket = bucketGroup.find(updatedBucketConfiguration.id());
+        if (bucket == null) {
+            //TODO(@nono5546):에러 발생할 수 있음.
+            bucketGroup.add(new RemoteBucket(updatedBucketConfiguration));
+        } else {
+            bucket.updateConfiguration(updatedBucketConfiguration);
+        }
     }
 }
