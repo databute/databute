@@ -94,8 +94,6 @@ public class BucketCoordinator {
                     final String nodeId = Databuter.instance().id();
                     bucket.configuration().backupClusterId(nodeId);
 
-                    bucketGroup.add(bucket);
-
                     updateBackupBucket(bucket);
 
                     availableBucketCount.getAndDecrement();
