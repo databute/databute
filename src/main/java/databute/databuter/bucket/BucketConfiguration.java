@@ -53,14 +53,20 @@ public class BucketConfiguration {
         return StringUtils.equals(standbyNodeId, nodeId);
     }
 
-    public void update(BucketConfiguration other) {
+    public boolean update(BucketConfiguration other) {
+        boolean updated = false;
+
         if (!StringUtils.equals(activeNodeId, other.activeNodeId())) {
             this.activeNodeId = other.activeNodeId();
+            updated = true;
         }
 
         if (!StringUtils.equals(standbyNodeId, other.standbyNodeId())) {
             this.standbyNodeId = other.standbyNodeId();
+            updated = true;
         }
+
+        return updated;
     }
 
     @Override
