@@ -89,10 +89,10 @@ public class BucketCoordinator {
                 break;
             }
 
-            if (StringUtils.isEmpty(bucket.backUpClusterId())) {
+            if (StringUtils.isEmpty(bucket.backupNodeId())) {
                 try {
                     final String nodeId = Databuter.instance().id();
-                    bucket.configuration().backupClusterId(nodeId);
+                    bucket.configuration().backupNodeId(nodeId);
 
                     updateBackupBucket(bucket);
 
@@ -119,7 +119,7 @@ public class BucketCoordinator {
 
         while (availableBucketCount.get() > 0) {
             final String nodeId = Databuter.instance().id();
-            final BucketConfiguration bucketConfiguration = new BucketConfiguration().masterClusterId(nodeId);
+            final BucketConfiguration bucketConfiguration = new BucketConfiguration().masterNodeId(nodeId);
             final Bucket bucket = new LocalBucket(bucketConfiguration);
             final boolean added = bucketGroup.add(bucket);
             if (!added) {

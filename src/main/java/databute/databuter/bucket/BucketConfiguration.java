@@ -13,11 +13,11 @@ public class BucketConfiguration {
     @JsonProperty("id")
     private String id;
 
-    @JsonProperty("masterClusterId")
-    private String masterClusterId;
+    @JsonProperty("masterNodeId")
+    private String masterNodeId;
 
-    @JsonProperty("backupClusterId")
-    private String backupClusterId;
+    @JsonProperty("backupNodeId")
+    private String backupNodeId;
 
     public BucketConfiguration() {
         this.id = UUID.randomUUID().toString();
@@ -27,31 +27,31 @@ public class BucketConfiguration {
         return id;
     }
 
-    public String masterClusterId() {
-        return masterClusterId;
+    public String masterNodeId() {
+        return masterNodeId;
     }
 
-    public BucketConfiguration masterClusterId(String masterClusterId) {
-        this.masterClusterId = masterClusterId;
+    public BucketConfiguration masterNodeId(String masterNodeId) {
+        this.masterNodeId = masterNodeId;
         return this;
     }
 
-    public String backupClusterId() {
-        return backupClusterId;
+    public String backupNodeId() {
+        return backupNodeId;
     }
 
-    public BucketConfiguration backupClusterId(String backupClusterId) {
-        this.backupClusterId = backupClusterId;
+    public BucketConfiguration backupNodeId(String backupNodeId) {
+        this.backupNodeId = backupNodeId;
         return this;
     }
 
     public void update(BucketConfiguration other) {
-        if (!StringUtils.equals(masterClusterId, other.masterClusterId())) {
-            this.masterClusterId = other.masterClusterId();
+        if (!StringUtils.equals(masterNodeId, other.masterNodeId())) {
+            this.masterNodeId = other.masterNodeId();
         }
 
-        if (!StringUtils.equals(backupClusterId, other.backupClusterId())) {
-            this.backupClusterId = other.backupClusterId();
+        if (!StringUtils.equals(backupNodeId, other.backupNodeId())) {
+            this.backupNodeId = other.backupNodeId();
         }
     }
 
@@ -59,8 +59,8 @@ public class BucketConfiguration {
     public String toString() {
         return MoreObjects.toStringHelper(this)
                 .add("id", id)
-                .add("masterClusterId", masterClusterId)
-                .add("backupClusterId", backupClusterId)
+                .add("masterNodeId", masterNodeId)
+                .add("backupNodeId", backupNodeId)
                 .toString();
     }
 }
