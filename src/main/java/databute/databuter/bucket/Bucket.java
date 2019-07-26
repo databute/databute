@@ -40,7 +40,7 @@ public abstract class Bucket {
     }
 
     public void updateConfiguration(BucketConfiguration configuration) {
-        configuration.update(configuration);
+        this.configuration.update(checkNotNull(configuration, "configuration"));
     }
 
     @Override
