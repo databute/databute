@@ -3,7 +3,7 @@ package databute.databuter.client.register;
 import databute.databuter.Databuter;
 import databute.databuter.bucket.Bucket;
 import databute.databuter.bucket.BucketGroup;
-import databute.databuter.bucket.notification.add.BucketAddedNotificationMessage;
+import databute.databuter.bucket.notification.BucketNotificationMessage;
 import databute.databuter.client.cluster.add.AddClusterNodeMessage;
 import databute.databuter.client.network.ClientMessageHandler;
 import databute.databuter.client.network.ClientSession;
@@ -63,7 +63,7 @@ public class RegisterMessageHandler extends ClientMessageHandler<RegisterMessage
     }
 
     private void sendBucketAddedNotificationMessage(Bucket bucket) {
-        session().send(BucketAddedNotificationMessage.builder()
+        session().send(BucketNotificationMessage.added()
                 .id(bucket.id())
                 .activeNodeId(bucket.activeNodeId())
                 .standbyNodeId(bucket.standbyNodeId())

@@ -1,4 +1,4 @@
-package databute.databuter.bucket.notification.update;
+package databute.databuter.bucket.notification;
 
 import com.google.common.base.MoreObjects;
 import databute.databuter.client.network.ClientMessageCode;
@@ -7,17 +7,27 @@ import databute.databuter.network.message.MessageCode;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public class BucketUpdatedNotificationMessage implements Message {
+public class BucketNotificationMessage implements Message {
 
-    public static BucketUpdatedNotificationMessage.Builder builder() {
-        return new BucketUpdatedNotificationMessage.Builder();
+    public static BucketNotificationMessage.Builder added() {
+        return new BucketNotificationMessage.Builder(BucketNotificationType.ADDED);
     }
 
+    public static BucketNotificationMessage.Builder updated() {
+        return new BucketNotificationMessage.Builder(BucketNotificationType.UPDATED);
+    }
+
+    public static BucketNotificationMessage.Builder removed() {
+        return new BucketNotificationMessage.Builder(BucketNotificationType.REMOVED);
+    }
+
+    private final BucketNotificationType type;
     private final String id;
     private final String activeNodeId;
     private final String standbyNodeId;
 
-    public BucketUpdatedNotificationMessage(String id, String activeNodeId, String standbyNodeId) {
+    public BucketNotificationMessage(BucketNotificationType type, String id, String activeNodeId, String standbyNodeId) {
+        this.type = checkNotNull(type, "type");
         this.id = checkNotNull(id, "id");
         this.activeNodeId = activeNodeId;
         this.standbyNodeId = standbyNodeId;
@@ -25,7 +35,11 @@ public class BucketUpdatedNotificationMessage implements Message {
 
     @Override
     public MessageCode messageCode() {
-        return ClientMessageCode.BUCKET_UPDATED_NOTIFICATION;
+        return ClientMessageCode.BUCKET_NOTIFICATION;
+    }
+
+    public BucketNotificationType type() {
+        return type;
     }
 
     public String id() {
@@ -44,6 +58,7 @@ public class BucketUpdatedNotificationMessage implements Message {
     public String toString() {
         return MoreObjects.toStringHelper(this)
                 .add("messageCode", messageCode())
+                .add("type", type)
                 .add("id", id)
                 .add("activeNodeId", activeNodeId)
                 .add("standbyNodeId", standbyNodeId)
@@ -56,8 +71,10 @@ public class BucketUpdatedNotificationMessage implements Message {
         private String activeNodeId;
         private String standbyNodeId;
 
-        private Builder() {
-            super();
+        private final BucketNotificationType type;
+
+        private Builder(BucketNotificationType type) {
+            this.type = type;
         }
 
         public Builder id(String id) {
@@ -75,8 +92,8 @@ public class BucketUpdatedNotificationMessage implements Message {
             return this;
         }
 
-        public BucketUpdatedNotificationMessage build() {
-            return new BucketUpdatedNotificationMessage(id, activeNodeId, standbyNodeId);
+        public BucketNotificationMessage build() {
+            return new BucketNotificationMessage(type, id, activeNodeId, standbyNodeId);
         }
     }
 }

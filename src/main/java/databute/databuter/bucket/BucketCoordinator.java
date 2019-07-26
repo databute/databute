@@ -4,7 +4,7 @@ import com.google.gson.Gson;
 import databute.databuter.Databuter;
 import databute.databuter.ZooKeeperConfiguration;
 import databute.databuter.bucket.local.LocalBucket;
-import databute.databuter.bucket.notification.update.BucketUpdatedNotificationMessage;
+import databute.databuter.bucket.notification.BucketNotificationMessage;
 import databute.databuter.bucket.remote.RemoteBucket;
 import databute.databuter.client.network.ClientSessionGroup;
 import org.apache.commons.lang3.StringUtils;
@@ -141,7 +141,7 @@ public class BucketCoordinator {
 
     private void broadcastBucketUpdated(Bucket bucket) {
         final ClientSessionGroup clientSessionGroup = Databuter.instance().clientSessionGroup();
-        clientSessionGroup.broadcastToListeningSession(BucketUpdatedNotificationMessage.builder()
+        clientSessionGroup.broadcastToListeningSession(BucketNotificationMessage.updated()
                 .id(bucket.id())
                 .activeNodeId(bucket.activeNodeId())
                 .standbyNodeId(bucket.standbyNodeId())

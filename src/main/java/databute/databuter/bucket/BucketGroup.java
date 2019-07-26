@@ -2,7 +2,7 @@ package databute.databuter.bucket;
 
 import com.google.common.collect.Maps;
 import databute.databuter.Databuter;
-import databute.databuter.bucket.notification.add.BucketAddedNotificationMessage;
+import databute.databuter.bucket.notification.BucketNotificationMessage;
 import databute.databuter.client.network.ClientSessionGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,7 +45,7 @@ public class BucketGroup implements Iterable<Bucket> {
 
     private void broadcastBucketAdded(Bucket bucket) {
         final ClientSessionGroup clientSessionGroup = Databuter.instance().clientSessionGroup();
-        clientSessionGroup.broadcastToListeningSession(BucketAddedNotificationMessage.builder()
+        clientSessionGroup.broadcastToListeningSession(BucketNotificationMessage.added()
                 .id(bucket.id())
                 .activeNodeId(bucket.activeNodeId())
                 .standbyNodeId(bucket.standbyNodeId())
