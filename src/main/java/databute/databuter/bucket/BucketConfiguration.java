@@ -13,11 +13,11 @@ public class BucketConfiguration {
     @JsonProperty("id")
     private String id;
 
-    @JsonProperty("masterNodeId")
-    private String masterNodeId;
+    @JsonProperty("activeNodeId")
+    private String activeNodeId;
 
-    @JsonProperty("backupNodeId")
-    private String backupNodeId;
+    @JsonProperty("standbyNodeId")
+    private String standbyNodeId;
 
     public BucketConfiguration() {
         this.id = UUID.randomUUID().toString();
@@ -27,31 +27,31 @@ public class BucketConfiguration {
         return id;
     }
 
-    public String masterNodeId() {
-        return masterNodeId;
+    public String activeNodeId() {
+        return activeNodeId;
     }
 
-    public BucketConfiguration masterNodeId(String masterNodeId) {
-        this.masterNodeId = masterNodeId;
+    public BucketConfiguration activeNodeId(String activeNodeId) {
+        this.activeNodeId = activeNodeId;
         return this;
     }
 
-    public String backupNodeId() {
-        return backupNodeId;
+    public String standbyNodeId() {
+        return standbyNodeId;
     }
 
-    public BucketConfiguration backupNodeId(String backupNodeId) {
-        this.backupNodeId = backupNodeId;
+    public BucketConfiguration standbyNodeId(String standbyNodeId) {
+        this.standbyNodeId = standbyNodeId;
         return this;
     }
 
     public void update(BucketConfiguration other) {
-        if (!StringUtils.equals(masterNodeId, other.masterNodeId())) {
-            this.masterNodeId = other.masterNodeId();
+        if (!StringUtils.equals(activeNodeId, other.activeNodeId())) {
+            this.activeNodeId = other.activeNodeId();
         }
 
-        if (!StringUtils.equals(backupNodeId, other.backupNodeId())) {
-            this.backupNodeId = other.backupNodeId();
+        if (!StringUtils.equals(standbyNodeId, other.standbyNodeId())) {
+            this.standbyNodeId = other.standbyNodeId();
         }
     }
 
@@ -59,8 +59,8 @@ public class BucketConfiguration {
     public String toString() {
         return MoreObjects.toStringHelper(this)
                 .add("id", id)
-                .add("masterNodeId", masterNodeId)
-                .add("backupNodeId", backupNodeId)
+                .add("activeNodeId", activeNodeId)
+                .add("standbyNodeId", standbyNodeId)
                 .toString();
     }
 }

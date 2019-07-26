@@ -74,7 +74,7 @@ public class BucketCoordinator {
     }
 
     private void onInitialized() {
-        addBackUpBucketIfNeeded();
+        makeStandbyIfStanbyNodeIsEmpty();
 
         try {
             makeBucket();
@@ -83,28 +83,30 @@ public class BucketCoordinator {
         }
     }
 
-    private void addBackUpBucketIfNeeded() {
+    private void makeStandbyIfStanbyNodeIsEmpty() {
         for (Bucket bucket : bucketGroup) {
             if (availableBucketCount.get() <= 0) {
                 break;
             }
 
-            if (StringUtils.isEmpty(bucket.backupNodeId())) {
+            if (StringUtils.isEmpty(bucket.standbyNodeId())) {
                 try {
                     final String nodeId = Databuter.instance().id();
-                    bucket.configuration().backupNodeId(nodeId);
+                    bucket.configuration().standbyNodeId(nodeId);
 
-                    updateBackupBucket(bucket);
+                    updateBucket(bucket);
 
                     availableBucketCount.getAndDecrement();
+
+                    logger.debug("Bucket {} is set as standby.", bucket.id());
                 } catch (Exception e) {
-                    logger.error("Failed to register backup bucket {}", bucket.id(), e);
+                    logger.error("Failed to make bucket {} as standby.", bucket.id(), e);
                 }
             }
         }
     }
 
-    private void updateBackupBucket(Bucket bucket) throws Exception {
+    private void updateBucket(Bucket bucket) throws Exception {
         final String json = new Gson().toJson(bucket.configuration());
         final String path = ZKPaths.makePath(zooKeeperConfiguration.path(), "bucket", bucket.id());
 
@@ -119,7 +121,7 @@ public class BucketCoordinator {
 
         while (availableBucketCount.get() > 0) {
             final String nodeId = Databuter.instance().id();
-            final BucketConfiguration bucketConfiguration = new BucketConfiguration().masterNodeId(nodeId);
+            final BucketConfiguration bucketConfiguration = new BucketConfiguration().activeNodeId(nodeId);
             final Bucket bucket = new LocalBucket(bucketConfiguration);
             final boolean added = bucketGroup.add(bucket);
             if (!added) {
