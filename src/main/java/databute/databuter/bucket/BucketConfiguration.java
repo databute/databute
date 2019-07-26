@@ -36,6 +36,10 @@ public class BucketConfiguration {
         return this;
     }
 
+    public boolean isActiveBy(String nodeId) {
+        return StringUtils.equals(activeNodeId, nodeId);
+    }
+
     public String standbyNodeId() {
         return standbyNodeId;
     }
@@ -43,6 +47,10 @@ public class BucketConfiguration {
     public BucketConfiguration standbyNodeId(String standbyNodeId) {
         this.standbyNodeId = standbyNodeId;
         return this;
+    }
+
+    public boolean isStandbyBy(String nodeId) {
+        return StringUtils.equals(standbyNodeId, nodeId);
     }
 
     public void update(BucketConfiguration other) {

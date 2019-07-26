@@ -31,16 +31,7 @@ public class BucketGroup implements Iterable<Bucket> {
     public boolean add(Bucket bucket) {
         checkNotNull(bucket, "bucket");
 
-        final boolean added = (buckets.putIfAbsent(bucket.id(), bucket) == null);
-        if (added) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("Added bucket {}", bucket);
-            } else {
-                logger.info("Added bucket {}", bucket.id());
-            }
-        }
-
-        return added;
+        return (buckets.putIfAbsent(bucket.id(), bucket) == null);
     }
 
     public boolean remove(Bucket bucket) {
