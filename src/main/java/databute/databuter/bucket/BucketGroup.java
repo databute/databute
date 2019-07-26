@@ -31,6 +31,7 @@ public class BucketGroup implements Iterable<Bucket> {
     public boolean add(Bucket bucket) {
         checkNotNull(bucket, "bucket");
 
+        // TODO(@ghkim3221): 중복되는 버킷을 발견한 경우 예외 throws
         return (buckets.putIfAbsent(bucket.id(), bucket) == null);
     }
 
