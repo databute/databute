@@ -5,7 +5,7 @@ import databute.databuter.network.message.MessageCode;
 public enum ClientMessageCode implements MessageCode {
 
     REGISTER(0),
-    CLUSTER_NOTIFICATION(1),
+    CLUSTER_NODE_NOTIFICATION(1),
     BUCKET_NOTIFICATION(2);
 
     private final int value;

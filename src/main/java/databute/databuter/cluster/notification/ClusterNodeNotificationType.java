@@ -1,6 +1,6 @@
 package databute.databuter.cluster.notification;
 
-public enum ClusterNotificationType {
+public enum ClusterNodeNotificationType {
 
     ADDED,
     REMOVED,

@@ -3,7 +3,7 @@ package databute.databuter.client.network;
 import com.google.common.collect.Maps;
 import databute.databuter.bucket.notification.BucketNotificationMessageSerializer;
 import databute.databuter.client.register.RegisterMessageDeserializer;
-import databute.databuter.cluster.notification.ClusterNotificationMessageSerializer;
+import databute.databuter.cluster.notification.ClusterNodeNotificationMessageSerializer;
 import databute.databuter.network.AbstractSessionAcceptor;
 import databute.databuter.network.message.MessageCode;
 import databute.databuter.network.message.MessageCodeResolver;
@@ -32,7 +32,7 @@ public class ClientSessionAcceptor extends AbstractSessionAcceptor {
         this.resolver = new ClientMessageCodeResolver();
 
         this.serializers = Maps.newHashMap();
-        this.serializers.put(ClientMessageCode.CLUSTER_NOTIFICATION, new ClusterNotificationMessageSerializer());
+        this.serializers.put(ClientMessageCode.CLUSTER_NODE_NOTIFICATION, new ClusterNodeNotificationMessageSerializer());
         this.serializers.put(ClientMessageCode.BUCKET_NOTIFICATION, new BucketNotificationMessageSerializer());
 
         this.deserializers = Maps.newHashMap();
