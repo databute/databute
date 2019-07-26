@@ -26,12 +26,12 @@ public abstract class Bucket {
         return id;
     }
 
-    public String backUpClusterId() {
-        return configuration.backupClusterId();
-    }
-
     public BucketConfiguration configuration() {
         return configuration;
+    }
+
+    public String backUpClusterId() {
+        return configuration.backupClusterId();
     }
 
     public Bucket backUpClusterId(String backupClusterId) {
