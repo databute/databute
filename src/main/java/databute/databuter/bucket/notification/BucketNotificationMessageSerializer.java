@@ -15,6 +15,7 @@ public class BucketNotificationMessageSerializer implements MessageSerializer<Bu
         final Packet packet = new BufferedPacket();
         packet.writeString(bucketNotificationMessage.type().name());
         packet.writeString(bucketNotificationMessage.id());
+        packet.writeInt(bucketNotificationMessage.factor());
         packet.writeString(bucketNotificationMessage.activeNodeId());
         packet.writeString(bucketNotificationMessage.standbyNodeId());
         return packet;

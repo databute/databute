@@ -10,7 +10,7 @@ public class SharedBucketFactor {
 
     public SharedBucketFactor() {
         final String zooKeeperPath = Databuter.instance().configuration().zooKeeper().path();
-        final String path = ZKPaths.makePath(zooKeeperPath, "bucketFactor");
+        final String path = ZKPaths.makePath(zooKeeperPath, "factor");
         this.bucketFactor = new SharedCount(Databuter.instance().curator(), path, 0);
     }
 

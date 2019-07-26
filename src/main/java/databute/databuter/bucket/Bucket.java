@@ -21,6 +21,10 @@ public abstract class Bucket {
         return configuration;
     }
 
+    public int factor() {
+        return configuration.factor();
+    }
+
     public String activeNodeId() {
         return configuration.activeNodeId();
     }
