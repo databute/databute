@@ -4,7 +4,9 @@ import com.google.gson.Gson;
 import databute.databuter.Databuter;
 import databute.databuter.ZooKeeperConfiguration;
 import databute.databuter.bucket.local.LocalBucket;
+import databute.databuter.bucket.notification.BucketNotificationMessage;
 import databute.databuter.bucket.remote.RemoteBucket;
+import databute.databuter.client.network.ClientSessionGroup;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.recipes.cache.ChildData;
@@ -129,8 +131,21 @@ public class BucketCoordinator {
             throw new IllegalStateException("Found not added bucket " + bucketConfiguration);
         }
 
-        bucket.configuration().update(bucketConfiguration);
-        logger.info("Updated bucket {}.", bucket.id());
+        final boolean updated = bucket.configuration().update(bucketConfiguration);
+        if (updated) {
+            logger.info("Updated bucket {}.", bucket.id());
+
+            broadcastBucketUpdated(bucket);
+        }
+    }
+
+    private void broadcastBucketUpdated(Bucket bucket) {
+        final ClientSessionGroup clientSessionGroup = Databuter.instance().clientSessionGroup();
+        clientSessionGroup.broadcastToListeningSession(BucketNotificationMessage.updated()
+                .id(bucket.id())
+                .activeNodeId(bucket.activeNodeId())
+                .standbyNodeId(bucket.standbyNodeId())
+                .build());
     }
 
     private void createLocalActiveBucket() {
