@@ -23,12 +23,18 @@ public class BucketNotificationMessage implements Message {
 
     private final BucketNotificationType type;
     private final String id;
+    private final int factor;
     private final String activeNodeId;
     private final String standbyNodeId;
 
-    public BucketNotificationMessage(BucketNotificationType type, String id, String activeNodeId, String standbyNodeId) {
+    public BucketNotificationMessage(BucketNotificationType type,
+                                     String id,
+                                     int factor,
+                                     String activeNodeId,
+                                     String standbyNodeId) {
         this.type = checkNotNull(type, "type");
         this.id = checkNotNull(id, "id");
+        this.factor = factor;
         this.activeNodeId = activeNodeId;
         this.standbyNodeId = standbyNodeId;
     }
@@ -46,6 +52,10 @@ public class BucketNotificationMessage implements Message {
         return id;
     }
 
+    public int factor() {
+        return factor;
+    }
+
     public String activeNodeId() {
         return activeNodeId;
     }
@@ -60,6 +70,7 @@ public class BucketNotificationMessage implements Message {
                 .add("messageCode", messageCode())
                 .add("type", type)
                 .add("id", id)
+                .add("factor", factor)
                 .add("activeNodeId", activeNodeId)
                 .add("standbyNodeId", standbyNodeId)
                 .toString();
@@ -68,6 +79,7 @@ public class BucketNotificationMessage implements Message {
     public static class Builder {
 
         private String id;
+        private int factor;
         private String activeNodeId;
         private String standbyNodeId;
 
@@ -82,6 +94,11 @@ public class BucketNotificationMessage implements Message {
             return this;
         }
 
+        public Builder factor(int factor) {
+            this.factor = factor;
+            return this;
+        }
+
         public Builder activeNodeId(String activeNodeId) {
             this.activeNodeId = activeNodeId;
             return this;
@@ -93,7 +110,7 @@ public class BucketNotificationMessage implements Message {
         }
 
         public BucketNotificationMessage build() {
-            return new BucketNotificationMessage(type, id, activeNodeId, standbyNodeId);
+            return new BucketNotificationMessage(type, id, factor, activeNodeId, standbyNodeId);
         }
     }
 }

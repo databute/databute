@@ -47,6 +47,7 @@ public class BucketGroup implements Iterable<Bucket> {
         final ClientSessionGroup clientSessionGroup = Databuter.instance().clientSessionGroup();
         clientSessionGroup.broadcastToListeningSession(BucketNotificationMessage.added()
                 .id(bucket.id())
+                .factor(bucket.factor())
                 .activeNodeId(bucket.activeNodeId())
                 .standbyNodeId(bucket.standbyNodeId())
                 .build());
@@ -78,6 +79,7 @@ public class BucketGroup implements Iterable<Bucket> {
         final ClientSessionGroup clientSessionGroup = Databuter.instance().clientSessionGroup();
         clientSessionGroup.broadcastToListeningSession(BucketNotificationMessage.removed()
                 .id(bucket.id())
+                .factor(bucket.factor())
                 .activeNodeId(bucket.activeNodeId())
                 .standbyNodeId(bucket.standbyNodeId())
                 .build());

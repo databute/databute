@@ -143,6 +143,7 @@ public class BucketCoordinator {
         final ClientSessionGroup clientSessionGroup = Databuter.instance().clientSessionGroup();
         clientSessionGroup.broadcastToListeningSession(BucketNotificationMessage.updated()
                 .id(bucket.id())
+                .factor(bucket.factor())
                 .activeNodeId(bucket.activeNodeId())
                 .standbyNodeId(bucket.standbyNodeId())
                 .build());
@@ -155,11 +156,10 @@ public class BucketCoordinator {
         final LocalBucket localBucket = createLocalBucket(bucketConfiguration);
         logger.info("Created local active bucket {}.", localBucket.id());
 
-
         try {
             final int factor = bucketFactor.getAndIncreaseBucketFactor();
-            localBucket.configuration().bucketFactor(factor);
-            logger.info("Assigned factor {} to bucket {}", factor, localBucket.id());
+            localBucket.configuration().factor(factor);
+            logger.info("Assigned factor {} to bucket {}", localBucket.configuration().factor(), localBucket.id());
 
             final String path = localBucket.save();
             logger.debug("Saved local active bucket {} to the ZooKeeper with path {}", localBucket.id(), path);

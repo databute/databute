@@ -13,30 +13,30 @@ public class BucketConfiguration {
     @JsonProperty("id")
     private String id;
 
+    @JsonProperty("factor")
+    private int factor;
+
     @JsonProperty("activeNodeId")
     private String activeNodeId;
 
     @JsonProperty("standbyNodeId")
     private String standbyNodeId;
 
-    @JsonProperty("bucketFactor")
-    private int bucketFactor;
-
     public BucketConfiguration() {
         this.id = UUID.randomUUID().toString();
     }
 
-    public int bucketFactor() {
-        return bucketFactor;
-    }
-
-    public BucketConfiguration bucketFactor(int bucketFactor) {
-        this.bucketFactor = bucketFactor;
-        return this;
-    }
-
     public String id() {
         return id;
+    }
+
+    public int factor() {
+        return factor;
+    }
+
+    public BucketConfiguration factor(int factor) {
+        this.factor = factor;
+        return this;
     }
 
     public String activeNodeId() {
@@ -68,6 +68,11 @@ public class BucketConfiguration {
     public boolean update(BucketConfiguration other) {
         boolean updated = false;
 
+        if (factor != other.factor()) {
+            this.factor = other.factor();
+            updated = true;
+        }
+
         if (!StringUtils.equals(activeNodeId, other.activeNodeId())) {
             this.activeNodeId = other.activeNodeId();
             updated = true;
@@ -85,9 +90,9 @@ public class BucketConfiguration {
     public String toString() {
         return MoreObjects.toStringHelper(this)
                 .add("id", id)
+                .add("factor", factor)
                 .add("activeNodeId", activeNodeId)
                 .add("standbyNodeId", standbyNodeId)
-                .add("bucketFactor", bucketFactor)
                 .toString();
     }
 }
