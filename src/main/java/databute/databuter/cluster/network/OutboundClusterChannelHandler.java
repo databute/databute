@@ -1,5 +1,8 @@
 package databute.databuter.cluster.network;
 
+import databute.databuter.Databuter;
+import databute.databuter.bucket.Bucket;
+import databute.databuter.bucket.local.LocalBucket;
 import databute.databuter.cluster.ClusterCoordinator;
 import databute.databuter.cluster.handshake.request.HandshakeRequestMessage;
 import databute.databuter.cluster.handshake.response.HandshakeResponseMessageHandler;
@@ -10,6 +13,8 @@ import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.SocketChannel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.concurrent.Callable;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -51,5 +56,28 @@ public class OutboundClusterChannelHandler extends ChannelInboundHandlerAdapter 
         logger.info("Inactive cluster outbound session {}", session);
 
         clusterCoordinator.remoteNodeGroup().remove(remoteNode);
+
+        //TODO(@nono5546):BucketCoordinator가 하도록 리팩토링.
+        for (Bucket bucket : Databuter.instance().bucketGroup()) {
+            if (bucket instanceof LocalBucket) {
+                final LocalBucket localBucket = (LocalBucket) bucket;
+                if (localBucket.configuration().isActiveBy(Databuter.instance().id()) &&
+                        localBucket.configuration().isStandbyBy(remoteNode.id())) {
+                    ctx.executor()
+                            .submit((Callable<Void>) () -> {
+                                localBucket.configuration().standbyNodeId(null);
+                                localBucket.update();
+                                return null;
+                            })
+                            .addListener(future -> {
+                                if (future.isSuccess()) {
+                                    logger.info("Removed standby node of bucket {}.", localBucket.id());
+                                } else {
+                                    logger.error("Failed to remove standby node of bucket {}", bucket.id(), future.cause());
+                                }
+                            });
+                }
+            }
+        }
     }
 }
