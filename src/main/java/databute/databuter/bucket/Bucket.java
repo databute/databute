@@ -21,12 +21,12 @@ public abstract class Bucket {
         return configuration;
     }
 
-    public String masterNodeId() {
-        return configuration.masterNodeId();
+    public String activeNodeId() {
+        return configuration.activeNodeId();
     }
 
-    public String backupNodeId() {
-        return configuration.backupNodeId();
+    public String standbyNodeId() {
+        return configuration.standbyNodeId();
     }
 
     public void updateConfiguration(BucketConfiguration configuration) {
