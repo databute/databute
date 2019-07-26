@@ -7,22 +7,22 @@ import databute.databuter.network.message.MessageCode;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public class ClusterNotificationMessage implements Message {
+public class ClusterNodeNotificationMessage implements Message {
 
-    public static ClusterNotificationMessage.Builder added() {
-        return new ClusterNotificationMessage.Builder(ClusterNotificationType.ADDED);
+    public static ClusterNodeNotificationMessage.Builder added() {
+        return new ClusterNodeNotificationMessage.Builder(ClusterNodeNotificationType.ADDED);
     }
 
-    public static ClusterNotificationMessage.Builder removed() {
-        return new ClusterNotificationMessage.Builder(ClusterNotificationType.REMOVED);
+    public static ClusterNodeNotificationMessage.Builder removed() {
+        return new ClusterNodeNotificationMessage.Builder(ClusterNodeNotificationType.REMOVED);
     }
 
-    private final ClusterNotificationType type;
+    private final ClusterNodeNotificationType type;
     private final String id;
     private final String address;
     private final int port;
 
-    private ClusterNotificationMessage(ClusterNotificationType type, String id, String address, int port) {
+    private ClusterNodeNotificationMessage(ClusterNodeNotificationType type, String id, String address, int port) {
         this.type = checkNotNull(type, "type");
         this.id = checkNotNull(id, "id");
         this.address = checkNotNull(address, "address");
@@ -31,10 +31,10 @@ public class ClusterNotificationMessage implements Message {
 
     @Override
     public MessageCode messageCode() {
-        return ClientMessageCode.CLUSTER_NOTIFICATION;
+        return ClientMessageCode.CLUSTER_NODE_NOTIFICATION;
     }
 
-    public ClusterNotificationType type() {
+    public ClusterNodeNotificationType type() {
         return type;
     }
 
@@ -67,29 +67,29 @@ public class ClusterNotificationMessage implements Message {
         private String address;
         private int port;
 
-        private final ClusterNotificationType type;
+        private final ClusterNodeNotificationType type;
 
-        private Builder(ClusterNotificationType type) {
+        private Builder(ClusterNodeNotificationType type) {
             this.type = type;
         }
 
-        public ClusterNotificationMessage.Builder id(String id) {
+        public ClusterNodeNotificationMessage.Builder id(String id) {
             this.id = id;
             return this;
         }
 
-        public ClusterNotificationMessage.Builder address(String address) {
+        public ClusterNodeNotificationMessage.Builder address(String address) {
             this.address = address;
             return this;
         }
 
-        public ClusterNotificationMessage.Builder port(int port) {
+        public ClusterNodeNotificationMessage.Builder port(int port) {
             this.port = port;
             return this;
         }
 
-        public ClusterNotificationMessage build() {
-            return new ClusterNotificationMessage(type, id, address, port);
+        public ClusterNodeNotificationMessage build() {
+            return new ClusterNodeNotificationMessage(type, id, address, port);
         }
     }
 }

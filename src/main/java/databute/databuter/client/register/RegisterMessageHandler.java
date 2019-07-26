@@ -8,7 +8,7 @@ import databute.databuter.client.network.ClientMessageHandler;
 import databute.databuter.client.network.ClientSession;
 import databute.databuter.cluster.ClusterNode;
 import databute.databuter.cluster.local.LocalClusterNode;
-import databute.databuter.cluster.notification.ClusterNotificationMessage;
+import databute.databuter.cluster.notification.ClusterNodeNotificationMessage;
 import databute.databuter.cluster.remote.RemoteClusterNode;
 import databute.databuter.cluster.remote.RemoteClusterNodeGroup;
 import org.slf4j.Logger;
@@ -48,7 +48,7 @@ public class RegisterMessageHandler extends ClientMessageHandler<RegisterMessage
     }
 
     private void sendAddClusterNodeMessage(ClusterNode node) {
-        session().send(ClusterNotificationMessage.added()
+        session().send(ClusterNodeNotificationMessage.added()
                 .id(node.id())
                 .address(node.address())
                 .port(node.port())

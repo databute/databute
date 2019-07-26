@@ -3,7 +3,7 @@ package databute.databuter.cluster.remote;
 import com.google.common.collect.Maps;
 import databute.databuter.Databuter;
 import databute.databuter.client.network.ClientSessionGroup;
-import databute.databuter.cluster.notification.ClusterNotificationMessage;
+import databute.databuter.cluster.notification.ClusterNodeNotificationMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,7 +58,7 @@ public class RemoteClusterNodeGroup implements Iterable<RemoteClusterNode> {
 
     private void broadcastRemoteNodeAdded(RemoteClusterNode remoteNode) {
         final ClientSessionGroup clientSessionGroup = Databuter.instance().clientSessionGroup();
-        clientSessionGroup.broadcastToListeningSession(ClusterNotificationMessage.added()
+        clientSessionGroup.broadcastToListeningSession(ClusterNodeNotificationMessage.added()
                 .id(remoteNode.id())
                 .address(remoteNode.address())
                 .port(remoteNode.port())
@@ -89,7 +89,7 @@ public class RemoteClusterNodeGroup implements Iterable<RemoteClusterNode> {
 
     private void broadcastRemoteNodeRemoved(RemoteClusterNode remoteNode) {
         final ClientSessionGroup clientSessionGroup = Databuter.instance().clientSessionGroup();
-        clientSessionGroup.broadcastToListeningSession(ClusterNotificationMessage.removed()
+        clientSessionGroup.broadcastToListeningSession(ClusterNodeNotificationMessage.removed()
                 .id(remoteNode.id())
                 .address(remoteNode.address())
                 .port(remoteNode.port())
