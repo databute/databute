@@ -9,11 +9,13 @@ import databute.databuter.cluster.ClusterConfiguration;
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 public class DatabuterConfiguration {
 
+    public static final long MEGABYTE = (1024 * 1024);
+
     @JsonProperty("guardMemorySize")
-    private int guardMemorySize;
+    private long guardMemorySize;
 
     @JsonProperty("bucketMemorySize")
-    private int bucketMemorySize;
+    private long bucketMemorySize;
 
     @JsonProperty("client")
     private ClientConfiguration client;
@@ -24,12 +26,12 @@ public class DatabuterConfiguration {
     @JsonProperty("cluster")
     private ClusterConfiguration cluster;
 
-    public int guardMemorySizeMb() {
-        return guardMemorySize * 1024 * 1024;
+    public long guardMemorySize() {
+        return (guardMemorySize * MEGABYTE);
     }
 
-    public int bucketMemorySizeMb() {
-        return bucketMemorySize * 1024 * 1024;
+    public long bucketMemorySize() {
+        return (bucketMemorySize * MEGABYTE);
     }
 
     public ClientConfiguration client() {

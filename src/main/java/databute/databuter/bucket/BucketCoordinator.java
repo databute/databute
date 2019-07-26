@@ -43,9 +43,9 @@ public class BucketCoordinator {
 
     private void calculateAvailableBucketCount() {
         final long totalMemory = Runtime.getRuntime().totalMemory();
-        final long availableMemory = totalMemory - Databuter.instance().configuration().guardMemorySizeMb();
-
-        this.availableBucketCount.set(availableMemory / Databuter.instance().configuration().bucketMemorySizeMb());
+        final long availableMemory = (totalMemory - Databuter.instance().configuration().guardMemorySize());
+        final long availableBucketCount = (availableMemory / Databuter.instance().configuration().bucketMemorySize());
+        this.availableBucketCount.set(availableBucketCount);
     }
 
     private void registerCacheEvenetListener() throws BucketException {
