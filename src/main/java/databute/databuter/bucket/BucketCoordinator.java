@@ -3,6 +3,8 @@ package databute.databuter.bucket;
 import com.google.gson.Gson;
 import databute.databuter.Databuter;
 import databute.databuter.ZooKeeperConfiguration;
+import databute.databuter.bucket.local.LocalBucket;
+import databute.databuter.bucket.remote.RemoteBucket;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.recipes.cache.ChildData;
@@ -15,8 +17,6 @@ import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.atomic.AtomicLong;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 public class BucketCoordinator {
 
     private static final Logger logger = LoggerFactory.getLogger(BucketCoordinator.class);
@@ -24,13 +24,13 @@ public class BucketCoordinator {
     private PathChildrenCache cache;
 
     private final BucketGroup bucketGroup;
-    private final AtomicLong availableBucketCount;
     private final ZooKeeperConfiguration zooKeeperConfiguration;
+    private final AtomicLong availableBucketCount;
 
-    public BucketCoordinator(BucketGroup bucketGroup) {
-        this.bucketGroup = bucketGroup;
-        this.availableBucketCount = new AtomicLong();
+    public BucketCoordinator() {
+        this.bucketGroup = Databuter.instance().bucketGroup();
         this.zooKeeperConfiguration = Databuter.instance().configuration().zooKeeper();
+        this.availableBucketCount = new AtomicLong();
     }
 
     public void start() throws BucketException {
@@ -41,9 +41,9 @@ public class BucketCoordinator {
 
     private void calculateAvailableBucketCount() {
         final long totalMemory = Runtime.getRuntime().totalMemory();
-        final long availableMemory = totalMemory - Databuter.instance().configuration().guardMemorySizeMb();
-
-        this.availableBucketCount.set(availableMemory / Databuter.instance().configuration().bucketMemorySizeMb());
+        final long availableMemory = (totalMemory - Databuter.instance().configuration().guardMemorySize());
+        final long availableBucketCount = (availableMemory / Databuter.instance().configuration().bucketMemorySize());
+        this.availableBucketCount.set(availableBucketCount);
     }
 
     private void registerCacheEvenetListener() throws BucketException {
@@ -83,36 +83,6 @@ public class BucketCoordinator {
         }
     }
 
-    private void onAdded(ChildData data) {
-        checkNotNull(data, "data");
-
-        final String json = new String(data.getData());
-        final BucketConfiguration addedBucketConfiguration = new Gson().fromJson(json, BucketConfiguration.class);
-
-        if (bucketGroup.has(addedBucketConfiguration.id())) {
-            //로컬 버킷
-            return;
-        }
-
-        bucketGroup.add(new RemoteBucket(addedBucketConfiguration));
-    }
-
-    //TODO(@nono5546):업데이트 구현 후 테스트.
-    private void onUpdated(ChildData data) {
-        checkNotNull(data, "data");
-
-        final String json = new String(data.getData());
-        final BucketConfiguration updatedBucketConfiguration = new Gson().fromJson(json, BucketConfiguration.class);
-
-        final Bucket bucket = bucketGroup.find(updatedBucketConfiguration.id());
-        if (bucket == null) {
-            //TODO(@nono5546):에러 발생할 수 있음.
-            bucketGroup.add(new RemoteBucket(updatedBucketConfiguration));
-        } else {
-            bucket.updateConfiguration(updatedBucketConfiguration);
-        }
-    }
-
     private void addBackUpBucketIfNeeded() {
         for (Bucket bucket : bucketGroup) {
             if (availableBucketCount.get() <= 0) {
@@ -121,9 +91,8 @@ public class BucketCoordinator {
 
             if (StringUtils.isEmpty(bucket.backUpClusterId())) {
                 try {
-                    bucket.backUpClusterId(Databuter.instance().id());
-
-                    bucketGroup.add(bucket);
+                    final String nodeId = Databuter.instance().id();
+                    bucket.configuration().backupClusterId(nodeId);
 
                     updateBackupBucket(bucket);
 
@@ -149,7 +118,9 @@ public class BucketCoordinator {
         logger.debug("Making {} bucket...", availableBucketCount.get());
 
         while (availableBucketCount.get() > 0) {
-            final Bucket bucket = new LocalBucket();
+            final String nodeId = Databuter.instance().id();
+            final BucketConfiguration bucketConfiguration = new BucketConfiguration().masterClusterId(nodeId);
+            final Bucket bucket = new LocalBucket(bucketConfiguration);
             final boolean added = bucketGroup.add(bucket);
             if (!added) {
                 throw new BucketException("Found duplcated bucket " + bucket);
@@ -174,5 +145,39 @@ public class BucketCoordinator {
                 .withMode(CreateMode.EPHEMERAL)
                 .forPath(path, json.getBytes());
         logger.debug("Registered bucket {} at {}", bucket.id(), createdPath);
+    }
+
+    private void onAdded(ChildData data) {
+        if (data == null) {
+            return;
+        }
+
+        final String json = new String(data.getData());
+        final BucketConfiguration addedBucketConfiguration = new Gson().fromJson(json, BucketConfiguration.class);
+
+        if (bucketGroup.has(addedBucketConfiguration.id())) {
+            //로컬 버킷
+            return;
+        }
+
+        bucketGroup.add(new RemoteBucket(addedBucketConfiguration));
+    }
+
+    //TODO(@nono5546):업데이트 구현 후 테스트.
+    private void onUpdated(ChildData data) {
+        if (data == null) {
+            return;
+        }
+
+        final String json = new String(data.getData());
+        final BucketConfiguration updatedBucketConfiguration = new Gson().fromJson(json, BucketConfiguration.class);
+
+        final Bucket bucket = bucketGroup.find(updatedBucketConfiguration.id());
+        if (bucket == null) {
+            //TODO(@nono5546):에러 발생할 수 있음.
+            bucketGroup.add(new RemoteBucket(updatedBucketConfiguration));
+        } else {
+            bucket.updateConfiguration(updatedBucketConfiguration);
+        }
     }
 }

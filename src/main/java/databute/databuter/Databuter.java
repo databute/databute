@@ -35,16 +35,25 @@ public final class Databuter {
     private ClientSessionAcceptor clientAcceptor;
 
     private final String id;
-    private final BucketGroup bucketGroup = new BucketGroup();
+    private final BucketGroup bucketGroup;
     private final ClientSessionGroup clientSessionGroup;
 
     private Databuter() {
         this.id = UUID.randomUUID().toString();
+        this.bucketGroup = new BucketGroup();
         this.clientSessionGroup = new ClientSessionGroup();
     }
 
     public static Databuter instance() {
         return instance;
+    }
+
+    public String id() {
+        return id;
+    }
+
+    public BucketGroup bucketGroup() {
+        return bucketGroup;
     }
 
     public ClientSessionGroup clientSessionGroup() {
@@ -57,10 +66,6 @@ public final class Databuter {
 
     public CuratorFramework curator() {
         return curator;
-    }
-
-    public String id() {
-        return id;
     }
 
     public ClusterCoordinator clusterCoordinator() {
@@ -106,7 +111,7 @@ public final class Databuter {
 
 
     private void startBucketCoordinator() throws BucketException {
-        bucketCoordinator = new BucketCoordinator(bucketGroup);
+        bucketCoordinator = new BucketCoordinator();
         bucketCoordinator.start();
     }
 

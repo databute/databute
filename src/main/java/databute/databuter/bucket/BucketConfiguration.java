@@ -5,6 +5,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.MoreObjects;
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.UUID;
+
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 public class BucketConfiguration {
 
@@ -17,9 +19,8 @@ public class BucketConfiguration {
     @JsonProperty("backupClusterId")
     private String backupClusterId;
 
-    public BucketConfiguration(String id, String masterClusterId) {
-        this.id = id;
-        this.masterClusterId = masterClusterId;
+    public BucketConfiguration() {
+        this.id = UUID.randomUUID().toString();
     }
 
     public String id() {
@@ -28,6 +29,11 @@ public class BucketConfiguration {
 
     public String masterClusterId() {
         return masterClusterId;
+    }
+
+    public BucketConfiguration masterClusterId(String masterClusterId) {
+        this.masterClusterId = masterClusterId;
+        return this;
     }
 
     public String backupClusterId() {
