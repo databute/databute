@@ -5,8 +5,9 @@ client:
     address: 'localhost'
     port: 2422
 cluster:
-  address: 'localhost'
-  port: 9091
+  endpoint:
+    address: 'localhost'
+    port: 9091
 zooKeeper:
   address: 'localhost'
   port: 2181

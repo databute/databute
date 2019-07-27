@@ -8,6 +8,7 @@ import databute.databuter.cluster.local.LocalClusterNode;
 import databute.databuter.cluster.network.ClusterSessionAcceptor;
 import databute.databuter.cluster.remote.RemoteClusterNode;
 import databute.databuter.cluster.remote.RemoteClusterNodeGroup;
+import databute.databuter.network.EndpointConfiguration;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import org.apache.commons.lang3.StringUtils;
@@ -45,8 +46,8 @@ public class ClusterCoordinator {
         this.loopGroup = new NioEventLoopGroup();
         this.localNode = new LocalClusterNode(ClusterNodeConfiguration.builder()
                 .id(id)
-                .address(configuration.address())
-                .port(configuration.port())
+                .address(configuration.endpoint().address())
+                .port(configuration.endpoint().port())
                 .build());
         this.remoteNodeGroup = new RemoteClusterNodeGroup();
         this.zooKeeperConfiguration = Databuter.instance().configuration().zooKeeper();
@@ -74,7 +75,10 @@ public class ClusterCoordinator {
     }
 
     private void bindAcceptor() {
-        final InetSocketAddress localAddress = configuration.localAddress();
+        final EndpointConfiguration endpointConfiguration = configuration.endpoint();
+        final String address = endpointConfiguration.address();
+        final int port = endpointConfiguration.port();
+        final InetSocketAddress localAddress = new InetSocketAddress(address, port);
         acceptor = new ClusterSessionAcceptor(loopGroup, this);
         acceptor.bind(localAddress).join();
         logger.debug("Cluster session acceptor is bound on {}", acceptor.localAddress());
