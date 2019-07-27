@@ -4,6 +4,12 @@ import com.google.common.collect.Maps;
 import databute.databuter.bucket.notification.BucketNotificationMessageSerializer;
 import databute.databuter.client.register.RegisterMessageDeserializer;
 import databute.databuter.cluster.notification.ClusterNodeNotificationMessageSerializer;
+import databute.databuter.entity.delete.DeleteEntityMessageDeserializer;
+import databute.databuter.entity.get.GetEntityMessageDeserializer;
+import databute.databuter.entity.result.fail.EntityOperationFailMessageSerializer;
+import databute.databuter.entity.result.success.EntityOperationSuccessMessageSerializer;
+import databute.databuter.entity.set.SetEntityMessageDeserializer;
+import databute.databuter.entity.update.UpdateEntityMessageDeserializer;
 import databute.databuter.network.AbstractSessionAcceptor;
 import databute.databuter.network.message.MessageCode;
 import databute.databuter.network.message.MessageCodeResolver;
@@ -34,9 +40,15 @@ public class ClientSessionAcceptor extends AbstractSessionAcceptor {
         this.serializers = Maps.newHashMap();
         this.serializers.put(MessageCode.CLUSTER_NODE_NOTIFICATION, new ClusterNodeNotificationMessageSerializer());
         this.serializers.put(MessageCode.BUCKET_NOTIFICATION, new BucketNotificationMessageSerializer());
+        this.serializers.put(MessageCode.ENTITY_OPERATION_SUCCESS, new EntityOperationSuccessMessageSerializer());
+        this.serializers.put(MessageCode.ENTITY_OPERATION_FAIL, new EntityOperationFailMessageSerializer());
 
         this.deserializers = Maps.newHashMap();
         this.deserializers.put(MessageCode.REGISTER, new RegisterMessageDeserializer());
+        this.deserializers.put(MessageCode.GET_ENTITY, new GetEntityMessageDeserializer());
+        this.deserializers.put(MessageCode.SET_ENTITY, new SetEntityMessageDeserializer());
+        this.deserializers.put(MessageCode.UPDATE_ENTITY, new UpdateEntityMessageDeserializer());
+        this.deserializers.put(MessageCode.DELETE_ENTITY, new DeleteEntityMessageDeserializer());
     }
 
     @Override
