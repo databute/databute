@@ -3,6 +3,7 @@ package databute.databuter.client.network;
 import databute.databuter.Databuter;
 import databute.databuter.client.register.RegisterMessageHandler;
 import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.ChannelId;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.SocketChannel;
@@ -34,6 +35,29 @@ public class ClientChannelHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelInactive(ChannelHandlerContext ctx) {
+        removeFromSessionGroup();
+
         logger.info("Inactive client session {}", session);
+    }
+
+    private void removeFromSessionGroup() {
+        final ChannelId channelId = session.channel().id();
+
+        removeSessionFromSessionGroup(channelId);
+        removeListeningSessionFromSessionGroup(channelId);
+    }
+
+    private void removeSessionFromSessionGroup(ChannelId channelId) {
+        final boolean removed = (Databuter.instance().clientSessionGroup().removeSession(channelId) != null);
+        if (removed) {
+            logger.debug("Removed client session {}", session.channel().id());
+        }
+    }
+
+    private void removeListeningSessionFromSessionGroup(ChannelId channelId) {
+        final boolean removed = (Databuter.instance().clientSessionGroup().removeListeningSession(channelId) != null);
+        if (removed) {
+            logger.debug("Removed listening client session {}", channelId);
+        }
     }
 }
