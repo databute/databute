@@ -10,7 +10,7 @@ import databute.databuter.client.network.ClientSessionAcceptor;
 import databute.databuter.client.network.ClientSessionGroup;
 import databute.databuter.cluster.ClusterCoordinator;
 import databute.databuter.cluster.ClusterException;
-import databute.databuter.network.EndpointConfiguration;
+import databute.databuter.network.Endpoint;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.retry.ExponentialBackoffRetry;
@@ -124,9 +124,9 @@ public final class Databuter {
 
     private void bindClientAcceptor() {
         final ClientConfiguration clientConfiguration = configuration.client();
-        final EndpointConfiguration clientEndpointConfiguration = clientConfiguration.endpoint();
-        final String address = clientEndpointConfiguration.address();
-        final int port = clientEndpointConfiguration.port();
+        final Endpoint clientEndpoint = clientConfiguration.endpoint();
+        final String address = clientEndpoint.address();
+        final int port = clientEndpoint.port();
         final InetSocketAddress localAddress = new InetSocketAddress(address, port);
         clientAcceptor = new ClientSessionAcceptor();
         clientAcceptor.bind(localAddress).join();

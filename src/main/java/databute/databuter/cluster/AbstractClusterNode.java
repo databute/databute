@@ -1,6 +1,6 @@
 package databute.databuter.cluster;
 
-import databute.databuter.network.EndpointConfiguration;
+import databute.databuter.network.Endpoint;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -26,12 +26,12 @@ public abstract class AbstractClusterNode implements ClusterNode {
     }
 
     @Override
-    public EndpointConfiguration inboundEndpoint() {
+    public Endpoint inboundEndpoint() {
         return configuration.inboundEndpoint();
     }
 
     @Override
-    public EndpointConfiguration outboundEndpoint() {
+    public Endpoint outboundEndpoint() {
         return configuration.outboundEndpoint();
     }
 }

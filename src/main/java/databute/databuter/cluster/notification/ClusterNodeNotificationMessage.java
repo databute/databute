@@ -1,7 +1,7 @@
 package databute.databuter.cluster.notification;
 
 import com.google.common.base.MoreObjects;
-import databute.databuter.network.EndpointConfiguration;
+import databute.databuter.network.Endpoint;
 import databute.databuter.network.message.Message;
 import databute.databuter.network.message.MessageCode;
 
@@ -19,11 +19,11 @@ public class ClusterNodeNotificationMessage implements Message {
 
     private final ClusterNodeNotificationType type;
     private final String id;
-    private final EndpointConfiguration endpoint;
+    private final Endpoint endpoint;
 
     private ClusterNodeNotificationMessage(ClusterNodeNotificationType type,
                                            String id,
-                                           EndpointConfiguration endpoint) {
+                                           Endpoint endpoint) {
         this.type = checkNotNull(type, "type");
         this.id = checkNotNull(id, "id");
         this.endpoint = checkNotNull(endpoint, "endpoint");
@@ -42,7 +42,7 @@ public class ClusterNodeNotificationMessage implements Message {
         return id;
     }
 
-    public EndpointConfiguration endpoint() {
+    public Endpoint endpoint() {
         return endpoint;
     }
 
@@ -59,7 +59,7 @@ public class ClusterNodeNotificationMessage implements Message {
     public static class Builder {
 
         private String id;
-        private EndpointConfiguration endpoint;
+        private Endpoint endpoint;
 
         private final ClusterNodeNotificationType type;
 
@@ -72,7 +72,7 @@ public class ClusterNodeNotificationMessage implements Message {
             return this;
         }
 
-        public ClusterNodeNotificationMessage.Builder endpoint(EndpointConfiguration endpoint) {
+        public ClusterNodeNotificationMessage.Builder endpoint(Endpoint endpoint) {
             this.endpoint = endpoint;
             return this;
         }

@@ -1,7 +1,7 @@
 package databute.databuter.cluster;
 
 import com.google.common.base.MoreObjects;
-import databute.databuter.network.EndpointConfiguration;
+import databute.databuter.network.Endpoint;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -12,12 +12,12 @@ public class ClusterNodeConfiguration {
     }
 
     private final String id;
-    private final EndpointConfiguration inboundEndpoint;
-    private final EndpointConfiguration outboundEndpoint;
+    private final Endpoint inboundEndpoint;
+    private final Endpoint outboundEndpoint;
 
     public ClusterNodeConfiguration(String id,
-                                    EndpointConfiguration inboundEndpoint,
-                                    EndpointConfiguration outboundEndpoint) {
+                                    Endpoint inboundEndpoint,
+                                    Endpoint outboundEndpoint) {
         this.id = checkNotNull(id, "id");
         this.inboundEndpoint = checkNotNull(inboundEndpoint, "inboundEndpoint");
         this.outboundEndpoint = checkNotNull(outboundEndpoint, "outboundEndpoint");
@@ -27,11 +27,11 @@ public class ClusterNodeConfiguration {
         return id;
     }
 
-    public EndpointConfiguration inboundEndpoint() {
+    public Endpoint inboundEndpoint() {
         return inboundEndpoint;
     }
 
-    public EndpointConfiguration outboundEndpoint() {
+    public Endpoint outboundEndpoint() {
         return outboundEndpoint;
     }
 
@@ -47,8 +47,8 @@ public class ClusterNodeConfiguration {
     public static class Builder {
 
         private String id;
-        private EndpointConfiguration inboundEndpoint;
-        private EndpointConfiguration outboundEndpoint;
+        private Endpoint inboundEndpoint;
+        private Endpoint outboundEndpoint;
 
         private Builder() {
             super();
@@ -59,12 +59,12 @@ public class ClusterNodeConfiguration {
             return this;
         }
 
-        public Builder inboundEndpoint(EndpointConfiguration inboundEndpoint) {
+        public Builder inboundEndpoint(Endpoint inboundEndpoint) {
             this.inboundEndpoint = inboundEndpoint;
             return this;
         }
 
-        public Builder outboundEndpoint(EndpointConfiguration outboundEndpoint) {
+        public Builder outboundEndpoint(Endpoint outboundEndpoint) {
             this.outboundEndpoint = outboundEndpoint;
             return this;
         }

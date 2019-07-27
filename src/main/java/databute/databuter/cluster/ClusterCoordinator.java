@@ -8,7 +8,7 @@ import databute.databuter.cluster.local.LocalClusterNode;
 import databute.databuter.cluster.network.ClusterSessionAcceptor;
 import databute.databuter.cluster.remote.RemoteClusterNode;
 import databute.databuter.cluster.remote.RemoteClusterNodeGroup;
-import databute.databuter.network.EndpointConfiguration;
+import databute.databuter.network.Endpoint;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import org.apache.commons.lang3.StringUtils;
@@ -75,9 +75,9 @@ public class ClusterCoordinator {
     }
 
     private void bindAcceptor() {
-        final EndpointConfiguration endpointConfiguration = configuration.endpoint();
-        final String address = endpointConfiguration.address();
-        final int port = endpointConfiguration.port();
+        final Endpoint endpoint = configuration.endpoint();
+        final String address = endpoint.address();
+        final int port = endpoint.port();
         final InetSocketAddress localAddress = new InetSocketAddress(address, port);
         acceptor = new ClusterSessionAcceptor(loopGroup, this);
         acceptor.bind(localAddress).join();

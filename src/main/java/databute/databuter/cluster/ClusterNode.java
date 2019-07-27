@@ -1,6 +1,6 @@
 package databute.databuter.cluster;
 
-import databute.databuter.network.EndpointConfiguration;
+import databute.databuter.network.Endpoint;
 
 public interface ClusterNode {
 
@@ -8,8 +8,8 @@ public interface ClusterNode {
 
     ClusterNodeConfiguration configuration();
 
-    EndpointConfiguration inboundEndpoint();
+    Endpoint inboundEndpoint();
 
-    EndpointConfiguration outboundEndpoint();
+    Endpoint outboundEndpoint();
 
 }
