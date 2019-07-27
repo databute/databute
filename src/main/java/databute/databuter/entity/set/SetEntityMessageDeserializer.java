@@ -13,20 +13,21 @@ public class SetEntityMessageDeserializer implements MessageDeserializer<SetEnti
     public SetEntityMessage deserialize(Packet packet) {
         checkNotNull(packet, "packet");
 
+        final String id = packet.readString();
         final String key = packet.readString();
         final EntityValueType valueType = EntityValueType.valueOf(packet.readString());
         switch (valueType) {
             case INTEGER: {
                 final Integer integerValue = deserializeIntegerValue(packet);
-                return new SetEntityMessage(key, valueType, integerValue);
+                return new SetEntityMessage(id, key, valueType, integerValue);
             }
             case LONG: {
                 final Long longValue = deserializeLongValue(packet);
-                return new SetEntityMessage(key, valueType, longValue);
+                return new SetEntityMessage(id, key, valueType, longValue);
             }
             case STRING: {
                 final String stringValue = deserializeStringValue(packet);
-                return new SetEntityMessage(key, valueType, stringValue);
+                return new SetEntityMessage(id, key, valueType, stringValue);
             }
         }
 

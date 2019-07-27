@@ -11,7 +11,8 @@ public class GetEntityMessageDeserializer implements MessageDeserializer<GetEnti
     public GetEntityMessage deserialize(Packet packet) {
         checkNotNull(packet, "packet");
 
+        final String id = packet.readString();
         final String key = packet.readString();
-        return new GetEntityMessage(key);
+        return new GetEntityMessage(id, key);
     }
 }

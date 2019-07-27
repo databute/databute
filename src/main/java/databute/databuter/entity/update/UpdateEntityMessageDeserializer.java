@@ -13,20 +13,21 @@ public class UpdateEntityMessageDeserializer implements MessageDeserializer<Upda
     public UpdateEntityMessage deserialize(Packet packet) {
         checkNotNull(packet, "packet");
 
+        final String id = packet.readString();
         final String key = packet.readString();
         final EntityValueType valueType = EntityValueType.valueOf(packet.readString());
         switch (valueType) {
             case INTEGER: {
                 final Integer integerValue = deserializeIntegerValue(packet);
-                return new UpdateEntityMessage(key, valueType, integerValue);
+                return new UpdateEntityMessage(id, key, valueType, integerValue);
             }
             case LONG: {
                 final Long longValue = deserializeLongValue(packet);
-                return new UpdateEntityMessage(key, valueType, longValue);
+                return new UpdateEntityMessage(id, key, valueType, longValue);
             }
             case STRING: {
                 final String stringValue = deserializeStringValue(packet);
-                return new UpdateEntityMessage(key, valueType, stringValue);
+                return new UpdateEntityMessage(id, key, valueType, stringValue);
             }
         }
 

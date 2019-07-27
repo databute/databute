@@ -11,7 +11,8 @@ public class DeleteEntityMessageDeserializer implements MessageDeserializer<Dele
     public DeleteEntityMessage deserialize(Packet packet) {
         checkNotNull(packet, "packet");
 
+        final String id = packet.readString();
         final String key = packet.readString();
-        return new DeleteEntityMessage(key);
+        return new DeleteEntityMessage(id, key);
     }
 }
