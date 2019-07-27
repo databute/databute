@@ -1,8 +1,9 @@
 guardMemorySize: 32
 bucketMemorySize: 32
 client:
-  address: 'localhost'
-  port: 2423
+  endpoint:
+    address: 'localhost'
+    port: 2423
 cluster:
   address: 'localhost'
   port: 9092
