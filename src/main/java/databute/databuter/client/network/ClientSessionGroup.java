@@ -67,6 +67,14 @@ public class ClientSessionGroup {
         }
     }
 
+    public ClientSession removeSession(ChannelId channelId) {
+        return sessions.remove(checkNotNull(channelId, "channelId"));
+    }
+
+    public ClientSession removeListeningSession(ChannelId channelId) {
+        return listeningSessions.remove(checkNotNull(channelId, "channelId"));
+    }
+
     public void broadcastToListeningSession(Message message) {
         for (ClientSession listeningSession : listeningSessions.values()) {
             listeningSession.send(message);
