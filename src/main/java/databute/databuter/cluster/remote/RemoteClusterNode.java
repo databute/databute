@@ -36,8 +36,8 @@ public class RemoteClusterNode extends AbstractClusterNode {
     }
 
     public void connect() {
-        final String address = configuration().address();
-        final int port = configuration().port();
+        final String address = configuration().inboundEndpoint().address();
+        final int port = configuration().inboundEndpoint().port();
         final InetSocketAddress remoteAddress = new InetSocketAddress(address, port);
         logger.info("Connecting to remote cluster node {} at {}", id(), remoteAddress);
 

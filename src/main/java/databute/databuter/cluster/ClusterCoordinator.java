@@ -46,8 +46,8 @@ public class ClusterCoordinator {
         this.loopGroup = new NioEventLoopGroup();
         this.localNode = new LocalClusterNode(ClusterNodeConfiguration.builder()
                 .id(id)
-                .address(configuration.endpoint().address())
-                .port(configuration.endpoint().port())
+                .inboundEndpoint(Databuter.instance().configuration().cluster().endpoint())
+                .outboundEndpoint(Databuter.instance().configuration().client().endpoint())
                 .build());
         this.remoteNodeGroup = new RemoteClusterNodeGroup();
         this.zooKeeperConfiguration = Databuter.instance().configuration().zooKeeper();
