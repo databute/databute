@@ -1,6 +1,7 @@
 package databute.databuter.cluster;
 
 import com.google.common.base.MoreObjects;
+import databute.databuter.network.Endpoint;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -11,41 +12,43 @@ public class ClusterNodeConfiguration {
     }
 
     private final String id;
-    private final String address;
-    private final int port;
+    private final Endpoint inboundEndpoint;
+    private final Endpoint outboundEndpoint;
 
-    private ClusterNodeConfiguration(String id, String address, int port) {
+    public ClusterNodeConfiguration(String id,
+                                    Endpoint inboundEndpoint,
+                                    Endpoint outboundEndpoint) {
         this.id = checkNotNull(id, "id");
-        this.address = checkNotNull(address, "address");
-        this.port = port;
+        this.inboundEndpoint = checkNotNull(inboundEndpoint, "inboundEndpoint");
+        this.outboundEndpoint = checkNotNull(outboundEndpoint, "outboundEndpoint");
     }
 
     public String id() {
         return id;
     }
 
-    public String address() {
-        return address;
+    public Endpoint inboundEndpoint() {
+        return inboundEndpoint;
     }
 
-    public int port() {
-        return port;
+    public Endpoint outboundEndpoint() {
+        return outboundEndpoint;
     }
 
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
                 .add("id", id)
-                .add("address", address)
-                .add("port", port)
+                .add("inboundEndpoint", inboundEndpoint)
+                .add("outboundEndpoint", outboundEndpoint)
                 .toString();
     }
 
     public static class Builder {
 
         private String id;
-        private String address;
-        private int port;
+        private Endpoint inboundEndpoint;
+        private Endpoint outboundEndpoint;
 
         private Builder() {
             super();
@@ -56,18 +59,18 @@ public class ClusterNodeConfiguration {
             return this;
         }
 
-        public Builder address(String address) {
-            this.address = address;
+        public Builder inboundEndpoint(Endpoint inboundEndpoint) {
+            this.inboundEndpoint = inboundEndpoint;
             return this;
         }
 
-        public Builder port(int port) {
-            this.port = port;
+        public Builder outboundEndpoint(Endpoint outboundEndpoint) {
+            this.outboundEndpoint = outboundEndpoint;
             return this;
         }
 
         public ClusterNodeConfiguration build() {
-            return new ClusterNodeConfiguration(id, address, port);
+            return new ClusterNodeConfiguration(id, inboundEndpoint, outboundEndpoint);
         }
     }
 }

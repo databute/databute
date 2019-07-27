@@ -3,29 +3,22 @@ package databute.databuter.client;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.MoreObjects;
+import databute.databuter.network.Endpoint;
 
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 public class ClientConfiguration {
 
-    @JsonProperty("address")
-    private String address;
+    @JsonProperty("endpoint")
+    private Endpoint endpoint;
 
-    @JsonProperty("port")
-    private int port;
-
-    public String address() {
-        return address;
-    }
-
-    public int port() {
-        return port;
+    public Endpoint endpoint() {
+        return endpoint;
     }
 
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-                .add("address", address)
-                .add("port", port)
+                .add("endpoint", endpoint)
                 .toString();
     }
 }

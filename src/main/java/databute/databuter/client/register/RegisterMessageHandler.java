@@ -50,8 +50,7 @@ public class RegisterMessageHandler extends ClientMessageHandler<RegisterMessage
     private void sendAddClusterNodeMessage(ClusterNode node) {
         session().send(ClusterNodeNotificationMessage.added()
                 .id(node.id())
-                .address(node.address())
-                .port(node.port())
+                .endpoint(node.outboundEndpoint())
                 .build());
     }
 

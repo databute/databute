@@ -1,13 +1,15 @@
 package databute.databuter.cluster;
 
+import databute.databuter.network.Endpoint;
+
 public interface ClusterNode {
 
     String id();
 
     ClusterNodeConfiguration configuration();
 
-    String address();
+    Endpoint inboundEndpoint();
 
-    int port();
+    Endpoint outboundEndpoint();
 
 }

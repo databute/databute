@@ -1,24 +1,31 @@
-package databute.databuter.cluster;
+package databute.databuter.network;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.MoreObjects;
-import databute.databuter.network.Endpoint;
 
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
-public class ClusterConfiguration {
+public class Endpoint {
 
-    @JsonProperty("endpoint")
-    private Endpoint endpoint;
+    @JsonProperty("address")
+    private String address;
 
-    public Endpoint endpoint() {
-        return endpoint;
+    @JsonProperty("port")
+    private int port;
+
+    public String address() {
+        return address;
+    }
+
+    public int port() {
+        return port;
     }
 
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-                .add("endpoint", endpoint)
+                .add("address", address)
+                .add("port", port)
                 .toString();
     }
 }

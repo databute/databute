@@ -5,10 +5,12 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import databute.databuter.bucket.BucketCoordinator;
 import databute.databuter.bucket.BucketException;
 import databute.databuter.bucket.BucketGroup;
+import databute.databuter.client.ClientConfiguration;
 import databute.databuter.client.network.ClientSessionAcceptor;
 import databute.databuter.client.network.ClientSessionGroup;
 import databute.databuter.cluster.ClusterCoordinator;
 import databute.databuter.cluster.ClusterException;
+import databute.databuter.network.Endpoint;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.retry.ExponentialBackoffRetry;
@@ -121,8 +123,10 @@ public final class Databuter {
     }
 
     private void bindClientAcceptor() {
-        final String address = configuration.client().address();
-        final int port = configuration.client().port();
+        final ClientConfiguration clientConfiguration = configuration.client();
+        final Endpoint clientEndpoint = clientConfiguration.endpoint();
+        final String address = clientEndpoint.address();
+        final int port = clientEndpoint.port();
         final InetSocketAddress localAddress = new InetSocketAddress(address, port);
         clientAcceptor = new ClientSessionAcceptor();
         clientAcceptor.bind(localAddress).join();

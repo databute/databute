@@ -1,6 +1,7 @@
 package databute.databuter.cluster.notification;
 
 import com.google.common.base.MoreObjects;
+import databute.databuter.network.Endpoint;
 import databute.databuter.network.message.Message;
 import databute.databuter.network.message.MessageCode;
 
@@ -18,14 +19,14 @@ public class ClusterNodeNotificationMessage implements Message {
 
     private final ClusterNodeNotificationType type;
     private final String id;
-    private final String address;
-    private final int port;
+    private final Endpoint endpoint;
 
-    private ClusterNodeNotificationMessage(ClusterNodeNotificationType type, String id, String address, int port) {
+    private ClusterNodeNotificationMessage(ClusterNodeNotificationType type,
+                                           String id,
+                                           Endpoint endpoint) {
         this.type = checkNotNull(type, "type");
         this.id = checkNotNull(id, "id");
-        this.address = checkNotNull(address, "address");
-        this.port = port;
+        this.endpoint = checkNotNull(endpoint, "endpoint");
     }
 
     @Override
@@ -41,12 +42,8 @@ public class ClusterNodeNotificationMessage implements Message {
         return id;
     }
 
-    public String address() {
-        return address;
-    }
-
-    public int port() {
-        return port;
+    public Endpoint endpoint() {
+        return endpoint;
     }
 
     @Override
@@ -55,16 +52,14 @@ public class ClusterNodeNotificationMessage implements Message {
                 .add("messageCode", messageCode())
                 .add("type", type)
                 .add("id", id)
-                .add("address", address)
-                .add("port", port)
+                .add("endpoint", endpoint)
                 .toString();
     }
 
     public static class Builder {
 
         private String id;
-        private String address;
-        private int port;
+        private Endpoint endpoint;
 
         private final ClusterNodeNotificationType type;
 
@@ -77,18 +72,13 @@ public class ClusterNodeNotificationMessage implements Message {
             return this;
         }
 
-        public ClusterNodeNotificationMessage.Builder address(String address) {
-            this.address = address;
-            return this;
-        }
-
-        public ClusterNodeNotificationMessage.Builder port(int port) {
-            this.port = port;
+        public ClusterNodeNotificationMessage.Builder endpoint(Endpoint endpoint) {
+            this.endpoint = endpoint;
             return this;
         }
 
         public ClusterNodeNotificationMessage build() {
-            return new ClusterNodeNotificationMessage(type, id, address, port);
+            return new ClusterNodeNotificationMessage(type, id, endpoint);
         }
     }
 }

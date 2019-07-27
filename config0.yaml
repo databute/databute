@@ -1,11 +1,13 @@
 guardMemorySize: 32
 bucketMemorySize: 32
 client:
-  address: 'localhost'
-  port: 2421
+  endpoint:
+    address: 'localhost'
+    port: 2421
 cluster:
-  address: 'localhost'
-  port: 9090
+  endpoint:
+    address: 'localhost'
+    port: 9090
 zooKeeper:
   address: 'localhost'
   port: 2181

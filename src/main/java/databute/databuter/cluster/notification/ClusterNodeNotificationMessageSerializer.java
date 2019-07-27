@@ -15,8 +15,8 @@ public class ClusterNodeNotificationMessageSerializer implements MessageSerializ
         final Packet packet = new BufferedPacket();
         packet.writeString(clusterNodeNotificationMessage.type().name());
         packet.writeString(clusterNodeNotificationMessage.id());
-        packet.writeString(clusterNodeNotificationMessage.address());
-        packet.writeInt(clusterNodeNotificationMessage.port());
+        packet.writeString(clusterNodeNotificationMessage.endpoint().address());
+        packet.writeInt(clusterNodeNotificationMessage.endpoint().port());
         return packet;
     }
 }

@@ -60,8 +60,7 @@ public class RemoteClusterNodeGroup implements Iterable<RemoteClusterNode> {
         final ClientSessionGroup clientSessionGroup = Databuter.instance().clientSessionGroup();
         clientSessionGroup.broadcastToListeningSession(ClusterNodeNotificationMessage.added()
                 .id(remoteNode.id())
-                .address(remoteNode.address())
-                .port(remoteNode.port())
+                .endpoint(remoteNode.outboundEndpoint())
                 .build());
     }
 
@@ -91,8 +90,7 @@ public class RemoteClusterNodeGroup implements Iterable<RemoteClusterNode> {
         final ClientSessionGroup clientSessionGroup = Databuter.instance().clientSessionGroup();
         clientSessionGroup.broadcastToListeningSession(ClusterNodeNotificationMessage.removed()
                 .id(remoteNode.id())
-                .address(remoteNode.address())
-                .port(remoteNode.port())
+                .endpoint(remoteNode.outboundEndpoint())
                 .build());
     }
 }
