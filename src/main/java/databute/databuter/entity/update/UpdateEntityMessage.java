@@ -31,6 +31,7 @@ public class UpdateEntityMessage implements EntityMessage {
         return id;
     }
 
+    @Override
     public String key() {
         return key;
     }

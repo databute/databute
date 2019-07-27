@@ -26,6 +26,7 @@ public class DeleteEntityMessage implements EntityMessage {
         return id;
     }
 
+    @Override
     public String key() {
         return key;
     }

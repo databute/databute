@@ -6,6 +6,8 @@ import databute.databuter.client.register.RegisterMessageDeserializer;
 import databute.databuter.cluster.notification.ClusterNodeNotificationMessageSerializer;
 import databute.databuter.entity.delete.DeleteEntityMessageDeserializer;
 import databute.databuter.entity.get.GetEntityMessageDeserializer;
+import databute.databuter.entity.result.fail.EntityOperationFailMessageSerializer;
+import databute.databuter.entity.result.success.EntityOperationSuccessMessageSerializer;
 import databute.databuter.entity.set.SetEntityMessageDeserializer;
 import databute.databuter.entity.update.UpdateEntityMessageDeserializer;
 import databute.databuter.network.AbstractSessionAcceptor;
@@ -38,6 +40,8 @@ public class ClientSessionAcceptor extends AbstractSessionAcceptor {
         this.serializers = Maps.newHashMap();
         this.serializers.put(MessageCode.CLUSTER_NODE_NOTIFICATION, new ClusterNodeNotificationMessageSerializer());
         this.serializers.put(MessageCode.BUCKET_NOTIFICATION, new BucketNotificationMessageSerializer());
+        this.serializers.put(MessageCode.ENTITY_OPERATION_SUCCESS, new EntityOperationSuccessMessageSerializer());
+        this.serializers.put(MessageCode.ENTITY_OPERATION_FAIL, new EntityOperationFailMessageSerializer());
 
         this.deserializers = Maps.newHashMap();
         this.deserializers.put(MessageCode.REGISTER, new RegisterMessageDeserializer());
