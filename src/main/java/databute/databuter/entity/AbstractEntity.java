@@ -9,10 +9,10 @@ public abstract class AbstractEntity<T> implements Entity<T> {
     private T value;
     private Instant lastUpdatedTimestamp;
 
-    private final String key;
+    private final EntityKey key;
     private final Instant createdTimestamp;
 
-    protected AbstractEntity(String key, T value) {
+    protected AbstractEntity(EntityKey key, T value) {
         this.key = checkNotNull(key, "key");
         this.value = checkNotNull(value, "value");
         this.createdTimestamp = Instant.now();
@@ -20,7 +20,7 @@ public abstract class AbstractEntity<T> implements Entity<T> {
     }
 
     @Override
-    public final String key() {
+    public final EntityKey key() {
         return key;
     }
 

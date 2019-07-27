@@ -4,7 +4,7 @@ import java.time.Instant;
 
 public interface Entity<T> {
 
-    String key();
+    EntityKey key();
 
     T value();
 

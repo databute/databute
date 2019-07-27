@@ -2,10 +2,11 @@ package databute.databuter.entity.type;
 
 import com.google.common.base.MoreObjects;
 import databute.databuter.entity.AbstractEntity;
+import databute.databuter.entity.EntityKey;
 
 public class StringEntity extends AbstractEntity<String> {
 
-    public StringEntity(String key, String value) {
+    public StringEntity(EntityKey key, String value) {
         super(key, value);
     }
 
