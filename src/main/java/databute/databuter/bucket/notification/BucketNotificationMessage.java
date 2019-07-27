@@ -1,7 +1,6 @@
 package databute.databuter.bucket.notification;
 
 import com.google.common.base.MoreObjects;
-import databute.databuter.client.network.ClientMessageCode;
 import databute.databuter.network.message.Message;
 import databute.databuter.network.message.MessageCode;
 
@@ -41,7 +40,7 @@ public class BucketNotificationMessage implements Message {
 
     @Override
     public MessageCode messageCode() {
-        return ClientMessageCode.BUCKET_NOTIFICATION;
+        return MessageCode.BUCKET_NOTIFICATION;
     }
 
     public BucketNotificationType type() {

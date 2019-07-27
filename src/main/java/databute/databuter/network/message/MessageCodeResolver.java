@@ -1,7 +1,13 @@
 package databute.databuter.network.message;
 
-public interface MessageCodeResolver {
+public class MessageCodeResolver {
 
-    MessageCode resolve(int value);
-
+    public MessageCode resolve(int value) {
+        for (MessageCode messageCode : MessageCode.values()) {
+            if (messageCode.value() == value) {
+                return messageCode;
+            }
+        }
+        return null;
+    }
 }

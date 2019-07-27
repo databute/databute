@@ -34,13 +34,13 @@ public class ClusterSessionAcceptor extends AbstractSessionAcceptor {
     public ClusterSessionAcceptor(EventLoopGroup loopGroup, ClusterCoordinator clusterCoordinator) {
         super(loopGroup, loopGroup);
         this.clusterCoordinator = checkNotNull(clusterCoordinator, "clusterCoordinator");
-        this.resolver = new ClusterMessageCodeResolver();
+        this.resolver = new MessageCodeResolver();
 
         this.serializers = Maps.newHashMap();
-        this.serializers.put(ClusterMessageCode.HANDSHAKE_RESPONSE, new HandshakeResponseMessageSerializer());
+        this.serializers.put(MessageCode.HANDSHAKE_RESPONSE, new HandshakeResponseMessageSerializer());
 
         this.deserializers = Maps.newHashMap();
-        this.deserializers.put(ClusterMessageCode.HANDSHAKE_REQUEST, new HandshakeRequestMessageDeserializer());
+        this.deserializers.put(MessageCode.HANDSHAKE_REQUEST, new HandshakeRequestMessageDeserializer());
     }
 
     @Override

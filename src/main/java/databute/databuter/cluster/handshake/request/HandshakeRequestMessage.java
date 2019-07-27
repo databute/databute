@@ -1,7 +1,6 @@
 package databute.databuter.cluster.handshake.request;
 
 import com.google.common.base.MoreObjects;
-import databute.databuter.cluster.network.ClusterMessageCode;
 import databute.databuter.network.message.Message;
 import databute.databuter.network.message.MessageCode;
 
@@ -17,7 +16,7 @@ public class HandshakeRequestMessage implements Message {
 
     @Override
     public MessageCode messageCode() {
-        return ClusterMessageCode.HANDSHAKE_REQUEST;
+        return MessageCode.HANDSHAKE_REQUEST;
     }
 
     public String id() {
