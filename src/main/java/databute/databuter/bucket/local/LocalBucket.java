@@ -1,18 +1,55 @@
 package databute.databuter.bucket.local;
 
 import com.google.common.base.MoreObjects;
+import com.google.common.collect.Maps;
 import com.google.gson.Gson;
 import databute.databuter.Databuter;
 import databute.databuter.bucket.Bucket;
 import databute.databuter.bucket.BucketConfiguration;
 import databute.databuter.bucket.BucketException;
+import databute.databuter.entity.DuplicateEntityKeyException;
+import databute.databuter.entity.Entity;
+import databute.databuter.entity.EntityKey;
 import org.apache.curator.utils.ZKPaths;
 import org.apache.zookeeper.CreateMode;
 
+import java.util.Map;
+
+import static com.google.common.base.Preconditions.checkNotNull;
+
 public class LocalBucket extends Bucket {
+
+    private final Map<EntityKey, Entity> entities;
 
     public LocalBucket(BucketConfiguration configuration) {
         super(configuration);
+        this.entities = Maps.newHashMap();
+    }
+
+    public Entity get(EntityKey key) {
+        checkNotNull(key, "key");
+        return entities.get(key);
+    }
+
+    public Entity add(Entity entity) throws DuplicateEntityKeyException {
+        checkNotNull(entity, "entity");
+
+        final EntityKey key = entity.key();
+        if (entities.containsKey(key)) {
+            throw new DuplicateEntityKeyException(key);
+        } else {
+            return entities.put(key, entity);
+        }
+    }
+
+    public Entity remove(Entity entity) {
+        checkNotNull(entity, "entity");
+        return remove(entity.key());
+    }
+
+    public Entity remove(EntityKey key) {
+        checkNotNull(key, "key");
+        return entities.remove(key);
     }
 
     public String save() throws BucketException {
