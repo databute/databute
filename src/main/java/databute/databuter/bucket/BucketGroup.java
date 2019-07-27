@@ -1,12 +1,16 @@
 package databute.databuter.bucket;
 
 import com.google.common.collect.Maps;
+import com.google.common.hash.HashCode;
+import com.google.common.hash.Hashing;
 import databute.databuter.Databuter;
 import databute.databuter.bucket.notification.BucketNotificationMessage;
 import databute.databuter.client.network.ClientSessionGroup;
+import databute.databuter.entity.EntityKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -27,8 +31,29 @@ public class BucketGroup implements Iterable<Bucket> {
         return buckets.values().iterator();
     }
 
+    public int count() {
+        return buckets.size();
+    }
+
     public Bucket find(String id) {
         return buckets.get(id);
+    }
+
+    @SuppressWarnings("UnstableApiUsage")
+    public Bucket findByKey(EntityKey entityKey) {
+        final int count = count();
+        final HashCode hashKey = Hashing.crc32().hashString(entityKey.key(), StandardCharsets.UTF_8);
+        final int factor = Hashing.consistentHash(hashKey, count);
+        return findByFactor(factor);
+    }
+
+    private Bucket findByFactor(int factor) {
+        for (Bucket bucket : buckets.values()) {
+            if (bucket.factor() == factor) {
+                return bucket;
+            }
+        }
+        return null;
     }
 
     public boolean add(Bucket bucket) {

@@ -26,11 +26,12 @@ public class LocalBucket extends Bucket {
         this.entities = Maps.newHashMap();
     }
 
+    @Override
     public Entity get(EntityKey key) {
-        checkNotNull(key, "key");
         return entities.get(key);
     }
 
+    @Override
     public Entity add(Entity entity) throws DuplicateEntityKeyException {
         checkNotNull(entity, "entity");
 
@@ -42,13 +43,8 @@ public class LocalBucket extends Bucket {
         }
     }
 
-    public Entity remove(Entity entity) {
-        checkNotNull(entity, "entity");
-        return remove(entity.key());
-    }
-
+    @Override
     public Entity remove(EntityKey key) {
-        checkNotNull(key, "key");
         return entities.remove(key);
     }
 

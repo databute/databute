@@ -1,9 +1,10 @@
 package databute.databuter.entity.result.success;
 
 import com.google.common.base.MoreObjects;
-import databute.databuter.entity.EntityKey;
-import databute.databuter.entity.EntityMessage;
-import databute.databuter.entity.EntityValueType;
+import databute.databuter.entity.*;
+import databute.databuter.entity.type.IntegerEntity;
+import databute.databuter.entity.type.LongEntity;
+import databute.databuter.entity.type.StringEntity;
 import databute.databuter.network.message.MessageCode;
 
 import java.time.Instant;
@@ -11,6 +12,26 @@ import java.time.Instant;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 public class EntityOperationSuccessMessage implements EntityMessage {
+
+    public static EntityOperationSuccessMessage entity(String id, Entity entity) {
+        checkNotNull(entity, "entity");
+
+        if (entity instanceof IntegerEntity) {
+            final IntegerEntity integerEntity = (IntegerEntity) entity;
+            return new EntityOperationSuccessMessage(id, integerEntity.key(), EntityValueType.INTEGER,
+                    integerEntity.value(), integerEntity.createdTimestamp(), integerEntity.lastUpdatedTimestamp());
+        } else if (entity instanceof LongEntity) {
+            final LongEntity longEntity = (LongEntity) entity;
+            return new EntityOperationSuccessMessage(id, longEntity.key(), EntityValueType.LONG, longEntity.value(),
+                    longEntity.createdTimestamp(), longEntity.lastUpdatedTimestamp());
+        } else if (entity instanceof StringEntity) {
+            final StringEntity stringEntity = (StringEntity) entity;
+            return new EntityOperationSuccessMessage(id, stringEntity.key(), EntityValueType.STRING,
+                    stringEntity.value(), stringEntity.createdTimestamp(), stringEntity.lastUpdatedTimestamp());
+        } else {
+            throw new UnsupportedValueTypeException();
+        }
+    }
 
     private final String id;
     private final EntityKey key;
