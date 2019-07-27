@@ -7,9 +7,9 @@ public class EntityKey {
 
     private final String key;
 
-    public EntityKey(String key) {
+    public EntityKey(String key) throws EmptyEntityKeyException {
         if (StringUtils.isEmpty(key)) {
-            throw new IllegalArgumentException("key must not be empty:" + key);
+            throw new EmptyEntityKeyException(key);
         }
         this.key = key;
     }
