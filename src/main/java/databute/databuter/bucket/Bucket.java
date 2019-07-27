@@ -1,5 +1,9 @@
 package databute.databuter.bucket;
 
+import databute.databuter.entity.DuplicateEntityKeyException;
+import databute.databuter.entity.Entity;
+import databute.databuter.entity.EntityKey;
+
 import static com.google.common.base.Preconditions.checkNotNull;
 
 public abstract class Bucket {
@@ -12,6 +16,12 @@ public abstract class Bucket {
         this.id = configuration.id();
         this.configuration = configuration;
     }
+
+    public abstract Entity get(EntityKey entityKey);
+
+    public abstract Entity add(Entity entity) throws DuplicateEntityKeyException;
+
+    public abstract Entity remove(EntityKey entityKey);
 
     public String id() {
         return id;

@@ -12,6 +12,18 @@ public class EntityOperationFailMessage implements EntityMessage {
         return new EntityOperationFailMessage(id, key, EntityOperationErrorCode.NOT_FOUND);
     }
 
+    public static EntityOperationFailMessage emptyKey(String id, String key) {
+        return new EntityOperationFailMessage(id, key, EntityOperationErrorCode.EMPTY_KEY);
+    }
+
+    public static EntityOperationFailMessage duplicateKey(String id, String key) {
+        return new EntityOperationFailMessage(id, key, EntityOperationErrorCode.DUPLICATE_KEY);
+    }
+
+    public static EntityOperationFailMessage unsupportedValueType(String id, String key) {
+        return new EntityOperationFailMessage(id, key, EntityOperationErrorCode.UNSUPPORTED_VALUE_TYPE);
+    }
+
     private final String id;
     private final String key;
     private final EntityOperationErrorCode errorCode;
