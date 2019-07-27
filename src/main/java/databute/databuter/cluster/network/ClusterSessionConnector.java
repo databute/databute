@@ -37,13 +37,13 @@ public class ClusterSessionConnector extends AbstractSessionConnector {
         super(loopGroup);
         this.clusterCoordinator = checkNotNull(clusterCoordinator, "clusterCoordinator");
         this.remoteNode = checkNotNull(remoteNode, "remoteNode");
-        this.resolver = new ClusterMessageCodeResolver();
+        this.resolver = new MessageCodeResolver();
 
         this.serializers = Maps.newHashMap();
-        this.serializers.put(ClusterMessageCode.HANDSHAKE_REQUEST, new HandshakeRequestMessageSerializer());
+        this.serializers.put(MessageCode.HANDSHAKE_REQUEST, new HandshakeRequestMessageSerializer());
 
         this.deserializers = Maps.newHashMap();
-        this.deserializers.put(ClusterMessageCode.HANDSHAKE_RESPONSE, new HandshakeResponseMessageDeserializer());
+        this.deserializers.put(MessageCode.HANDSHAKE_RESPONSE, new HandshakeResponseMessageDeserializer());
     }
 
     @Override

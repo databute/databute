@@ -29,14 +29,14 @@ public class ClientSessionAcceptor extends AbstractSessionAcceptor {
 
     public ClientSessionAcceptor() {
         super(new NioEventLoopGroup(), new NioEventLoopGroup());
-        this.resolver = new ClientMessageCodeResolver();
+        this.resolver = new MessageCodeResolver();
 
         this.serializers = Maps.newHashMap();
-        this.serializers.put(ClientMessageCode.CLUSTER_NODE_NOTIFICATION, new ClusterNodeNotificationMessageSerializer());
-        this.serializers.put(ClientMessageCode.BUCKET_NOTIFICATION, new BucketNotificationMessageSerializer());
+        this.serializers.put(MessageCode.CLUSTER_NODE_NOTIFICATION, new ClusterNodeNotificationMessageSerializer());
+        this.serializers.put(MessageCode.BUCKET_NOTIFICATION, new BucketNotificationMessageSerializer());
 
         this.deserializers = Maps.newHashMap();
-        this.deserializers.put(ClientMessageCode.REGISTER, new RegisterMessageDeserializer());
+        this.deserializers.put(MessageCode.REGISTER, new RegisterMessageDeserializer());
     }
 
     @Override
