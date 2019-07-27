@@ -1,21 +1,19 @@
-package databute.databuter.entity.request;
+package databute.databuter.entity.update;
 
 import com.google.common.base.MoreObjects;
-import databute.databuter.entity.EntityType;
+import databute.databuter.entity.EntityValueType;
 import databute.databuter.network.message.Message;
 import databute.databuter.network.message.MessageCode;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public class EntityRequestMessage implements Message {
+public class UpdateEntityMessage implements Message {
 
-    private final EntityRequestType requestType;
     private final String key;
-    private final EntityType valueType;
+    private final EntityValueType valueType;
     private final Object value;
 
-    public EntityRequestMessage(EntityRequestType requestType, String key, EntityType valueType, Object value) {
-        this.requestType = checkNotNull(requestType, "requestType");
+    public UpdateEntityMessage(String key, EntityValueType valueType, Object value) {
         this.key = checkNotNull(key, "key");
         this.valueType = checkNotNull(valueType, "valueType");
         this.value = checkNotNull(value, "value");
@@ -23,14 +21,25 @@ public class EntityRequestMessage implements Message {
 
     @Override
     public MessageCode messageCode() {
-        return MessageCode.ENTITY_REQUEST;
+        return MessageCode.UPDATE_ENTITY;
+    }
+
+    public String key() {
+        return key;
+    }
+
+    public EntityValueType valueType() {
+        return valueType;
+    }
+
+    public Object value() {
+        return value;
     }
 
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
                 .add("messageCode", messageCode())
-                .add("requestType", requestType)
                 .add("key", key)
                 .add("valueType", valueType)
                 .add("value", value)

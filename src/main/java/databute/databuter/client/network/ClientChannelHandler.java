@@ -2,7 +2,10 @@ package databute.databuter.client.network;
 
 import databute.databuter.Databuter;
 import databute.databuter.client.register.RegisterMessageHandler;
-import databute.databuter.entity.request.EntityRequestMessageHandler;
+import databute.databuter.entity.delete.DeleteEntityMessageHandler;
+import databute.databuter.entity.get.GetEntityMessageHandler;
+import databute.databuter.entity.set.SetEntityMessageHandler;
+import databute.databuter.entity.update.UpdateEntityMessageHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelId;
 import io.netty.channel.ChannelInboundHandlerAdapter;
@@ -32,7 +35,10 @@ public class ClientChannelHandler extends ChannelInboundHandlerAdapter {
         final ChannelPipeline pipeline = ctx.pipeline();
 
         pipeline.addLast(new RegisterMessageHandler(session));
-        pipeline.addLast(new EntityRequestMessageHandler(session));
+        pipeline.addLast(new GetEntityMessageHandler(session));
+        pipeline.addLast(new SetEntityMessageHandler(session));
+        pipeline.addLast(new UpdateEntityMessageHandler(session));
+        pipeline.addLast(new DeleteEntityMessageHandler(session));
     }
 
     @Override
