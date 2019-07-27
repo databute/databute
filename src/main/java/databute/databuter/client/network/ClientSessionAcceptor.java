@@ -4,6 +4,7 @@ import com.google.common.collect.Maps;
 import databute.databuter.bucket.notification.BucketNotificationMessageSerializer;
 import databute.databuter.client.register.RegisterMessageDeserializer;
 import databute.databuter.cluster.notification.ClusterNodeNotificationMessageSerializer;
+import databute.databuter.entity.request.EntityRequestMessageDeserializer;
 import databute.databuter.network.AbstractSessionAcceptor;
 import databute.databuter.network.message.MessageCode;
 import databute.databuter.network.message.MessageCodeResolver;
@@ -37,6 +38,7 @@ public class ClientSessionAcceptor extends AbstractSessionAcceptor {
 
         this.deserializers = Maps.newHashMap();
         this.deserializers.put(MessageCode.REGISTER, new RegisterMessageDeserializer());
+        this.deserializers.put(MessageCode.ENTITY_REQUEST, new EntityRequestMessageDeserializer());
     }
 
     @Override

@@ -2,6 +2,7 @@ package databute.databuter.client.network;
 
 import databute.databuter.Databuter;
 import databute.databuter.client.register.RegisterMessageHandler;
+import databute.databuter.entity.request.EntityRequestMessageHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelId;
 import io.netty.channel.ChannelInboundHandlerAdapter;
@@ -31,6 +32,7 @@ public class ClientChannelHandler extends ChannelInboundHandlerAdapter {
         final ChannelPipeline pipeline = ctx.pipeline();
 
         pipeline.addLast(new RegisterMessageHandler(session));
+        pipeline.addLast(new EntityRequestMessageHandler(session));
     }
 
     @Override
