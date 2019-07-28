@@ -27,17 +27,17 @@ public class BucketCoordinator {
     private final BucketGroup bucketGroup;
     private final ZooKeeperConfiguration zooKeeperConfiguration;
     private final AtomicLong availableBucketCount;
-    private final SharedBucketFactor bucketFactor;
+    private final SharedKeyFactorCounter sharedKeyFactorCounter;
 
     public BucketCoordinator() {
         this.bucketGroup = Databuter.instance().bucketGroup();
         this.zooKeeperConfiguration = Databuter.instance().configuration().zooKeeper();
         this.availableBucketCount = new AtomicLong();
-        this.bucketFactor = new SharedBucketFactor();
+        this.sharedKeyFactorCounter = new SharedKeyFactorCounter();
     }
 
     public void start() throws BucketException {
-        bucketFactor.start();
+        sharedKeyFactorCounter.start();
 
         calculateAvailableBucketCount();
 
@@ -143,7 +143,7 @@ public class BucketCoordinator {
         final ClientSessionGroup clientSessionGroup = Databuter.instance().clientSessionGroup();
         clientSessionGroup.broadcastToListeningSession(BucketNotificationMessage.updated()
                 .id(bucket.id())
-                .factor(bucket.factor())
+                .keyFactor(bucket.keyFactor())
                 .activeNodeId(bucket.activeNodeId())
                 .standbyNodeId(bucket.standbyNodeId())
                 .build());
@@ -157,9 +157,9 @@ public class BucketCoordinator {
         logger.info("Created local active bucket {}.", localBucket.id());
 
         try {
-            final int factor = bucketFactor.getAndIncreaseBucketFactor();
-            localBucket.configuration().factor(factor);
-            logger.info("Assigned factor {} to bucket {}", localBucket.configuration().factor(), localBucket.id());
+            final int keyFactor = sharedKeyFactorCounter.getAndIncreaseSharedKeyFactor();
+            localBucket.configuration().keyFactor(keyFactor);
+            logger.info("Assigned key factor {} to bucket {}", localBucket.configuration().keyFactor(), localBucket.id());
 
             final String path = localBucket.save();
             logger.debug("Saved local active bucket {} to the ZooKeeper with path {}", localBucket.id(), path);

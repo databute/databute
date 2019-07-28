@@ -13,8 +13,8 @@ public class BucketConfiguration {
     @JsonProperty("id")
     private String id;
 
-    @JsonProperty("factor")
-    private int factor;
+    @JsonProperty("keyFactor")
+    private int keyFactor;
 
     @JsonProperty("activeNodeId")
     private String activeNodeId;
@@ -30,12 +30,12 @@ public class BucketConfiguration {
         return id;
     }
 
-    public int factor() {
-        return factor;
+    public int keyFactor() {
+        return keyFactor;
     }
 
-    public BucketConfiguration factor(int factor) {
-        this.factor = factor;
+    public BucketConfiguration keyFactor(int keyFactor) {
+        this.keyFactor = keyFactor;
         return this;
     }
 
@@ -68,8 +68,8 @@ public class BucketConfiguration {
     public boolean update(BucketConfiguration other) {
         boolean updated = false;
 
-        if (factor != other.factor()) {
-            this.factor = other.factor();
+        if (keyFactor != other.keyFactor()) {
+            this.keyFactor = other.keyFactor();
             updated = true;
         }
 
@@ -90,7 +90,7 @@ public class BucketConfiguration {
     public String toString() {
         return MoreObjects.toStringHelper(this)
                 .add("id", id)
-                .add("factor", factor)
+                .add("keyFactor", keyFactor)
                 .add("activeNodeId", activeNodeId)
                 .add("standbyNodeId", standbyNodeId)
                 .toString();
