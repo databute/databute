@@ -3,8 +3,8 @@ package databute.databuter.bucket.remote;
 import com.google.common.base.MoreObjects;
 import databute.databuter.bucket.Bucket;
 import databute.databuter.bucket.BucketConfiguration;
-import databute.databuter.entity.DuplicateEntityKeyException;
 import databute.databuter.entity.Entity;
+import databute.databuter.entity.EntityCallback;
 import databute.databuter.entity.EntityKey;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
@@ -15,17 +15,17 @@ public class RemoteBucket extends Bucket {
     }
 
     @Override
-    public Entity get(EntityKey entityKey) {
+    public void get(EntityKey entityKey, EntityCallback callback) {
         throw new NotImplementedException();
     }
 
     @Override
-    public Entity add(Entity entity) throws DuplicateEntityKeyException {
+    public void add(Entity entity, EntityCallback callback) {
         throw new NotImplementedException();
     }
 
     @Override
-    public Entity remove(EntityKey entityKey) {
+    public void remove(EntityKey entityKey, EntityCallback callback) {
         throw new NotImplementedException();
     }
 
