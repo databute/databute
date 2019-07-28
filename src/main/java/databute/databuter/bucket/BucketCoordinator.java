@@ -15,6 +15,7 @@ import org.apache.curator.framework.recipes.cache.ChildData;
 import org.apache.curator.framework.recipes.cache.PathChildrenCache;
 import org.apache.curator.framework.recipes.cache.PathChildrenCacheEvent;
 import org.apache.curator.framework.recipes.locks.InterProcessMutex;
+import org.apache.curator.framework.recipes.locks.InterProcessSemaphoreMutex;
 import org.apache.curator.utils.ZKPaths;
 import org.apache.zookeeper.CreateMode;
 import org.slf4j.Logger;
@@ -33,7 +34,7 @@ public class BucketCoordinator {
     private final ZooKeeperConfiguration zooKeeperConfiguration;
     private final AtomicLong availableBucketCount;
     private final SharedKeyFactorCounter sharedKeyFactorCounter;
-    private final InterProcessMutex bucketMutex;
+    private final InterProcessSemaphoreMutex bucketMutex;
 
     public BucketCoordinator() {
         this.bucketGroup = Databuter.instance().bucketGroup();
@@ -43,7 +44,7 @@ public class BucketCoordinator {
 
         final CuratorFramework curator = Databuter.instance().curator();
         final String path = ZKPaths.makePath(zooKeeperConfiguration.path(),"mutex/bucket");
-        this.bucketMutex = new InterProcessMutex(curator,path);
+        this.bucketMutex = new InterProcessSemaphoreMutex(curator,path);
     }
 
     public void start() throws BucketException {
@@ -245,13 +246,23 @@ public class BucketCoordinator {
             final String json = new Gson().toJson(bucket.configuration());
             final String zooKeeperPath = Databuter.instance().configuration().zooKeeper().path();
             final String path = ZKPaths.makePath(zooKeeperPath, "bucket", bucket.id());
-            return Databuter.instance().curator()
+
+            bucketMutex.acquire();
+            final String savePath = Databuter.instance().curator()
                     .create()
                     .creatingParentContainersIfNeeded()
                     .withMode(CreateMode.PERSISTENT)
                     .forPath(path, json.getBytes());
+
+            return savePath;
         } catch (Exception e) {
             throw new BucketException("Failed to save bucket " + bucket.id() + " to the ZooKeeper.");
+        }finally {
+            try{
+                bucketMutex.release();
+            }catch (Exception e){
+                logger.error("Failed to release bucket mutex.",e);
+            }
         }
     }
 
@@ -261,11 +272,19 @@ public class BucketCoordinator {
             final String json = new Gson().toJson(bucket.configuration());
             final String zooKeeperPath = Databuter.instance().configuration().zooKeeper().path();
             final String path = ZKPaths.makePath(zooKeeperPath, "bucket", bucket.id());
+
+            bucketMutex.acquire();
             Databuter.instance().curator()
                     .setData()
                     .forPath(path, json.getBytes());
         } catch (Exception e) {
             throw new BucketException("Failed to update bucket " + bucket.id() + " to the ZooKeeper.");
+        }finally {
+            try {
+                bucketMutex.release();
+            } catch (Exception e) {
+                logger.error("Failed to release bucket mutex.",e);
+            }
         }
     }
 }
