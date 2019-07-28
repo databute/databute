@@ -16,6 +16,7 @@ import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.recipes.cache.ChildData;
 import org.apache.curator.framework.recipes.cache.PathChildrenCache;
 import org.apache.curator.framework.recipes.cache.PathChildrenCacheEvent;
+import org.apache.curator.framework.recipes.locks.InterProcessSemaphoreMutex;
 import org.apache.curator.utils.ZKPaths;
 import org.apache.zookeeper.CreateMode;
 import org.slf4j.Logger;
@@ -39,6 +40,7 @@ public class ClusterCoordinator {
     private final LocalClusterNode localNode;
     private final RemoteClusterNodeGroup remoteNodeGroup;
     private final ZooKeeperConfiguration zooKeeperConfiguration;
+    private final InterProcessSemaphoreMutex clusterMutex;
 
     public ClusterCoordinator(ClusterConfiguration configuration, String id) {
         this.configuration = checkNotNull(configuration, "configuration");
@@ -51,6 +53,10 @@ public class ClusterCoordinator {
                 .build());
         this.remoteNodeGroup = new RemoteClusterNodeGroup();
         this.zooKeeperConfiguration = Databuter.instance().configuration().zooKeeper();
+
+        final CuratorFramework curator = Databuter.instance().curator();
+        final String path = ZKPaths.makePath(zooKeeperConfiguration.path(),"mutex/cluster");
+        this.clusterMutex = new InterProcessSemaphoreMutex(curator,path);
     }
 
     public String id() {
@@ -139,11 +145,21 @@ public class ClusterCoordinator {
     private void registerClusterNode() throws Exception {
         final String json = new Gson().toJson(localNode.configuration());
         final String path = ZKPaths.makePath(zooKeeperConfiguration.path(), "discovery", id);
-        final String createdPath = Databuter.instance().curator()
-                .create()
-                .withMode(CreateMode.EPHEMERAL)
-                .forPath(path, json.getBytes());
-        logger.debug("Registered cluster node at {}", createdPath);
+
+        try {
+            clusterMutex.acquire();
+            final String createdPath = Databuter.instance().curator()
+                    .create()
+                    .withMode(CreateMode.EPHEMERAL)
+                    .forPath(path, json.getBytes());
+            logger.debug("Registered cluster node at {}", createdPath);
+        }finally {
+            try {
+                clusterMutex.release();
+            }catch (Exception e){
+                logger.error("Failed to release cluster mutex.");
+            }
+        }
     }
 
     @Override
