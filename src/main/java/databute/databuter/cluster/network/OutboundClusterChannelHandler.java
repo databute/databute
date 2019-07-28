@@ -86,5 +86,4 @@ public class OutboundClusterChannelHandler extends ChannelInboundHandlerAdapter 
             }
         }
     }
-
 }
