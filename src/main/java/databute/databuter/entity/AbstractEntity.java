@@ -13,10 +13,18 @@ public abstract class AbstractEntity<T> implements Entity<T> {
     private final Instant createdTimestamp;
 
     protected AbstractEntity(EntityKey key, T value) {
+        this(key, value, Instant.now());
+    }
+
+    protected AbstractEntity(EntityKey key, T value, Instant createdTimestamp) {
+        this(key, value, createdTimestamp, createdTimestamp);
+    }
+
+    protected AbstractEntity(EntityKey key, T value, Instant createdTimestamp, Instant lastUpdatedTimestamp) {
         this.key = checkNotNull(key, "key");
         this.value = checkNotNull(value, "value");
-        this.createdTimestamp = Instant.now();
-        this.lastUpdatedTimestamp = createdTimestamp;
+        this.createdTimestamp = checkNotNull(createdTimestamp, "createdTimestamp ");
+        this.lastUpdatedTimestamp = checkNotNull(lastUpdatedTimestamp, "lastUpdatedTimestamp");
     }
 
     @Override

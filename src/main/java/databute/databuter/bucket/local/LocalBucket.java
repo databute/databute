@@ -37,7 +37,7 @@ public class LocalBucket extends Bucket {
 
         final EntityKey key = entity.key();
         if (entities.containsKey(key)) {
-            throw new DuplicateEntityKeyException(key);
+            throw new DuplicateEntityKeyException(key.key());
         } else {
             return entities.put(key, entity);
         }
