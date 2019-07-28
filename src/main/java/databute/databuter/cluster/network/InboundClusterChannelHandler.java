@@ -2,6 +2,10 @@ package databute.databuter.cluster.network;
 
 import databute.databuter.cluster.ClusterCoordinator;
 import databute.databuter.cluster.handshake.request.HandshakeRequestMessageHandler;
+import databute.databuter.entity.delete.DeleteEntityMessageHandler;
+import databute.databuter.entity.get.GetEntityMessageHandler;
+import databute.databuter.entity.set.SetEntityMessageHandler;
+import databute.databuter.entity.update.UpdateEntityMessageHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.channel.ChannelPipeline;
@@ -36,6 +40,10 @@ public class InboundClusterChannelHandler extends ChannelInboundHandlerAdapter {
         final ChannelPipeline pipeline = ctx.pipeline();
 
         pipeline.addLast(new HandshakeRequestMessageHandler(session));
+        pipeline.addLast(new GetEntityMessageHandler(session));
+        pipeline.addLast(new SetEntityMessageHandler(session));
+        pipeline.addLast(new UpdateEntityMessageHandler(session));
+        pipeline.addLast(new DeleteEntityMessageHandler(session));
     }
 
     @Override

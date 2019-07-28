@@ -7,6 +7,8 @@ import databute.databuter.cluster.ClusterCoordinator;
 import databute.databuter.cluster.handshake.request.HandshakeRequestMessage;
 import databute.databuter.cluster.handshake.response.HandshakeResponseMessageHandler;
 import databute.databuter.cluster.remote.RemoteClusterNode;
+import databute.databuter.entity.result.fail.EntityOperationFailMessageHandler;
+import databute.databuter.entity.result.success.EntityOperationSuccessMessageHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.channel.ChannelPipeline;
@@ -49,6 +51,8 @@ public class OutboundClusterChannelHandler extends ChannelInboundHandlerAdapter 
         final ChannelPipeline pipeline = ctx.pipeline();
 
         pipeline.addLast(new HandshakeResponseMessageHandler(session));
+        pipeline.addLast(new EntityOperationSuccessMessageHandler(session));
+        pipeline.addLast(new EntityOperationFailMessageHandler(session));
     }
 
     @Override

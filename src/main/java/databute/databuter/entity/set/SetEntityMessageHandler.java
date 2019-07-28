@@ -2,22 +2,22 @@ package databute.databuter.entity.set;
 
 import databute.databuter.Databuter;
 import databute.databuter.bucket.Bucket;
-import databute.databuter.client.network.ClientMessageHandler;
-import databute.databuter.client.network.ClientSession;
 import databute.databuter.entity.*;
 import databute.databuter.entity.result.fail.EntityOperationFailMessage;
 import databute.databuter.entity.result.success.EntityOperationSuccessMessage;
 import databute.databuter.entity.type.IntegerEntity;
 import databute.databuter.entity.type.LongEntity;
 import databute.databuter.entity.type.StringEntity;
+import databute.databuter.network.Session;
+import databute.databuter.network.message.AbstractMessageHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class SetEntityMessageHandler extends ClientMessageHandler<SetEntityMessage> {
+public class SetEntityMessageHandler extends AbstractMessageHandler<Session, SetEntityMessage> {
 
     private static final Logger logger = LoggerFactory.getLogger(SetEntityMessageHandler.class);
 
-    public SetEntityMessageHandler(ClientSession session) {
+    public SetEntityMessageHandler(Session session) {
         super(session);
     }
 

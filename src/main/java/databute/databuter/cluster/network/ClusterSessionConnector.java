@@ -5,6 +5,14 @@ import databute.databuter.cluster.ClusterCoordinator;
 import databute.databuter.cluster.handshake.request.HandshakeRequestMessageSerializer;
 import databute.databuter.cluster.handshake.response.HandshakeResponseMessageDeserializer;
 import databute.databuter.cluster.remote.RemoteClusterNode;
+import databute.databuter.entity.delete.DeleteEntityMessageDeserializer;
+import databute.databuter.entity.delete.DeleteEntityMessageSerializer;
+import databute.databuter.entity.get.GetEntityMessageDeserializer;
+import databute.databuter.entity.get.GetEntityMessageSerializer;
+import databute.databuter.entity.set.SetEntityMessageDeserializer;
+import databute.databuter.entity.set.SetEntityMessageSerializer;
+import databute.databuter.entity.update.UpdateEntityMessageDeserializer;
+import databute.databuter.entity.update.UpdateEntityMessageSerializer;
 import databute.databuter.network.AbstractSessionConnector;
 import databute.databuter.network.message.MessageCode;
 import databute.databuter.network.message.MessageCodeResolver;
@@ -41,9 +49,17 @@ public class ClusterSessionConnector extends AbstractSessionConnector {
 
         this.serializers = Maps.newHashMap();
         this.serializers.put(MessageCode.HANDSHAKE_REQUEST, new HandshakeRequestMessageSerializer());
+        this.serializers.put(MessageCode.GET_ENTITY, new GetEntityMessageSerializer());
+        this.serializers.put(MessageCode.SET_ENTITY, new SetEntityMessageSerializer());
+        this.serializers.put(MessageCode.UPDATE_ENTITY, new UpdateEntityMessageSerializer());
+        this.serializers.put(MessageCode.DELETE_ENTITY, new DeleteEntityMessageSerializer());
 
         this.deserializers = Maps.newHashMap();
         this.deserializers.put(MessageCode.HANDSHAKE_RESPONSE, new HandshakeResponseMessageDeserializer());
+        this.deserializers.put(MessageCode.GET_ENTITY, new GetEntityMessageDeserializer());
+        this.deserializers.put(MessageCode.SET_ENTITY, new SetEntityMessageDeserializer());
+        this.deserializers.put(MessageCode.UPDATE_ENTITY, new UpdateEntityMessageDeserializer());
+        this.deserializers.put(MessageCode.DELETE_ENTITY, new DeleteEntityMessageDeserializer());
     }
 
     @Override
