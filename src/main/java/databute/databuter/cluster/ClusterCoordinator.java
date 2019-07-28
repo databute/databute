@@ -55,8 +55,8 @@ public class ClusterCoordinator {
         this.zooKeeperConfiguration = Databuter.instance().configuration().zooKeeper();
 
         final CuratorFramework curator = Databuter.instance().curator();
-        final String path = ZKPaths.makePath(zooKeeperConfiguration.path(),"mutex/cluster");
-        this.clusterMutex = new InterProcessSemaphoreMutex(curator,path);
+        final String path = ZKPaths.makePath(zooKeeperConfiguration.path(), "mutex/cluster");
+        this.clusterMutex = new InterProcessSemaphoreMutex(curator, path);
     }
 
     public String id() {
@@ -148,15 +148,24 @@ public class ClusterCoordinator {
 
         try {
             clusterMutex.acquire();
-            final String createdPath = Databuter.instance().curator()
-                    .create()
-                    .withMode(CreateMode.EPHEMERAL)
-                    .forPath(path, json.getBytes());
-            logger.debug("Registered cluster node at {}", createdPath);
-        }finally {
+
+            try {
+                final String createdPath = Databuter.instance().curator()
+                        .create()
+                        .withMode(CreateMode.EPHEMERAL)
+                        .forPath(path, json.getBytes());
+                logger.debug("Registered cluster node at {}", createdPath);
+            } catch (Exception e) {
+                throw new ClusterException("Failed to register cluster" + localNode.id() + "to the zookeeper.");
+            }
+        } catch (ClusterException e) {
+            throw e;
+        } catch (Exception e) {
+            logger.error("Failed to acquire bucket mutex.", e);
+        } finally {
             try {
                 clusterMutex.release();
-            }catch (Exception e){
+            } catch (Exception e) {
                 logger.error("Failed to release cluster mutex.");
             }
         }

@@ -7,21 +7,17 @@ import databute.databuter.bucket.local.LocalBucket;
 import databute.databuter.bucket.notification.BucketNotificationMessage;
 import databute.databuter.bucket.remote.RemoteBucket;
 import databute.databuter.client.network.ClientSessionGroup;
-import databute.databuter.cluster.remote.RemoteClusterNode;
-import io.netty.channel.ChannelHandlerContext;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.recipes.cache.ChildData;
 import org.apache.curator.framework.recipes.cache.PathChildrenCache;
 import org.apache.curator.framework.recipes.cache.PathChildrenCacheEvent;
-import org.apache.curator.framework.recipes.locks.InterProcessMutex;
 import org.apache.curator.framework.recipes.locks.InterProcessSemaphoreMutex;
 import org.apache.curator.utils.ZKPaths;
 import org.apache.zookeeper.CreateMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicLong;
 
 public class BucketCoordinator {
@@ -43,8 +39,8 @@ public class BucketCoordinator {
         this.sharedKeyFactorCounter = new SharedKeyFactorCounter();
 
         final CuratorFramework curator = Databuter.instance().curator();
-        final String path = ZKPaths.makePath(zooKeeperConfiguration.path(),"mutex/bucket");
-        this.bucketMutex = new InterProcessSemaphoreMutex(curator,path);
+        final String path = ZKPaths.makePath(zooKeeperConfiguration.path(), "mutex/bucket");
+        this.bucketMutex = new InterProcessSemaphoreMutex(curator, path);
     }
 
     public void start() throws BucketException {
@@ -216,54 +212,39 @@ public class BucketCoordinator {
         return remoteBucket;
     }
 
-    public void removeInactiveStandbyBucket(ChannelHandlerContext ctx, RemoteClusterNode remoteNode) {
-        for (Bucket bucket : Databuter.instance().bucketGroup()) {
-            if (bucket instanceof LocalBucket) {
-                final LocalBucket localBucket = (LocalBucket) bucket;
-                if (localBucket.configuration().isActiveBy(Databuter.instance().id()) &&
-                        localBucket.configuration().isStandbyBy(remoteNode.id())) {
-                    ctx.executor()
-                            .submit((Callable<Void>) () -> {
-                                localBucket.configuration().standbyNodeId(null);
-                                update(localBucket);
-                                return null;
-                            })
-                            .addListener(future -> {
-                                if (future.isSuccess()) {
-                                    logger.info("Removed standby node of bucket {}.", localBucket.id());
-                                } else {
-                                    logger.error("Failed to remove standby node of bucket {}", bucket.id(), future.cause());
-                                }
-                            });
-                }
-            }
-        }
-    }
-
     private String save(Bucket bucket) throws BucketException {
         // TODO(@ghkim3221): 비동기로 ZooKeeper에 저장
         try {
             final String json = new Gson().toJson(bucket.configuration());
             final String zooKeeperPath = Databuter.instance().configuration().zooKeeper().path();
             final String path = ZKPaths.makePath(zooKeeperPath, "bucket", bucket.id());
+            final String savePath;
 
             bucketMutex.acquire();
-            final String savePath = Databuter.instance().curator()
-                    .create()
-                    .creatingParentContainersIfNeeded()
-                    .withMode(CreateMode.PERSISTENT)
-                    .forPath(path, json.getBytes());
 
+            try {
+                savePath = Databuter.instance().curator()
+                        .create()
+                        .creatingParentContainersIfNeeded()
+                        .withMode(CreateMode.PERSISTENT)
+                        .forPath(path, json.getBytes());
+            } catch (Exception e) {
+                throw new BucketException("Failed to save bucket " + bucket.id() + " to the ZooKeeper.");
+            }
+            
             return savePath;
+        } catch (BucketException e) {
+            throw e;
         } catch (Exception e) {
-            throw new BucketException("Failed to save bucket " + bucket.id() + " to the ZooKeeper.");
-        }finally {
-            try{
+            logger.error("Failed to acquire bucket mutex.", e);
+        } finally {
+            try {
                 bucketMutex.release();
-            }catch (Exception e){
-                logger.error("Failed to release bucket mutex.",e);
+            } catch (Exception e) {
+                logger.error("Failed to release bucket mutex.", e);
             }
         }
+        return null;
     }
 
     public void update(Bucket bucket) throws BucketException {
@@ -274,16 +255,22 @@ public class BucketCoordinator {
             final String path = ZKPaths.makePath(zooKeeperPath, "bucket", bucket.id());
 
             bucketMutex.acquire();
-            Databuter.instance().curator()
-                    .setData()
-                    .forPath(path, json.getBytes());
+            try {
+                Databuter.instance().curator()
+                        .setData()
+                        .forPath(path, json.getBytes());
+            } catch (Exception e) {
+                throw new BucketException("Failed to update bucket " + bucket.id() + " to the ZooKeeper.");
+            }
+        } catch (BucketException e) {
+            throw e;
         } catch (Exception e) {
-            throw new BucketException("Failed to update bucket " + bucket.id() + " to the ZooKeeper.");
-        }finally {
+            logger.error("Failed to acquire bucket mutex.", e);
+        } finally {
             try {
                 bucketMutex.release();
             } catch (Exception e) {
-                logger.error("Failed to release bucket mutex.",e);
+                logger.error("Failed to release bucket mutex.", e);
             }
         }
     }

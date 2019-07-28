@@ -2,14 +2,9 @@ package databute.databuter.bucket.local;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.collect.Maps;
-import com.google.gson.Gson;
-import databute.databuter.Databuter;
 import databute.databuter.bucket.Bucket;
 import databute.databuter.bucket.BucketConfiguration;
-import databute.databuter.bucket.BucketException;
 import databute.databuter.entity.*;
-import org.apache.curator.utils.ZKPaths;
-import org.apache.zookeeper.CreateMode;
 
 import java.util.Map;
 
