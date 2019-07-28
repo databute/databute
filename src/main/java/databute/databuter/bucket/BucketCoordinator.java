@@ -157,8 +157,8 @@ public class BucketCoordinator {
         logger.info("Created local active bucket {}.", localBucket.id());
 
         try {
-            final int sharedKeyFactor = sharedKeyFactorCounter.getAndIncreaseSharedKeyFactor();
-            localBucket.configuration().keyFactor(sharedKeyFactor);
+            final int keyFactor = sharedKeyFactorCounter.getAndIncreaseSharedKeyFactor();
+            localBucket.configuration().keyFactor(keyFactor);
             logger.info("Assigned key factor {} to bucket {}", localBucket.configuration().keyFactor(), localBucket.id());
 
             final String path = localBucket.save();
