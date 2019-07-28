@@ -2,22 +2,22 @@ package databute.databuter.entity.delete;
 
 import databute.databuter.Databuter;
 import databute.databuter.bucket.Bucket;
-import databute.databuter.client.network.ClientMessageHandler;
-import databute.databuter.client.network.ClientSession;
 import databute.databuter.entity.EmptyEntityKeyException;
 import databute.databuter.entity.Entity;
 import databute.databuter.entity.EntityKey;
 import databute.databuter.entity.UnsupportedValueTypeException;
 import databute.databuter.entity.result.fail.EntityOperationFailMessage;
 import databute.databuter.entity.result.success.EntityOperationSuccessMessage;
+import databute.databuter.network.Session;
+import databute.databuter.network.message.AbstractMessageHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class DeleteEntityMessageHandler extends ClientMessageHandler<DeleteEntityMessage> {
+public class DeleteEntityMessageHandler extends AbstractMessageHandler<Session, DeleteEntityMessage> {
 
     private static final Logger logger = LoggerFactory.getLogger(DeleteEntityMessageHandler.class);
 
-    public DeleteEntityMessageHandler(ClientSession session) {
+    public DeleteEntityMessageHandler(Session session) {
         super(session);
     }
 
