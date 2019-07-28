@@ -44,13 +44,13 @@ public class BucketGroup implements Iterable<Bucket> {
         //TODO(@nono5546): shared Key Factor를 가져오는 방식으로 변경.
         final int count = count();
         final HashCode hashKey = Hashing.crc32().hashString(entityKey.key(), StandardCharsets.UTF_8);
-        final int factor = Hashing.consistentHash(hashKey, count);
-        return findByFactor(factor);
+        final int keyFactor = Hashing.consistentHash(hashKey, count);
+        return findByKeyFactor(keyFactor);
     }
 
-    private Bucket findByFactor(int factor) {
+    private Bucket findByKeyFactor(int keyFactor) {
         for (Bucket bucket : buckets.values()) {
-            if (bucket.keyFactor() == factor) {
+            if (bucket.keyFactor() == keyFactor) {
                 return bucket;
             }
         }
