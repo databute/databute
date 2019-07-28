@@ -5,9 +5,7 @@ import databute.databuter.entity.Entity;
 import databute.databuter.entity.EntityMessage;
 import databute.databuter.entity.EntityValueType;
 import databute.databuter.entity.UnsupportedValueTypeException;
-import databute.databuter.entity.type.IntegerEntity;
-import databute.databuter.entity.type.LongEntity;
-import databute.databuter.entity.type.StringEntity;
+import databute.databuter.entity.type.*;
 import databute.databuter.network.message.MessageCode;
 
 import java.time.Instant;
@@ -31,6 +29,19 @@ public class EntityOperationSuccessMessage implements EntityMessage {
             final StringEntity stringEntity = (StringEntity) entity;
             return new EntityOperationSuccessMessage(id, stringEntity.key().key(), EntityValueType.STRING,
                     stringEntity.value(), stringEntity.createdTimestamp(), stringEntity.lastUpdatedTimestamp());
+        } else if (entity instanceof ListEntity) {
+            final ListEntity listEntity = (ListEntity) entity;
+            return new EntityOperationSuccessMessage(id, listEntity.key().key(), EntityValueType.LIST,
+                    listEntity.value(), listEntity.createdTimestamp(), listEntity.lastUpdatedTimestamp());
+        } else if (entity instanceof SetEntity) {
+            final SetEntity setEntity = (SetEntity) entity;
+            return new EntityOperationSuccessMessage(id, setEntity.key().key(), EntityValueType.SET,
+                    setEntity.value(), setEntity.createdTimestamp(), setEntity.lastUpdatedTimestamp());
+        } else if (entity instanceof DictionaryEntity) {
+            final DictionaryEntity dictionaryEntity = (DictionaryEntity) entity;
+            return new EntityOperationSuccessMessage(id, dictionaryEntity.key().key(), EntityValueType.DICTIONARY,
+                    dictionaryEntity.value(), dictionaryEntity.createdTimestamp(),
+                    dictionaryEntity.lastUpdatedTimestamp());
         } else {
             throw new UnsupportedValueTypeException();
         }

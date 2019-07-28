@@ -1,11 +1,17 @@
 package databute.databuter.entity.result.success;
 
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import databute.databuter.entity.EntityValueType;
 import databute.databuter.entity.UnsupportedValueTypeException;
 import databute.databuter.network.message.MessageDeserializer;
 import databute.databuter.network.packet.Packet;
 
 import java.time.Instant;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -32,6 +38,18 @@ public class EntityOperationSuccessMessageDeserializer implements MessageDeseria
                 value = deserializeStringValue(packet);
                 break;
             }
+            case LIST: {
+                value = deserializeListValue(packet);
+                break;
+            }
+            case SET: {
+                value = deserializeSetValue(packet);
+                break;
+            }
+            case DICTIONARY: {
+                value = deserializeDictionaryValue(packet);
+                break;
+            }
             default:
                 throw new UnsupportedValueTypeException();
         }
@@ -50,5 +68,42 @@ public class EntityOperationSuccessMessageDeserializer implements MessageDeseria
 
     private String deserializeStringValue(Packet packet) {
         return packet.readString();
+    }
+
+    private List<String> deserializeListValue(Packet packet) {
+        final List<String> value = Lists.newArrayList();
+
+        final int length = packet.readInt();
+        for (int i = 0; i < length; i++) {
+            final String item = packet.readString();
+            value.add(item);
+        }
+
+        return value;
+    }
+
+    private Set<String> deserializeSetValue(Packet packet) {
+        final Set<String> value = Sets.newHashSet();
+
+        final int length = packet.readInt();
+        for (int i = 0; i < length; i++) {
+            final String item = packet.readString();
+            value.add(item);
+        }
+
+        return value;
+    }
+
+    private Map<String, String> deserializeDictionaryValue(Packet packet) {
+        final Map<String, String> value = Maps.newHashMap();
+
+        final int length = packet.readInt();
+        for (int i = 0; i < length; i++) {
+            final String itemKey = packet.readString();
+            final String item = packet.readString();
+            value.put(itemKey, item);
+        }
+
+        return value;
     }
 }

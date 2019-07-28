@@ -5,5 +5,8 @@ public enum EntityValueType {
     INTEGER,
     LONG,
     STRING,
+    LIST,
+    SET,
+    DICTIONARY,
 
 }
