@@ -5,13 +5,15 @@ import databute.databuter.bucket.Bucket;
 import databute.databuter.entity.*;
 import databute.databuter.entity.result.fail.EntityOperationFailMessage;
 import databute.databuter.entity.result.success.EntityOperationSuccessMessage;
-import databute.databuter.entity.type.IntegerEntity;
-import databute.databuter.entity.type.LongEntity;
-import databute.databuter.entity.type.StringEntity;
+import databute.databuter.entity.type.*;
 import databute.databuter.network.Session;
 import databute.databuter.network.message.AbstractMessageHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class UpdateEntityMessageHandler extends AbstractMessageHandler<Session, UpdateEntityMessage> {
 
@@ -71,6 +73,15 @@ public class UpdateEntityMessageHandler extends AbstractMessageHandler<Session, 
         } else if (entity instanceof StringEntity) {
             final StringEntity stringEntity = (StringEntity) entity;
             updateStringEntity(stringEntity, updateEntityMessage);
+        } else if (entity instanceof ListEntity) {
+            final ListEntity listEntity = (ListEntity) entity;
+            updateListEntity(listEntity, updateEntityMessage);
+        } else if (entity instanceof SetEntity) {
+            final SetEntity setEntity = (SetEntity) entity;
+            updateSetEntity(setEntity, updateEntityMessage);
+        } else if (entity instanceof DictionaryEntity) {
+            final DictionaryEntity dictionaryEntity = (DictionaryEntity) entity;
+            updateDictionaryEntity(dictionaryEntity, updateEntityMessage);
         }
     }
 
@@ -93,5 +104,29 @@ public class UpdateEntityMessageHandler extends AbstractMessageHandler<Session, 
         stringEntity.set(stringValue);
 
         session().send(EntityOperationSuccessMessage.entity(updateEntityMessage.id(), stringEntity));
+    }
+
+    @SuppressWarnings("unchecked")
+    private void updateListEntity(ListEntity listEntity, UpdateEntityMessage updateEntityMessage) {
+        final List<String> listValue = (List<String>) updateEntityMessage.value();
+        listEntity.set(listValue);
+
+        session().send(EntityOperationSuccessMessage.entity(updateEntityMessage.id(), listEntity));
+    }
+
+    @SuppressWarnings("unchecked")
+    private void updateSetEntity(SetEntity setEntity, UpdateEntityMessage updateEntityMessage) {
+        final Set<String> setValue = (Set<String>) updateEntityMessage.value();
+        setEntity.set(setValue);
+
+        session().send(EntityOperationSuccessMessage.entity(updateEntityMessage.id(), setEntity));
+    }
+
+    @SuppressWarnings("unchecked")
+    private void updateDictionaryEntity(DictionaryEntity dictionaryEntity, UpdateEntityMessage updateEntityMessage) {
+        final Map<String, String> dictionaryValue = (Map<String, String>) updateEntityMessage.value();
+        dictionaryEntity.set(dictionaryValue);
+
+        session().send(EntityOperationSuccessMessage.entity(updateEntityMessage.id(), dictionaryEntity));
     }
 }
