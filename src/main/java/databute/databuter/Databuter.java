@@ -10,6 +10,7 @@ import databute.databuter.client.network.ClientSessionAcceptor;
 import databute.databuter.client.network.ClientSessionGroup;
 import databute.databuter.cluster.ClusterCoordinator;
 import databute.databuter.cluster.ClusterException;
+import databute.databuter.entity.EntityMessageDispatcher;
 import databute.databuter.network.Endpoint;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
@@ -39,11 +40,13 @@ public final class Databuter {
     private final String id;
     private final BucketGroup bucketGroup;
     private final ClientSessionGroup clientSessionGroup;
+    private final EntityMessageDispatcher entityMessageDispatcher;
 
     private Databuter() {
         this.id = UUID.randomUUID().toString();
         this.bucketGroup = new BucketGroup();
         this.clientSessionGroup = new ClientSessionGroup();
+        this.entityMessageDispatcher = new EntityMessageDispatcher();
     }
 
     public static Databuter instance() {
@@ -60,6 +63,10 @@ public final class Databuter {
 
     public ClientSessionGroup clientSessionGroup() {
         return clientSessionGroup;
+    }
+
+    public EntityMessageDispatcher entityMessageDispatcher() {
+        return entityMessageDispatcher;
     }
 
     public DatabuterConfiguration configuration() {
