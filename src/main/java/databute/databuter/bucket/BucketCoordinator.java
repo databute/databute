@@ -7,15 +7,20 @@ import databute.databuter.bucket.local.LocalBucket;
 import databute.databuter.bucket.notification.BucketNotificationMessage;
 import databute.databuter.bucket.remote.RemoteBucket;
 import databute.databuter.client.network.ClientSessionGroup;
+import databute.databuter.cluster.remote.RemoteClusterNode;
+import io.netty.channel.ChannelHandlerContext;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.recipes.cache.ChildData;
 import org.apache.curator.framework.recipes.cache.PathChildrenCache;
 import org.apache.curator.framework.recipes.cache.PathChildrenCacheEvent;
+import org.apache.curator.framework.recipes.locks.InterProcessMutex;
 import org.apache.curator.utils.ZKPaths;
+import org.apache.zookeeper.CreateMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicLong;
 
 public class BucketCoordinator {
@@ -28,12 +33,17 @@ public class BucketCoordinator {
     private final ZooKeeperConfiguration zooKeeperConfiguration;
     private final AtomicLong availableBucketCount;
     private final SharedKeyFactorCounter sharedKeyFactorCounter;
+    private final InterProcessMutex bucketMutex;
 
     public BucketCoordinator() {
         this.bucketGroup = Databuter.instance().bucketGroup();
         this.zooKeeperConfiguration = Databuter.instance().configuration().zooKeeper();
         this.availableBucketCount = new AtomicLong();
         this.sharedKeyFactorCounter = new SharedKeyFactorCounter();
+
+        final CuratorFramework curator = Databuter.instance().curator();
+        final String path = ZKPaths.makePath(zooKeeperConfiguration.path(),"mutex/bucket");
+        this.bucketMutex = new InterProcessMutex(curator,path);
     }
 
     public void start() throws BucketException {
@@ -161,7 +171,7 @@ public class BucketCoordinator {
             localBucket.configuration().keyFactor(keyFactor);
             logger.info("Assigned key factor {} to bucket {}", localBucket.configuration().keyFactor(), localBucket.id());
 
-            final String path = localBucket.save();
+            final String path = save(localBucket);
             logger.debug("Saved local active bucket {} to the ZooKeeper with path {}", localBucket.id(), path);
         } catch (BucketException e) {
             logger.error("Failed to create local active bucket.", e);
@@ -178,7 +188,7 @@ public class BucketCoordinator {
         logger.info("Created local standby bucket {}.", localBucket.id());
 
         try {
-            localBucket.update();
+            update(localBucket);
             logger.info("Updated local standby bucket {} to the ZooKeeper.", localBucket.id());
         } catch (BucketException e) {
             logger.error("Failed to update local standby bucket.", e);
@@ -203,5 +213,59 @@ public class BucketCoordinator {
         bucketGroup.add(remoteBucket);
 
         return remoteBucket;
+    }
+
+    public void removeInactiveStandbyBucket(ChannelHandlerContext ctx, RemoteClusterNode remoteNode) {
+        for (Bucket bucket : Databuter.instance().bucketGroup()) {
+            if (bucket instanceof LocalBucket) {
+                final LocalBucket localBucket = (LocalBucket) bucket;
+                if (localBucket.configuration().isActiveBy(Databuter.instance().id()) &&
+                        localBucket.configuration().isStandbyBy(remoteNode.id())) {
+                    ctx.executor()
+                            .submit((Callable<Void>) () -> {
+                                localBucket.configuration().standbyNodeId(null);
+                                update(localBucket);
+                                return null;
+                            })
+                            .addListener(future -> {
+                                if (future.isSuccess()) {
+                                    logger.info("Removed standby node of bucket {}.", localBucket.id());
+                                } else {
+                                    logger.error("Failed to remove standby node of bucket {}", bucket.id(), future.cause());
+                                }
+                            });
+                }
+            }
+        }
+    }
+
+    private String save(Bucket bucket) throws BucketException {
+        // TODO(@ghkim3221): 비동기로 ZooKeeper에 저장
+        try {
+            final String json = new Gson().toJson(bucket.configuration());
+            final String zooKeeperPath = Databuter.instance().configuration().zooKeeper().path();
+            final String path = ZKPaths.makePath(zooKeeperPath, "bucket", bucket.id());
+            return Databuter.instance().curator()
+                    .create()
+                    .creatingParentContainersIfNeeded()
+                    .withMode(CreateMode.PERSISTENT)
+                    .forPath(path, json.getBytes());
+        } catch (Exception e) {
+            throw new BucketException("Failed to save bucket " + bucket.id() + " to the ZooKeeper.");
+        }
+    }
+
+    public void update(Bucket bucket) throws BucketException {
+        // TODO(@ghkim3221): 비동기로 ZooKeeper에 업데이트
+        try {
+            final String json = new Gson().toJson(bucket.configuration());
+            final String zooKeeperPath = Databuter.instance().configuration().zooKeeper().path();
+            final String path = ZKPaths.makePath(zooKeeperPath, "bucket", bucket.id());
+            Databuter.instance().curator()
+                    .setData()
+                    .forPath(path, json.getBytes());
+        } catch (Exception e) {
+            throw new BucketException("Failed to update bucket " + bucket.id() + " to the ZooKeeper.");
+        }
     }
 }
