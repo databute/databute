@@ -2,6 +2,7 @@ package databute.databuter.cluster.network;
 
 import databute.databuter.Databuter;
 import databute.databuter.bucket.Bucket;
+import databute.databuter.bucket.BucketCoordinator;
 import databute.databuter.bucket.local.LocalBucket;
 import databute.databuter.cluster.ClusterCoordinator;
 import databute.databuter.cluster.handshake.request.HandshakeRequestMessage;
@@ -67,10 +68,11 @@ public class OutboundClusterChannelHandler extends ChannelInboundHandlerAdapter 
                 final LocalBucket localBucket = (LocalBucket) bucket;
                 if (localBucket.configuration().isActiveBy(Databuter.instance().id()) &&
                         localBucket.configuration().isStandbyBy(remoteNode.id())) {
+                    final BucketCoordinator bucketCoordinator = Databuter.instance().bucketCoordinator();
                     ctx.executor()
                             .submit((Callable<Void>) () -> {
                                 localBucket.configuration().standbyNodeId(null);
-                                localBucket.update();
+                                bucketCoordinator.update(localBucket);
                                 return null;
                             })
                             .addListener(future -> {

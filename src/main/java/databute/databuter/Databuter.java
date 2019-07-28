@@ -81,6 +81,10 @@ public final class Databuter {
         return clusterCoordinator;
     }
 
+    public BucketCoordinator bucketCoordinator() {
+        return bucketCoordinator;
+    }
+
     private void start() throws Exception {
         logger.info("Starting Databuter at {}", Instant.now());
 

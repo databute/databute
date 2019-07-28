@@ -12,7 +12,9 @@ import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.recipes.cache.ChildData;
 import org.apache.curator.framework.recipes.cache.PathChildrenCache;
 import org.apache.curator.framework.recipes.cache.PathChildrenCacheEvent;
+import org.apache.curator.framework.recipes.locks.InterProcessSemaphoreMutex;
 import org.apache.curator.utils.ZKPaths;
+import org.apache.zookeeper.CreateMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,12 +30,17 @@ public class BucketCoordinator {
     private final ZooKeeperConfiguration zooKeeperConfiguration;
     private final AtomicLong availableBucketCount;
     private final SharedKeyFactorCounter sharedKeyFactorCounter;
+    private final InterProcessSemaphoreMutex bucketMutex;
 
     public BucketCoordinator() {
         this.bucketGroup = Databuter.instance().bucketGroup();
         this.zooKeeperConfiguration = Databuter.instance().configuration().zooKeeper();
         this.availableBucketCount = new AtomicLong();
         this.sharedKeyFactorCounter = new SharedKeyFactorCounter();
+
+        final CuratorFramework curator = Databuter.instance().curator();
+        final String path = ZKPaths.makePath(zooKeeperConfiguration.path(), "mutex/bucket");
+        this.bucketMutex = new InterProcessSemaphoreMutex(curator, path);
     }
 
     public void start() throws BucketException {
@@ -161,7 +168,7 @@ public class BucketCoordinator {
             localBucket.configuration().keyFactor(keyFactor);
             logger.info("Assigned key factor {} to bucket {}", localBucket.configuration().keyFactor(), localBucket.id());
 
-            final String path = localBucket.save();
+            final String path = save(localBucket);
             logger.debug("Saved local active bucket {} to the ZooKeeper with path {}", localBucket.id(), path);
         } catch (BucketException e) {
             logger.error("Failed to create local active bucket.", e);
@@ -178,7 +185,7 @@ public class BucketCoordinator {
         logger.info("Created local standby bucket {}.", localBucket.id());
 
         try {
-            localBucket.update();
+            update(localBucket);
             logger.info("Updated local standby bucket {} to the ZooKeeper.", localBucket.id());
         } catch (BucketException e) {
             logger.error("Failed to update local standby bucket.", e);
@@ -203,5 +210,66 @@ public class BucketCoordinator {
         bucketGroup.add(remoteBucket);
 
         return remoteBucket;
+    }
+
+    private String save(Bucket bucket) throws BucketException {
+        // TODO(@ghkim3221): 비동기로 ZooKeeper에 저장
+        try {
+            final String json = new Gson().toJson(bucket.configuration());
+            final String zooKeeperPath = Databuter.instance().configuration().zooKeeper().path();
+            final String path = ZKPaths.makePath(zooKeeperPath, "bucket", bucket.id());
+
+            bucketMutex.acquire();
+
+            try {
+                return Databuter.instance().curator()
+                        .create()
+                        .creatingParentContainersIfNeeded()
+                        .withMode(CreateMode.PERSISTENT)
+                        .forPath(path, json.getBytes());
+            } catch (Exception e) {
+                throw new BucketException("Failed to save bucket " + bucket.id() + " to the ZooKeeper.");
+            }
+        } catch (BucketException e) {
+            throw e;
+        } catch (Exception e) {
+            logger.error("Failed to acquire bucket mutex.", e);
+        } finally {
+            try {
+                bucketMutex.release();
+            } catch (Exception e) {
+                logger.error("Failed to release bucket mutex.", e);
+            }
+        }
+
+        return null;
+    }
+
+    public void update(Bucket bucket) throws BucketException {
+        // TODO(@ghkim3221): 비동기로 ZooKeeper에 업데이트
+        try {
+            final String json = new Gson().toJson(bucket.configuration());
+            final String zooKeeperPath = Databuter.instance().configuration().zooKeeper().path();
+            final String path = ZKPaths.makePath(zooKeeperPath, "bucket", bucket.id());
+
+            bucketMutex.acquire();
+            try {
+                Databuter.instance().curator()
+                        .setData()
+                        .forPath(path, json.getBytes());
+            } catch (Exception e) {
+                throw new BucketException("Failed to update bucket " + bucket.id() + " to the ZooKeeper.");
+            }
+        } catch (BucketException e) {
+            throw e;
+        } catch (Exception e) {
+            logger.error("Failed to acquire bucket mutex.", e);
+        } finally {
+            try {
+                bucketMutex.release();
+            } catch (Exception e) {
+                logger.error("Failed to release bucket mutex.", e);
+            }
+        }
     }
 }
