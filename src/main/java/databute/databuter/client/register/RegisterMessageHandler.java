@@ -64,7 +64,7 @@ public class RegisterMessageHandler extends ClientMessageHandler<RegisterMessage
     private void sendBucketAddedNotificationMessage(Bucket bucket) {
         session().send(BucketNotificationMessage.added()
                 .id(bucket.id())
-                .factor(bucket.factor())
+                .keyFactor(bucket.keyFactor())
                 .activeNodeId(bucket.activeNodeId())
                 .standbyNodeId(bucket.standbyNodeId())
                 .build());

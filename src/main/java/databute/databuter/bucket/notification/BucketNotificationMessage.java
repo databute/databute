@@ -22,18 +22,18 @@ public class BucketNotificationMessage implements Message {
 
     private final BucketNotificationType type;
     private final String id;
-    private final int factor;
+    private final int keyFactor;
     private final String activeNodeId;
     private final String standbyNodeId;
 
     public BucketNotificationMessage(BucketNotificationType type,
                                      String id,
-                                     int factor,
+                                     int keyFactor,
                                      String activeNodeId,
                                      String standbyNodeId) {
         this.type = checkNotNull(type, "type");
         this.id = checkNotNull(id, "id");
-        this.factor = factor;
+        this.keyFactor = keyFactor;
         this.activeNodeId = activeNodeId;
         this.standbyNodeId = standbyNodeId;
     }
@@ -51,8 +51,8 @@ public class BucketNotificationMessage implements Message {
         return id;
     }
 
-    public int factor() {
-        return factor;
+    public int keyFactor() {
+        return keyFactor;
     }
 
     public String activeNodeId() {
@@ -69,7 +69,7 @@ public class BucketNotificationMessage implements Message {
                 .add("messageCode", messageCode())
                 .add("type", type)
                 .add("id", id)
-                .add("factor", factor)
+                .add("keyFactor", keyFactor)
                 .add("activeNodeId", activeNodeId)
                 .add("standbyNodeId", standbyNodeId)
                 .toString();
@@ -78,7 +78,7 @@ public class BucketNotificationMessage implements Message {
     public static class Builder {
 
         private String id;
-        private int factor;
+        private int keyFactor;
         private String activeNodeId;
         private String standbyNodeId;
 
@@ -93,8 +93,8 @@ public class BucketNotificationMessage implements Message {
             return this;
         }
 
-        public Builder factor(int factor) {
-            this.factor = factor;
+        public Builder keyFactor(int keyFactor) {
+            this.keyFactor = keyFactor;
             return this;
         }
 
@@ -109,7 +109,7 @@ public class BucketNotificationMessage implements Message {
         }
 
         public BucketNotificationMessage build() {
-            return new BucketNotificationMessage(type, id, factor, activeNodeId, standbyNodeId);
+            return new BucketNotificationMessage(type, id, keyFactor, activeNodeId, standbyNodeId);
         }
     }
 }
