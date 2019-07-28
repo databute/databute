@@ -7,9 +7,7 @@ import databute.databuter.Databuter;
 import databute.databuter.bucket.Bucket;
 import databute.databuter.bucket.BucketConfiguration;
 import databute.databuter.bucket.BucketException;
-import databute.databuter.entity.DuplicateEntityKeyException;
-import databute.databuter.entity.Entity;
-import databute.databuter.entity.EntityKey;
+import databute.databuter.entity.*;
 import org.apache.curator.utils.ZKPaths;
 import org.apache.zookeeper.CreateMode;
 
@@ -27,25 +25,52 @@ public class LocalBucket extends Bucket {
     }
 
     @Override
-    public Entity get(EntityKey key) {
-        return entities.get(key);
-    }
-
-    @Override
-    public Entity add(Entity entity) throws DuplicateEntityKeyException {
-        checkNotNull(entity, "entity");
-
-        final EntityKey key = entity.key();
-        if (entities.containsKey(key)) {
-            throw new DuplicateEntityKeyException(key.key());
-        } else {
-            return entities.put(key, entity);
+    public void get(EntityKey entityKey, EntityCallback callback) {
+        try {
+            final Entity entity = entities.get(entityKey);
+            if (entity == null) {
+                callback.onFailure(new NotFoundException(entityKey.key()));
+            } else {
+                callback.onSuccess(entity);
+            }
+        } catch (Exception e) {
+            callback.onFailure(e);
         }
     }
 
     @Override
-    public Entity remove(EntityKey key) {
-        return entities.remove(key);
+    public void add(Entity entity, EntityCallback callback) {
+        try {
+            checkNotNull(entity, "entity");
+
+            final EntityKey entityKey = entity.key();
+            if (entities.containsKey(entityKey)) {
+                callback.onFailure(new DuplicateEntityKeyException(entityKey.key()));
+            } else {
+                final boolean added = (entities.putIfAbsent(entityKey, entity) == null);
+                if (added) {
+                    callback.onSuccess(entity);
+                } else {
+                    callback.onFailure(new DuplicateEntityKeyException(entityKey.key()));
+                }
+            }
+        } catch (Exception e) {
+            callback.onFailure(e);
+        }
+    }
+
+    @Override
+    public void remove(EntityKey entityKey, EntityCallback callback) {
+        try {
+            final Entity entity = entities.remove(entityKey);
+            if (entity == null) {
+                callback.onFailure(new NotFoundException(entityKey.key()));
+            } else {
+                callback.onSuccess(entity);
+            }
+        } catch (Exception e) {
+            callback.onFailure(e);
+        }
     }
 
     public String save() throws BucketException {

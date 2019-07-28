@@ -2,10 +2,7 @@ package databute.databuter.entity.delete;
 
 import databute.databuter.Databuter;
 import databute.databuter.bucket.Bucket;
-import databute.databuter.entity.EmptyEntityKeyException;
-import databute.databuter.entity.Entity;
-import databute.databuter.entity.EntityKey;
-import databute.databuter.entity.UnsupportedValueTypeException;
+import databute.databuter.entity.*;
 import databute.databuter.entity.result.fail.EntityOperationFailMessage;
 import databute.databuter.entity.result.success.EntityOperationSuccessMessage;
 import databute.databuter.network.Session;
@@ -31,11 +28,30 @@ public class DeleteEntityMessageHandler extends AbstractMessageHandler<Session, 
         try {
             final EntityKey entityKey = new EntityKey(key);
             final Bucket bucket = Databuter.instance().bucketGroup().findByKey(entityKey);
-            final Entity entity = bucket.remove(entityKey);
-            if (entity == null) {
-                session().send(EntityOperationFailMessage.notFound(id, key));
+            if (bucket == null) {
+                // TODO(@ghkim3221): 키에 해당하는 버킷을 찾을 수 없는 경우. 이 경우가 발생할 것인가...?
             } else {
-                session().send(EntityOperationSuccessMessage.entity(id, entity));
+                bucket.remove(entityKey, new EntityCallback() {
+                    @Override
+                    public void onSuccess(Entity entity) {
+                        session().send(EntityOperationSuccessMessage.entity(id, entity));
+                    }
+
+                    @Override
+                    public void onFailure(Exception e) {
+                        if (e instanceof NotFoundException) {
+                            session().send(EntityOperationFailMessage.notFound(id, key));
+                        } else if (e instanceof EmptyEntityKeyException) {
+                            session().send(EntityOperationFailMessage.emptyKey(id, key));
+                        } else if (e instanceof DuplicateEntityKeyException) {
+                            session().send(EntityOperationFailMessage.duplicateKey(id, key));
+                        } else if (e instanceof UnsupportedValueTypeException) {
+                            session().send(EntityOperationFailMessage.unsupportedValueType(id, key));
+                        } else {
+                            logger.error("Unknown error to remove entity {}", key, e);
+                        }
+                    }
+                });
             }
         } catch (EmptyEntityKeyException e) {
             session().send(EntityOperationFailMessage.emptyKey(id, key));
