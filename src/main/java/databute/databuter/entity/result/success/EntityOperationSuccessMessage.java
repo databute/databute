@@ -1,7 +1,10 @@
 package databute.databuter.entity.result.success;
 
 import com.google.common.base.MoreObjects;
-import databute.databuter.entity.*;
+import databute.databuter.entity.Entity;
+import databute.databuter.entity.EntityMessage;
+import databute.databuter.entity.EntityValueType;
+import databute.databuter.entity.UnsupportedValueTypeException;
 import databute.databuter.entity.type.IntegerEntity;
 import databute.databuter.entity.type.LongEntity;
 import databute.databuter.entity.type.StringEntity;
@@ -18,15 +21,15 @@ public class EntityOperationSuccessMessage implements EntityMessage {
 
         if (entity instanceof IntegerEntity) {
             final IntegerEntity integerEntity = (IntegerEntity) entity;
-            return new EntityOperationSuccessMessage(id, integerEntity.key(), EntityValueType.INTEGER,
+            return new EntityOperationSuccessMessage(id, integerEntity.key().key(), EntityValueType.INTEGER,
                     integerEntity.value(), integerEntity.createdTimestamp(), integerEntity.lastUpdatedTimestamp());
         } else if (entity instanceof LongEntity) {
             final LongEntity longEntity = (LongEntity) entity;
-            return new EntityOperationSuccessMessage(id, longEntity.key(), EntityValueType.LONG, longEntity.value(),
-                    longEntity.createdTimestamp(), longEntity.lastUpdatedTimestamp());
+            return new EntityOperationSuccessMessage(id, longEntity.key().key(), EntityValueType.LONG,
+                    longEntity.value(), longEntity.createdTimestamp(), longEntity.lastUpdatedTimestamp());
         } else if (entity instanceof StringEntity) {
             final StringEntity stringEntity = (StringEntity) entity;
-            return new EntityOperationSuccessMessage(id, stringEntity.key(), EntityValueType.STRING,
+            return new EntityOperationSuccessMessage(id, stringEntity.key().key(), EntityValueType.STRING,
                     stringEntity.value(), stringEntity.createdTimestamp(), stringEntity.lastUpdatedTimestamp());
         } else {
             throw new UnsupportedValueTypeException();
@@ -34,14 +37,14 @@ public class EntityOperationSuccessMessage implements EntityMessage {
     }
 
     private final String id;
-    private final EntityKey key;
+    private final String key;
     private final EntityValueType valueType;
     private final Object value;
     private final Instant createdTimestamp;
     private final Instant lastUpdatedTimestamp;
 
     public EntityOperationSuccessMessage(String id,
-                                         EntityKey key,
+                                         String key,
                                          EntityValueType valueType,
                                          Object value,
                                          Instant createdTimestamp,
@@ -66,7 +69,7 @@ public class EntityOperationSuccessMessage implements EntityMessage {
 
     @Override
     public String key() {
-        return key.key();
+        return key;
     }
 
     public EntityValueType valueType() {
