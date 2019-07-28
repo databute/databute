@@ -218,12 +218,11 @@ public class BucketCoordinator {
             final String json = new Gson().toJson(bucket.configuration());
             final String zooKeeperPath = Databuter.instance().configuration().zooKeeper().path();
             final String path = ZKPaths.makePath(zooKeeperPath, "bucket", bucket.id());
-            final String savePath;
 
             bucketMutex.acquire();
 
             try {
-                savePath = Databuter.instance().curator()
+                return Databuter.instance().curator()
                         .create()
                         .creatingParentContainersIfNeeded()
                         .withMode(CreateMode.PERSISTENT)
@@ -231,8 +230,6 @@ public class BucketCoordinator {
             } catch (Exception e) {
                 throw new BucketException("Failed to save bucket " + bucket.id() + " to the ZooKeeper.");
             }
-            
-            return savePath;
         } catch (BucketException e) {
             throw e;
         } catch (Exception e) {
@@ -244,6 +241,7 @@ public class BucketCoordinator {
                 logger.error("Failed to release bucket mutex.", e);
             }
         }
+
         return null;
     }
 
