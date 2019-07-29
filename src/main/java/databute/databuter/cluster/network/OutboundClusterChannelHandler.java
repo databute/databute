@@ -17,8 +17,6 @@ import io.netty.channel.socket.SocketChannel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.concurrent.Callable;
-
 import static com.google.common.base.Preconditions.checkNotNull;
 
 public class OutboundClusterChannelHandler extends ChannelInboundHandlerAdapter {
@@ -66,24 +64,50 @@ public class OutboundClusterChannelHandler extends ChannelInboundHandlerAdapter 
         for (Bucket bucket : Databuter.instance().bucketGroup()) {
             if (bucket instanceof LocalBucket) {
                 final LocalBucket localBucket = (LocalBucket) bucket;
-                if (localBucket.configuration().isActiveBy(Databuter.instance().id()) &&
-                        localBucket.configuration().isStandbyBy(remoteNode.id())) {
-                    final BucketCoordinator bucketCoordinator = Databuter.instance().bucketCoordinator();
-                    ctx.executor()
-                            .submit((Callable<Void>) () -> {
-                                localBucket.configuration().standbyNodeId(null);
-                                bucketCoordinator.update(localBucket);
-                                return null;
-                            })
-                            .addListener(future -> {
-                                if (future.isSuccess()) {
-                                    logger.info("Removed standby node of bucket {}.", localBucket.id());
-                                } else {
-                                    logger.error("Failed to remove standby node of bucket {}", bucket.id(), future.cause());
-                                }
-                            });
+
+                final boolean isActiveByLocalNode = localBucket.configuration().isActiveBy(Databuter.instance().id());
+                final boolean isStandbyByLocalNode = localBucket.configuration().isStandbyBy(Databuter.instance().id());
+                final boolean isActiveByRemoteNode = localBucket.configuration().isActiveBy(remoteNode.id());
+                final boolean isStandbyByRemoteNode = localBucket.configuration().isStandbyBy(remoteNode.id());
+
+                if (isActiveByLocalNode && isStandbyByRemoteNode) {
+                    removeStanbyNode(bucket, localBucket);
+                } else if (isActiveByRemoteNode && isStandbyByLocalNode) {
+                    failover(localBucket);
                 }
             }
         }
+    }
+
+    private void removeStanbyNode(Bucket bucket, LocalBucket localBucket) {
+        final BucketCoordinator bucketCoordinator = Databuter.instance().bucketCoordinator();
+        session.submit(() -> {
+            localBucket.configuration().standbyNodeId(null);
+            bucketCoordinator.update(localBucket);
+            return null;
+        }).addListener(future -> {
+            if (future.isSuccess()) {
+                logger.info("Removed standby node of bucket {}.", localBucket.id());
+            } else {
+                logger.error("Failed to remove standby node of bucket {}", bucket.id(), future.cause());
+            }
+        });
+    }
+
+    private void failover(LocalBucket localBucket) {
+        final BucketCoordinator bucketCoordinator = Databuter.instance().bucketCoordinator();
+        final String standbyNodeId = localBucket.configuration().standbyNodeId();
+        session.submit(() -> {
+            localBucket.configuration().activeNodeId(standbyNodeId);
+            localBucket.configuration().standbyNodeId(null);
+            bucketCoordinator.update(localBucket);
+            return null;
+        }).addListener(future -> {
+            if (future.isSuccess()) {
+                logger.info("Failover bucket {}.", localBucket.id());
+            } else {
+                logger.error("Failed to failover bucket {}.", localBucket.id(), future.cause());
+            }
+        });
     }
 }
