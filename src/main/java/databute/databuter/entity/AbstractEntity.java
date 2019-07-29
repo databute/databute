@@ -1,6 +1,7 @@
 package databute.databuter.entity;
 
 import java.time.Instant;
+import java.util.concurrent.locks.ReentrantLock;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -11,6 +12,7 @@ public abstract class AbstractEntity<T> implements Entity<T> {
 
     private final EntityKey key;
     private final Instant createdTimestamp;
+    private final ReentrantLock lock;
 
     protected AbstractEntity(EntityKey key, T value) {
         this(key, value, Instant.now());
@@ -25,6 +27,7 @@ public abstract class AbstractEntity<T> implements Entity<T> {
         this.value = checkNotNull(value, "value");
         this.createdTimestamp = checkNotNull(createdTimestamp, "createdTimestamp ");
         this.lastUpdatedTimestamp = checkNotNull(lastUpdatedTimestamp, "lastUpdatedTimestamp");
+        this.lock = new ReentrantLock();
     }
 
     @Override
@@ -34,14 +37,26 @@ public abstract class AbstractEntity<T> implements Entity<T> {
 
     @Override
     public final T value() {
-        return value;
+        lock.lock();
+        try {
+            return this.value;
+        } finally {
+            lock.unlock();
+        }
     }
 
     @Override
     public final T set(T value) {
-        this.value = checkNotNull(value, "value");
-        this.lastUpdatedTimestamp = Instant.now();
-        return this.value;
+        checkNotNull(value, "value");
+
+        lock.lock();
+        try {
+            this.value = value;
+            this.lastUpdatedTimestamp = Instant.now();
+            return this.value;
+        } finally {
+            lock.unlock();
+        }
     }
 
     @Override
