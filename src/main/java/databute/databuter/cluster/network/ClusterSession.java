@@ -4,6 +4,9 @@ import com.google.common.base.MoreObjects;
 import databute.databuter.cluster.ClusterCoordinator;
 import databute.databuter.network.AbstractSession;
 import io.netty.channel.socket.SocketChannel;
+import io.netty.util.concurrent.Future;
+
+import java.util.concurrent.Callable;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -18,6 +21,11 @@ public class ClusterSession extends AbstractSession {
 
     public ClusterCoordinator cluster() {
         return clusterCoordinator;
+    }
+
+    public Future<?> submit(Callable callable) {
+        checkNotNull(callable, "callable");
+        return channel().eventLoop().submit(callable);
     }
 
     @Override
