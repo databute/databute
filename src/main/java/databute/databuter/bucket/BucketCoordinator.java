@@ -82,6 +82,9 @@ public class BucketCoordinator {
             case CHILD_UPDATED:
                 onUpdated(event.getData());
                 break;
+            case CHILD_REMOVED:
+                onRemoved(event.getData());
+                break;
         }
     }
 
@@ -143,6 +146,23 @@ public class BucketCoordinator {
             logger.info("Updated bucket {}.", bucket.id());
 
             broadcastBucketUpdated(bucket);
+        }
+    }
+
+    private void onRemoved(ChildData data) {
+        if (data == null) {
+            logger.warn("Received CHILD_REMOVED event with null data.");
+            return;
+        }
+
+        final String json = new String(data.getData());
+        final BucketConfiguration bucketConfiguration = new Gson().fromJson(json, BucketConfiguration.class);
+
+        Bucket bucket = bucketGroup.find(bucketConfiguration.id());
+        if (bucket instanceof LocalBucket) {
+            throw new IllegalStateException("Remove local bucket " + bucketConfiguration);
+        } else {
+            bucketGroup.remove(bucket);
         }
     }
 
