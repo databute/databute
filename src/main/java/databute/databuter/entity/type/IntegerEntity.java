@@ -12,8 +12,12 @@ public class IntegerEntity extends AbstractEntity<Integer> {
         super(key, value);
     }
 
-    public IntegerEntity(EntityKey key, Integer value, Instant createdTimestamp, Instant lastUpdatedTimestamp) {
-        super(key, value, createdTimestamp, lastUpdatedTimestamp);
+    public IntegerEntity(EntityKey key,
+                         Integer value,
+                         Instant createdTimestamp,
+                         Instant lastUpdatedTimestamp,
+                         Instant expirationTimestamp) {
+        super(key, value, createdTimestamp, lastUpdatedTimestamp, expirationTimestamp);
     }
 
     @Override
@@ -23,6 +27,7 @@ public class IntegerEntity extends AbstractEntity<Integer> {
                 .add("value", value())
                 .add("createdTimestamp", createdTimestamp())
                 .add("lastUpdatedTimestamp", lastUpdatedTimestamp())
+                .add("expirationTimestamp", expirationTimestamp())
                 .toString();
     }
 }

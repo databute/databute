@@ -12,8 +12,12 @@ public class LongEntity extends AbstractEntity<Long> {
         super(key, value);
     }
 
-    public LongEntity(EntityKey key, Long value, Instant createdTimestamp, Instant lastUpdatedTimestamp) {
-        super(key, value, createdTimestamp, lastUpdatedTimestamp);
+    public LongEntity(EntityKey key,
+                      Long value,
+                      Instant createdTimestamp,
+                      Instant lastUpdatedTimestamp,
+                      Instant expirationTimestamp) {
+        super(key, value, createdTimestamp, lastUpdatedTimestamp, expirationTimestamp);
     }
 
     @Override
@@ -23,6 +27,7 @@ public class LongEntity extends AbstractEntity<Long> {
                 .add("value", value())
                 .add("createdTimestamp", createdTimestamp())
                 .add("lastUpdatedTimestamp", lastUpdatedTimestamp())
+                .add("expirationTimestamp", expirationTimestamp())
                 .toString();
     }
 }

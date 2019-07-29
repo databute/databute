@@ -13,8 +13,12 @@ public class DictionaryEntity extends AbstractEntity<Map<String, String>> {
         super(key, value);
     }
 
-    public DictionaryEntity(EntityKey key, Map<String, String> value, Instant createdTimestamp, Instant lastUpdatedTimestamp) {
-        super(key, value, createdTimestamp, lastUpdatedTimestamp);
+    public DictionaryEntity(EntityKey key,
+                            Map<String, String> value,
+                            Instant createdTimestamp,
+                            Instant lastUpdatedTimestamp,
+                            Instant expirationTimestamp) {
+        super(key, value, createdTimestamp, lastUpdatedTimestamp, expirationTimestamp);
     }
 
     @Override
@@ -24,6 +28,7 @@ public class DictionaryEntity extends AbstractEntity<Map<String, String>> {
                 .add("value", value())
                 .add("createdTimestamp", createdTimestamp())
                 .add("lastUpdatedTimestamp", lastUpdatedTimestamp())
+                .add("expirationTimestamp", expirationTimestamp())
                 .toString();
     }
 }

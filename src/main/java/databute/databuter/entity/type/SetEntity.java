@@ -13,8 +13,12 @@ public class SetEntity extends AbstractEntity<Set<String>> {
         super(key, value);
     }
 
-    public SetEntity(EntityKey key, Set<String> value, Instant createdTimestamp, Instant lastUpdatedTimestamp) {
-        super(key, value, createdTimestamp, lastUpdatedTimestamp);
+    public SetEntity(EntityKey key,
+                     Set<String> value,
+                     Instant createdTimestamp,
+                     Instant lastUpdatedTimestamp,
+                     Instant expirationTimestamp) {
+        super(key, value, createdTimestamp, lastUpdatedTimestamp, expirationTimestamp);
     }
 
     @Override
@@ -24,6 +28,7 @@ public class SetEntity extends AbstractEntity<Set<String>> {
                 .add("value", value())
                 .add("createdTimestamp", createdTimestamp())
                 .add("lastUpdatedTimestamp", lastUpdatedTimestamp())
+                .add("expirationTimestamp", expirationTimestamp())
                 .toString();
     }
 }
