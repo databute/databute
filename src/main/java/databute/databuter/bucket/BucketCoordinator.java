@@ -12,7 +12,7 @@ import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.recipes.cache.ChildData;
 import org.apache.curator.framework.recipes.cache.PathChildrenCache;
 import org.apache.curator.framework.recipes.cache.PathChildrenCacheEvent;
-import org.apache.curator.framework.recipes.locks.InterProcessSemaphoreMutex;
+import org.apache.curator.framework.recipes.locks.InterProcessMutex;
 import org.apache.curator.utils.ZKPaths;
 import org.apache.zookeeper.CreateMode;
 import org.slf4j.Logger;
@@ -30,7 +30,7 @@ public class BucketCoordinator {
     private final ZooKeeperConfiguration zooKeeperConfiguration;
     private final AtomicLong availableBucketCount;
     private final SharedKeyFactorCounter sharedKeyFactorCounter;
-    private final InterProcessSemaphoreMutex bucketMutex;
+    private final InterProcessMutex bucketMutex;
 
     public BucketCoordinator() {
         this.bucketGroup = Databuter.instance().bucketGroup();
@@ -40,10 +40,10 @@ public class BucketCoordinator {
 
         final CuratorFramework curator = Databuter.instance().curator();
         final String path = ZKPaths.makePath(zooKeeperConfiguration.path(), "mutex/bucket");
-        this.bucketMutex = new InterProcessSemaphoreMutex(curator, path);
+        this.bucketMutex = new InterProcessMutex(curator, path);
     }
 
-    public void start() throws BucketException {
+    public void start() throws SharedKeyFactorException, BucketException {
         sharedKeyFactorCounter.start();
 
         calculateAvailableBucketCount();
@@ -180,20 +180,42 @@ public class BucketCoordinator {
         final String nodeId = Databuter.instance().id();
         final BucketConfiguration bucketConfiguration = new BucketConfiguration().activeNodeId(nodeId);
 
-        final LocalBucket localBucket = createLocalBucket(bucketConfiguration);
-        logger.info("Created local active bucket {}.", localBucket.id());
-
+        LocalBucket localBucket = null;
         try {
-            final int keyFactor = sharedKeyFactorCounter.getAndIncreaseSharedKeyFactor();
-            localBucket.configuration().keyFactor(keyFactor);
-            logger.info("Assigned key factor {} to bucket {}", localBucket.configuration().keyFactor(), localBucket.id());
+            bucketMutex.acquire();
 
-            final String path = save(localBucket);
-            logger.debug("Saved local active bucket {} to the ZooKeeper with path {}", localBucket.id(), path);
-        } catch (BucketException e) {
-            logger.error("Failed to create local active bucket.", e);
+            try {
+                localBucket = createLocalBucket(bucketConfiguration);
+                logger.info("Created local active bucket {}.", localBucket.id());
 
-            bucketGroup.remove(localBucket);
+                final int keyFactor = sharedKeyFactorCounter.getAndIncreaseSharedKeyFactor();
+                localBucket.configuration().keyFactor(keyFactor);
+                logger.info("Assigned key factor {} to bucket {}", localBucket.configuration().keyFactor(), localBucket.id());
+
+                final String path = save(localBucket);
+                logger.debug("Saved local active bucket {} to the ZooKeeper with path {}", localBucket.id(), path);
+            } catch (SharedKeyFactorException e) {
+                logger.error("Failed to increase shared key factor.", e);
+
+                bucketGroup.remove(localBucket);
+            } catch (BucketException e) {
+                logger.error("Failed to create local active bucket.", e);
+
+                bucketGroup.remove(localBucket);
+                try {
+                    sharedKeyFactorCounter.getAndDecreaseSharedKeyFactor();
+                } catch (SharedKeyFactorException e1) {
+                    logger.error("Failed to decrease shared key factor.", e1);
+                }
+            }
+        } catch (Exception e) {
+            logger.error("Failed to acquire bucket mutex.");
+        } finally {
+            try {
+                bucketMutex.release();
+            } catch (Exception e) {
+                logger.error("Failed to realese bucket mutex.");
+            }
         }
     }
 
@@ -253,7 +275,7 @@ public class BucketCoordinator {
         } catch (BucketException e) {
             throw e;
         } catch (Exception e) {
-            logger.error("Failed to acquire bucket mutex.", e);
+            throw new BucketException("Failed to acquire bucket mutex.");
         } finally {
             try {
                 bucketMutex.release();
@@ -261,8 +283,6 @@ public class BucketCoordinator {
                 logger.error("Failed to release bucket mutex.", e);
             }
         }
-
-        return null;
     }
 
     public void update(Bucket bucket) throws BucketException {
