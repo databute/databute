@@ -5,6 +5,7 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import databute.databuter.bucket.BucketCoordinator;
 import databute.databuter.bucket.BucketException;
 import databute.databuter.bucket.BucketGroup;
+import databute.databuter.bucket.SharedKeyFactorException;
 import databute.databuter.client.ClientConfiguration;
 import databute.databuter.client.network.ClientSessionAcceptor;
 import databute.databuter.client.network.ClientSessionGroup;
@@ -123,7 +124,7 @@ public final class Databuter {
     }
 
 
-    private void startBucketCoordinator() throws BucketException {
+    private void startBucketCoordinator() throws BucketException, SharedKeyFactorException {
         bucketCoordinator = new BucketCoordinator();
         bucketCoordinator.start();
     }

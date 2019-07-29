@@ -14,21 +14,31 @@ public class SharedKeyFactorCounter {
         this.sharedCount = new SharedCount(Databuter.instance().curator(), path, 0);
     }
 
-    public void start() throws BucketException {
+    public void start() throws SharedKeyFactorException {
         try {
             sharedCount.start();
         } catch (Exception e) {
-            throw new BucketException("Fail to start shared key factor.", e);
+            throw new SharedKeyFactorException("Fail to start shared key factor.", e);
         }
     }
 
-    public int getAndIncreaseSharedKeyFactor() throws BucketException {
+    public int getAndIncreaseSharedKeyFactor() throws SharedKeyFactorException {
         try {
             final int previousKeyFactor = sharedCount.getCount();
             sharedCount.setCount(previousKeyFactor + 1);
             return previousKeyFactor;
         } catch (Exception e) {
-            throw new BucketException("Failed to increase shared key factor.", e);
+            throw new SharedKeyFactorException("Failed to increase shared key factor.", e);
+        }
+    }
+
+    public int getAndDecreaseSharedKeyFactor() throws SharedKeyFactorException {
+        try {
+            final int previousKeyFactor = sharedCount.getCount();
+            sharedCount.setCount(previousKeyFactor - 1);
+            return previousKeyFactor;
+        } catch (Exception e) {
+            throw new SharedKeyFactorException("Failed to decrease shared key factor.", e);
         }
     }
 }
