@@ -50,7 +50,13 @@ public class LocalBucket extends Bucket {
             if (entity == null) {
                 callback.onFailure(new NotFoundException(entityKey.key()));
             } else {
-                callback.onSuccess(entity);
+                if (entity.willBeExpire() && entity.expirationTimestamp().isBefore(Instant.now())) {
+                    entities.remove(entityKey);
+
+                    callback.onFailure(new NotFoundException(entityKey.key()));
+                } else {
+                    callback.onSuccess(entity);
+                }
             }
         } catch (Exception e) {
             callback.onFailure(e);
@@ -92,6 +98,40 @@ public class LocalBucket extends Bucket {
         }
     }
 
+    @Override
+    public void expire(EntityKey entityKey, Instant expirationTimestamp, EntityCallback callback) {
+        try {
+            final Entity entity = entities.get(entityKey);
+
+            if (entity == null) {
+                callback.onFailure(new NotFoundException(entityKey.key()));
+                return;
+            }
+
+            if (expirationTimestamp == null) {
+                // 엔티티에 할당된 TTL을 제거하여 삭제되지 않도록 함.
+                expireLock.lock();
+                try {
+                    entity.cancelExpiration();
+                } finally {
+                    expireLock.unlock();
+                }
+            } else {
+                expireLock.lock();
+                try {
+                    expireQueue.add(new Expiration(entityKey, expirationTimestamp));
+                    entity.expireAt(expirationTimestamp);
+                } finally {
+                    expireLock.unlock();
+                }
+            }
+
+            callback.onSuccess(entity);
+        } catch (Exception e) {
+            callback.onFailure(e);
+        }
+    }
+
     private void doExpire() {
         expireLock.lock();
         try {
@@ -105,10 +145,15 @@ public class LocalBucket extends Bucket {
                 }
                 expireIterator.remove();
 
-                final Entity expiredEntity = entities.remove(expiration.key());
-                logger.debug("Expired entity {}.", expiredEntity.key());
+                final Entity entity = entities.get(expiration.key());
+                if (entity != null) {
+                    if (entity.willBeExpire() && entity.expirationTimestamp().isBefore(Instant.now())) {
+                        entities.remove(expiration.key());
+                        logger.debug("Expired entity {}.", expiration.key());
 
-                count += 1;
+                        count += 1;
+                    }
+                }
             }
 
             logger.debug("Expired {} entities from bucket {}. {} expirations left.", count, id(), expireQueue.size());

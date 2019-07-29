@@ -4,6 +4,8 @@ import databute.databuter.entity.Entity;
 import databute.databuter.entity.EntityCallback;
 import databute.databuter.entity.EntityKey;
 
+import java.time.Instant;
+
 import static com.google.common.base.Preconditions.checkNotNull;
 
 public abstract class Bucket {
@@ -22,6 +24,8 @@ public abstract class Bucket {
     public abstract void add(Entity entity, EntityCallback callback);
 
     public abstract void remove(EntityKey entityKey, EntityCallback callback);
+
+    public abstract void expire(EntityKey entityKey, Instant expirationTimestamp, EntityCallback callback);
 
     public String id() {
         return id;

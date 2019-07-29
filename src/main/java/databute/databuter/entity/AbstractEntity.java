@@ -86,6 +86,11 @@ public abstract class AbstractEntity<T> implements Entity<T> {
     }
 
     @Override
+    public void cancelExpiration() {
+        expireAt(null);
+    }
+
+    @Override
     public boolean willBeExpire() {
         return (expirationTimestamp != null);
     }

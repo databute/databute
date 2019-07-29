@@ -3,6 +3,7 @@ package databute.databuter.cluster.network;
 import databute.databuter.cluster.ClusterCoordinator;
 import databute.databuter.cluster.handshake.request.HandshakeRequestMessageHandler;
 import databute.databuter.entity.delete.DeleteEntityMessageHandler;
+import databute.databuter.entity.expire.ExpireEntityMessageHandler;
 import databute.databuter.entity.get.GetEntityMessageHandler;
 import databute.databuter.entity.set.SetEntityMessageHandler;
 import databute.databuter.entity.update.UpdateEntityMessageHandler;
@@ -44,6 +45,7 @@ public class InboundClusterChannelHandler extends ChannelInboundHandlerAdapter {
         pipeline.addLast(new SetEntityMessageHandler(session));
         pipeline.addLast(new UpdateEntityMessageHandler(session));
         pipeline.addLast(new DeleteEntityMessageHandler(session));
+        pipeline.addLast(new ExpireEntityMessageHandler(session));
     }
 
     @Override

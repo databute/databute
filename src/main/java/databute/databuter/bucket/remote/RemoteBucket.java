@@ -8,6 +8,8 @@ import databute.databuter.entity.EntityCallback;
 import databute.databuter.entity.EntityKey;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
+import java.time.Instant;
+
 public class RemoteBucket extends Bucket {
 
     public RemoteBucket(BucketConfiguration configuration) {
@@ -26,6 +28,11 @@ public class RemoteBucket extends Bucket {
 
     @Override
     public void remove(EntityKey entityKey, EntityCallback callback) {
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public void expire(EntityKey entityKey, Instant expirationTimestamp, EntityCallback callback) {
         throw new NotImplementedException();
     }
 
