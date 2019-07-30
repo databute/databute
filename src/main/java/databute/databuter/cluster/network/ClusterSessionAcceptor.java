@@ -4,14 +4,14 @@ import com.google.common.collect.Maps;
 import databute.databuter.cluster.ClusterCoordinator;
 import databute.databuter.cluster.handshake.request.HandshakeRequestMessageDeserializer;
 import databute.databuter.cluster.handshake.response.HandshakeResponseMessageSerializer;
-import databute.databuter.entity.delete.DeleteEntityMessageDeserializer;
-import databute.databuter.entity.delete.DeleteEntityMessageSerializer;
-import databute.databuter.entity.get.GetEntityMessageDeserializer;
-import databute.databuter.entity.get.GetEntityMessageSerializer;
-import databute.databuter.entity.set.SetEntityMessageDeserializer;
-import databute.databuter.entity.set.SetEntityMessageSerializer;
-import databute.databuter.entity.update.UpdateEntityMessageDeserializer;
-import databute.databuter.entity.update.UpdateEntityMessageSerializer;
+import databute.databuter.entry.delete.DeleteEntryMessageDeserializer;
+import databute.databuter.entry.delete.DeleteEntryMessageSerializer;
+import databute.databuter.entry.get.GetEntryMessageDeserializer;
+import databute.databuter.entry.get.GetEntryMessageSerializer;
+import databute.databuter.entry.set.SetEntryMessageDeserializer;
+import databute.databuter.entry.set.SetEntryMessageSerializer;
+import databute.databuter.entry.update.UpdateEntryMessageDeserializer;
+import databute.databuter.entry.update.UpdateEntryMessageSerializer;
 import databute.databuter.network.AbstractSessionAcceptor;
 import databute.databuter.network.message.MessageCode;
 import databute.databuter.network.message.MessageCodeResolver;
@@ -46,17 +46,17 @@ public class ClusterSessionAcceptor extends AbstractSessionAcceptor {
 
         this.serializers = Maps.newHashMap();
         this.serializers.put(MessageCode.HANDSHAKE_RESPONSE, new HandshakeResponseMessageSerializer());
-        this.serializers.put(MessageCode.GET_ENTITY, new GetEntityMessageSerializer());
-        this.serializers.put(MessageCode.SET_ENTITY, new SetEntityMessageSerializer());
-        this.serializers.put(MessageCode.UPDATE_ENTITY, new UpdateEntityMessageSerializer());
-        this.serializers.put(MessageCode.DELETE_ENTITY, new DeleteEntityMessageSerializer());
+        this.serializers.put(MessageCode.GET_ENTRY, new GetEntryMessageSerializer());
+        this.serializers.put(MessageCode.SET_ENTRY, new SetEntryMessageSerializer());
+        this.serializers.put(MessageCode.UPDATE_ENTRY, new UpdateEntryMessageSerializer());
+        this.serializers.put(MessageCode.DELETE_ENTRY, new DeleteEntryMessageSerializer());
 
         this.deserializers = Maps.newHashMap();
         this.deserializers.put(MessageCode.HANDSHAKE_REQUEST, new HandshakeRequestMessageDeserializer());
-        this.deserializers.put(MessageCode.GET_ENTITY, new GetEntityMessageDeserializer());
-        this.deserializers.put(MessageCode.SET_ENTITY, new SetEntityMessageDeserializer());
-        this.deserializers.put(MessageCode.UPDATE_ENTITY, new UpdateEntityMessageDeserializer());
-        this.deserializers.put(MessageCode.DELETE_ENTITY, new DeleteEntityMessageDeserializer());
+        this.deserializers.put(MessageCode.GET_ENTRY, new GetEntryMessageDeserializer());
+        this.deserializers.put(MessageCode.SET_ENTRY, new SetEntryMessageDeserializer());
+        this.deserializers.put(MessageCode.UPDATE_ENTRY, new UpdateEntryMessageDeserializer());
+        this.deserializers.put(MessageCode.DELETE_ENTRY, new DeleteEntryMessageDeserializer());
     }
 
     @Override

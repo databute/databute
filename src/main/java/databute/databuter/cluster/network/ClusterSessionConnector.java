@@ -5,16 +5,16 @@ import databute.databuter.cluster.ClusterCoordinator;
 import databute.databuter.cluster.handshake.request.HandshakeRequestMessageSerializer;
 import databute.databuter.cluster.handshake.response.HandshakeResponseMessageDeserializer;
 import databute.databuter.cluster.remote.RemoteClusterNode;
-import databute.databuter.entity.delete.DeleteEntityMessageDeserializer;
-import databute.databuter.entity.delete.DeleteEntityMessageSerializer;
-import databute.databuter.entity.expire.ExpireEntityMessageDeserializer;
-import databute.databuter.entity.expire.ExpireEntityMessageSerializer;
-import databute.databuter.entity.get.GetEntityMessageDeserializer;
-import databute.databuter.entity.get.GetEntityMessageSerializer;
-import databute.databuter.entity.set.SetEntityMessageDeserializer;
-import databute.databuter.entity.set.SetEntityMessageSerializer;
-import databute.databuter.entity.update.UpdateEntityMessageDeserializer;
-import databute.databuter.entity.update.UpdateEntityMessageSerializer;
+import databute.databuter.entry.delete.DeleteEntryMessageDeserializer;
+import databute.databuter.entry.delete.DeleteEntryMessageSerializer;
+import databute.databuter.entry.expire.ExpireEntryMessageDeserializer;
+import databute.databuter.entry.expire.ExpireEntryMessageSerializer;
+import databute.databuter.entry.get.GetEntryMessageDeserializer;
+import databute.databuter.entry.get.GetEntryMessageSerializer;
+import databute.databuter.entry.set.SetEntryMessageDeserializer;
+import databute.databuter.entry.set.SetEntryMessageSerializer;
+import databute.databuter.entry.update.UpdateEntryMessageDeserializer;
+import databute.databuter.entry.update.UpdateEntryMessageSerializer;
 import databute.databuter.network.AbstractSessionConnector;
 import databute.databuter.network.message.MessageCode;
 import databute.databuter.network.message.MessageCodeResolver;
@@ -51,19 +51,19 @@ public class ClusterSessionConnector extends AbstractSessionConnector {
 
         this.serializers = Maps.newHashMap();
         this.serializers.put(MessageCode.HANDSHAKE_REQUEST, new HandshakeRequestMessageSerializer());
-        this.serializers.put(MessageCode.GET_ENTITY, new GetEntityMessageSerializer());
-        this.serializers.put(MessageCode.SET_ENTITY, new SetEntityMessageSerializer());
-        this.serializers.put(MessageCode.UPDATE_ENTITY, new UpdateEntityMessageSerializer());
-        this.serializers.put(MessageCode.DELETE_ENTITY, new DeleteEntityMessageSerializer());
-        this.serializers.put(MessageCode.EXPIRE_ENTITY, new ExpireEntityMessageSerializer());
+        this.serializers.put(MessageCode.GET_ENTRY, new GetEntryMessageSerializer());
+        this.serializers.put(MessageCode.SET_ENTRY, new SetEntryMessageSerializer());
+        this.serializers.put(MessageCode.UPDATE_ENTRY, new UpdateEntryMessageSerializer());
+        this.serializers.put(MessageCode.DELETE_ENTRY, new DeleteEntryMessageSerializer());
+        this.serializers.put(MessageCode.EXPIRE_ENTRY, new ExpireEntryMessageSerializer());
 
         this.deserializers = Maps.newHashMap();
         this.deserializers.put(MessageCode.HANDSHAKE_RESPONSE, new HandshakeResponseMessageDeserializer());
-        this.deserializers.put(MessageCode.GET_ENTITY, new GetEntityMessageDeserializer());
-        this.deserializers.put(MessageCode.SET_ENTITY, new SetEntityMessageDeserializer());
-        this.deserializers.put(MessageCode.UPDATE_ENTITY, new UpdateEntityMessageDeserializer());
-        this.deserializers.put(MessageCode.DELETE_ENTITY, new DeleteEntityMessageDeserializer());
-        this.deserializers.put(MessageCode.EXPIRE_ENTITY, new ExpireEntityMessageDeserializer());
+        this.deserializers.put(MessageCode.GET_ENTRY, new GetEntryMessageDeserializer());
+        this.deserializers.put(MessageCode.SET_ENTRY, new SetEntryMessageDeserializer());
+        this.deserializers.put(MessageCode.UPDATE_ENTRY, new UpdateEntryMessageDeserializer());
+        this.deserializers.put(MessageCode.DELETE_ENTRY, new DeleteEntryMessageDeserializer());
+        this.deserializers.put(MessageCode.EXPIRE_ENTRY, new ExpireEntryMessageDeserializer());
     }
 
     @Override

@@ -6,7 +6,7 @@ import com.google.common.hash.Hashing;
 import databute.databuter.Databuter;
 import databute.databuter.bucket.notification.BucketNotificationMessage;
 import databute.databuter.client.network.ClientSessionGroup;
-import databute.databuter.entity.EntityKey;
+import databute.databuter.entry.EntryKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,10 +40,10 @@ public class BucketGroup implements Iterable<Bucket> {
     }
 
     @SuppressWarnings("UnstableApiUsage")
-    public Bucket findByKey(EntityKey entityKey) {
+    public Bucket findByKey(EntryKey entryKey) {
         //TODO(@nono5546): shared Key Factor를 가져오는 방식으로 변경.
         final int count = count();
-        final HashCode hashKey = Hashing.crc32().hashString(entityKey.key(), StandardCharsets.UTF_8);
+        final HashCode hashKey = Hashing.crc32().hashString(entryKey.key(), StandardCharsets.UTF_8);
         final int keyFactor = Hashing.consistentHash(hashKey, count);
         return findByKeyFactor(keyFactor);
     }

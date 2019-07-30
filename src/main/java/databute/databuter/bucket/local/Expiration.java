@@ -2,7 +2,7 @@ package databute.databuter.bucket.local;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
-import databute.databuter.entity.EntityKey;
+import databute.databuter.entry.EntryKey;
 
 import java.time.Instant;
 
@@ -10,15 +10,15 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 public class Expiration implements Comparable<Expiration> {
 
-    private final EntityKey key;
+    private final EntryKey key;
     private final Instant expireTimestamp;
 
-    public Expiration(EntityKey key, Instant expireTimestamp) {
+    public Expiration(EntryKey key, Instant expireTimestamp) {
         this.key = checkNotNull(key, "key");
         this.expireTimestamp = checkNotNull(expireTimestamp, "expireTimestamp");
     }
 
-    public EntityKey key() {
+    public EntryKey key() {
         return key;
     }
 

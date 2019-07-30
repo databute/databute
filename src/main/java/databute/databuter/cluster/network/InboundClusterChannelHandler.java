@@ -2,11 +2,11 @@ package databute.databuter.cluster.network;
 
 import databute.databuter.cluster.ClusterCoordinator;
 import databute.databuter.cluster.handshake.request.HandshakeRequestMessageHandler;
-import databute.databuter.entity.delete.DeleteEntityMessageHandler;
-import databute.databuter.entity.expire.ExpireEntityMessageHandler;
-import databute.databuter.entity.get.GetEntityMessageHandler;
-import databute.databuter.entity.set.SetEntityMessageHandler;
-import databute.databuter.entity.update.UpdateEntityMessageHandler;
+import databute.databuter.entry.delete.DeleteEntryMessageHandler;
+import databute.databuter.entry.expire.ExpireEntryMessageHandler;
+import databute.databuter.entry.get.GetEntryMessageHandler;
+import databute.databuter.entry.set.SetEntryMessageHandler;
+import databute.databuter.entry.update.UpdateEntryMessageHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.channel.ChannelPipeline;
@@ -41,11 +41,11 @@ public class InboundClusterChannelHandler extends ChannelInboundHandlerAdapter {
         final ChannelPipeline pipeline = ctx.pipeline();
 
         pipeline.addLast(new HandshakeRequestMessageHandler(session));
-        pipeline.addLast(new GetEntityMessageHandler(session));
-        pipeline.addLast(new SetEntityMessageHandler(session));
-        pipeline.addLast(new UpdateEntityMessageHandler(session));
-        pipeline.addLast(new DeleteEntityMessageHandler(session));
-        pipeline.addLast(new ExpireEntityMessageHandler(session));
+        pipeline.addLast(new GetEntryMessageHandler(session));
+        pipeline.addLast(new SetEntryMessageHandler(session));
+        pipeline.addLast(new UpdateEntryMessageHandler(session));
+        pipeline.addLast(new DeleteEntryMessageHandler(session));
+        pipeline.addLast(new ExpireEntryMessageHandler(session));
     }
 
     @Override
