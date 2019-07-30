@@ -3,7 +3,7 @@ package databute.databuter.entry.set;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-import databute.databuter.entry.EntityValueType;
+import databute.databuter.entry.EntryValueType;
 import databute.databuter.entry.UnsupportedValueTypeException;
 import databute.databuter.network.message.MessageDeserializer;
 import databute.databuter.network.packet.Packet;
@@ -14,39 +14,39 @@ import java.util.Set;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public class SetEntityMessageDeserializer implements MessageDeserializer<SetEntityMessage> {
+public class SetEntryMessageDeserializer implements MessageDeserializer<SetEntryMessage> {
 
     @Override
-    public SetEntityMessage deserialize(Packet packet) {
+    public SetEntryMessage deserialize(Packet packet) {
         checkNotNull(packet, "packet");
 
         final String id = packet.readString();
         final String key = packet.readString();
-        final EntityValueType valueType = EntityValueType.valueOf(packet.readString());
+        final EntryValueType valueType = EntryValueType.valueOf(packet.readString());
         switch (valueType) {
             case INTEGER: {
                 final Integer integerValue = deserializeIntegerValue(packet);
-                return new SetEntityMessage(id, key, valueType, integerValue);
+                return new SetEntryMessage(id, key, valueType, integerValue);
             }
             case LONG: {
                 final Long longValue = deserializeLongValue(packet);
-                return new SetEntityMessage(id, key, valueType, longValue);
+                return new SetEntryMessage(id, key, valueType, longValue);
             }
             case STRING: {
                 final String stringValue = deserializeStringValue(packet);
-                return new SetEntityMessage(id, key, valueType, stringValue);
+                return new SetEntryMessage(id, key, valueType, stringValue);
             }
             case LIST: {
                 final List<String> listValue = deserializeListValue(packet);
-                return new SetEntityMessage(id, key, valueType, listValue);
+                return new SetEntryMessage(id, key, valueType, listValue);
             }
             case SET: {
                 final Set<String> setValue = deserializeSetValue(packet);
-                return new SetEntityMessage(id, key, valueType, setValue);
+                return new SetEntryMessage(id, key, valueType, setValue);
             }
             case DICTIONARY: {
                 final Map<String, String> dictionaryValue = deserializeDictionaryValue(packet);
-                return new SetEntityMessage(id, key, valueType, dictionaryValue);
+                return new SetEntryMessage(id, key, valueType, dictionaryValue);
             }
         }
 

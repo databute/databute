@@ -1,18 +1,18 @@
-package databute.databuter.entity.delete;
+package databute.databuter.entry.delete;
 
 import databute.databuter.network.message.MessageDeserializer;
 import databute.databuter.network.packet.Packet;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public class DeleteEntityMessageDeserializer implements MessageDeserializer<DeleteEntityMessage> {
+public class DeleteEntryMessageDeserializer implements MessageDeserializer<DeleteEntryMessage> {
 
     @Override
-    public DeleteEntityMessage deserialize(Packet packet) {
+    public DeleteEntryMessage deserialize(Packet packet) {
         checkNotNull(packet, "packet");
 
         final String id = packet.readString();
         final String key = packet.readString();
-        return new DeleteEntityMessage(id, key);
+        return new DeleteEntryMessage(id, key);
     }
 }

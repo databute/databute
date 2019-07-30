@@ -10,51 +10,51 @@ import java.util.Set;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public class EntityOperationSuccessMessageSerializer implements MessageSerializer<EntityOperationSuccessMessage> {
+public class EntryOperationSuccessMessageSerializer implements MessageSerializer<EntryOperationSuccessMessage> {
 
     @SuppressWarnings("unchecked")
     @Override
-    public Packet serialize(EntityOperationSuccessMessage entityOperationSuccessMessage) {
-        checkNotNull(entityOperationSuccessMessage, "entityOperationSuccessMessage");
+    public Packet serialize(EntryOperationSuccessMessage entryOperationSuccessMessage) {
+        checkNotNull(entryOperationSuccessMessage, "entryOperationSuccessMessage");
 
         final Packet packet = new BufferedPacket();
-        packet.writeString(entityOperationSuccessMessage.id());
-        packet.writeString(entityOperationSuccessMessage.key());
-        packet.writeString(entityOperationSuccessMessage.valueType().name());
-        switch (entityOperationSuccessMessage.valueType()) {
+        packet.writeString(entryOperationSuccessMessage.id());
+        packet.writeString(entryOperationSuccessMessage.key());
+        packet.writeString(entryOperationSuccessMessage.valueType().name());
+        switch (entryOperationSuccessMessage.valueType()) {
             case INTEGER: {
-                final Integer integerValue = (Integer) entityOperationSuccessMessage.value();
+                final Integer integerValue = (Integer) entryOperationSuccessMessage.value();
                 serializeIntegerValue(packet, integerValue);
                 break;
             }
             case LONG: {
-                final Long longValue = (Long) entityOperationSuccessMessage.value();
+                final Long longValue = (Long) entryOperationSuccessMessage.value();
                 serializeLongValue(packet, longValue);
                 break;
             }
             case STRING: {
-                final String stringValue = (String) entityOperationSuccessMessage.value();
+                final String stringValue = (String) entryOperationSuccessMessage.value();
                 serializeStringValue(packet, stringValue);
                 break;
             }
             case LIST: {
-                final List<String> listValue = (List<String>) entityOperationSuccessMessage.value();
+                final List<String> listValue = (List<String>) entryOperationSuccessMessage.value();
                 serializeListValue(packet, listValue);
                 break;
             }
             case SET: {
-                final Set<String> setValue = (Set<String>) entityOperationSuccessMessage.value();
+                final Set<String> setValue = (Set<String>) entryOperationSuccessMessage.value();
                 serializeSetValue(packet, setValue);
                 break;
             }
             case DICTIONARY: {
-                final Map<String, String> dictionaryValue = (Map<String, String>) entityOperationSuccessMessage.value();
+                final Map<String, String> dictionaryValue = (Map<String, String>) entryOperationSuccessMessage.value();
                 serializeDictionaryValue(packet, dictionaryValue);
                 break;
             }
         }
-        packet.writeLong(entityOperationSuccessMessage.createdTimestamp().toEpochMilli());
-        packet.writeLong(entityOperationSuccessMessage.lastUpdatedTimestamp().toEpochMilli());
+        packet.writeLong(entryOperationSuccessMessage.createdTimestamp().toEpochMilli());
+        packet.writeLong(entryOperationSuccessMessage.lastUpdatedTimestamp().toEpochMilli());
         return packet;
     }
 

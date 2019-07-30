@@ -10,44 +10,44 @@ import java.util.Set;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public class SetEntityMessageSerializer implements MessageSerializer<SetEntityMessage> {
+public class SetEntryMessageSerializer implements MessageSerializer<SetEntryMessage> {
 
     @SuppressWarnings("unchecked")
     @Override
-    public Packet serialize(SetEntityMessage setEntityMessage) {
-        checkNotNull(setEntityMessage, "setEntityMessage");
+    public Packet serialize(SetEntryMessage setEntryMessage) {
+        checkNotNull(setEntryMessage, "setEntryMessage");
 
         final Packet packet = new BufferedPacket();
-        packet.writeString(setEntityMessage.id());
-        packet.writeString(setEntityMessage.key());
-        packet.writeString(setEntityMessage.valueType().name());
-        switch (setEntityMessage.valueType()) {
+        packet.writeString(setEntryMessage.id());
+        packet.writeString(setEntryMessage.key());
+        packet.writeString(setEntryMessage.valueType().name());
+        switch (setEntryMessage.valueType()) {
             case INTEGER: {
-                final Integer integerValue = (Integer) setEntityMessage.value();
+                final Integer integerValue = (Integer) setEntryMessage.value();
                 serializeIntegerValue(packet, integerValue);
                 break;
             }
             case LONG: {
-                final Long longValue = (Long) setEntityMessage.value();
+                final Long longValue = (Long) setEntryMessage.value();
                 serializeLongValue(packet, longValue);
                 break;
             }
             case STRING: {
-                final String stringValue = (String) setEntityMessage.value();
+                final String stringValue = (String) setEntryMessage.value();
                 serializeStringValue(packet, stringValue);
             }
             case LIST: {
-                final List<String> listValue = (List<String>) setEntityMessage.value();
+                final List<String> listValue = (List<String>) setEntryMessage.value();
                 serializeListValue(packet, listValue);
                 break;
             }
             case SET: {
-                final Set<String> setValue = (Set<String>) setEntityMessage.value();
+                final Set<String> setValue = (Set<String>) setEntryMessage.value();
                 serializeSetValue(packet, setValue);
                 break;
             }
             case DICTIONARY: {
-                final Map<String, String> dictionaryValue = (Map<String, String>) setEntityMessage.value();
+                final Map<String, String> dictionaryValue = (Map<String, String>) setEntryMessage.value();
                 serializeDictionaryValue(packet, dictionaryValue);
                 break;
             }

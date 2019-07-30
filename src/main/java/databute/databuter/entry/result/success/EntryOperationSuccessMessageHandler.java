@@ -2,9 +2,9 @@ package databute.databuter.entry.result.success;
 
 import databute.databuter.Databuter;
 import databute.databuter.entry.*;
-import databute.databuter.entry.type.IntegerEntity;
-import databute.databuter.entry.type.LongEntity;
-import databute.databuter.entry.type.StringEntity;
+import databute.databuter.entry.type.IntegerEntry;
+import databute.databuter.entry.type.LongEntry;
+import databute.databuter.entry.type.StringEntry;
 import databute.databuter.network.Session;
 import databute.databuter.network.message.AbstractMessageHandler;
 import org.slf4j.Logger;
@@ -12,83 +12,83 @@ import org.slf4j.LoggerFactory;
 
 import java.time.Instant;
 
-public class EntityOperationSuccessMessageHandler extends AbstractMessageHandler<Session, EntityOperationSuccessMessage> {
+public class EntryOperationSuccessMessageHandler extends AbstractMessageHandler<Session, EntryOperationSuccessMessage> {
 
-    private static final Logger logger = LoggerFactory.getLogger(EntityOperationSuccessMessageHandler.class);
+    private static final Logger logger = LoggerFactory.getLogger(EntryOperationSuccessMessageHandler.class);
 
-    public EntityOperationSuccessMessageHandler(Session session) {
+    public EntryOperationSuccessMessageHandler(Session session) {
         super(session);
     }
 
     @Override
-    public void handle(EntityOperationSuccessMessage entityOperationSuccessMessage) {
-        logger.debug("Handling entry operation success message {}", entityOperationSuccessMessage);
+    public void handle(EntryOperationSuccessMessage entryOperationSuccessMessage) {
+        logger.debug("Handling entry operation success message {}", entryOperationSuccessMessage);
 
-        final EntityMessageDispatcher dispatcher = Databuter.instance().entityMessageDispatcher();
+        final EntryMessageDispatcher dispatcher = Databuter.instance().entryMessageDispatcher();
 
-        final String id = entityOperationSuccessMessage.id();
-        final EntityCallback callback = dispatcher.dequeue(id);
+        final String id = entryOperationSuccessMessage.id();
+        final EntryCallback callback = dispatcher.dequeue(id);
         if (callback == null) {
             logger.error("No callback found by id {}", id);
         } else {
-            call(callback, entityOperationSuccessMessage);
+            call(callback, entryOperationSuccessMessage);
         }
     }
 
-    private void call(EntityCallback callback, EntityOperationSuccessMessage entityOperationSuccessMessage) {
+    private void call(EntryCallback callback, EntryOperationSuccessMessage entryOperationSuccessMessage) {
         try {
-            switch (entityOperationSuccessMessage.valueType()) {
+            switch (entryOperationSuccessMessage.valueType()) {
                 case INTEGER:
-                    callIntegerEntity(callback, entityOperationSuccessMessage);
+                    callIntegerEntry(callback, entryOperationSuccessMessage);
                     break;
                 case LONG:
-                    callLongEntity(callback, entityOperationSuccessMessage);
+                    callLongEntry(callback, entryOperationSuccessMessage);
                     break;
                 case STRING:
-                    callStringEntity(callback, entityOperationSuccessMessage);
+                    callStringEntry(callback, entryOperationSuccessMessage);
                     break;
             }
-        } catch (EmptyEntityKeyException e) {
+        } catch (EmptyEntryKeyException e) {
             callback.onFailure(e);
         }
     }
 
-    private void callIntegerEntity(EntityCallback callback,
-                                   EntityOperationSuccessMessage entityOperationSuccessMessage)
-            throws EmptyEntityKeyException {
-        final EntityKey entityKey = new EntityKey(entityOperationSuccessMessage.key());
-        final Integer value = (Integer) entityOperationSuccessMessage.value();
-        final Instant createdTimestamp = entityOperationSuccessMessage.createdTimestamp();
-        final Instant lastUpdatedTimestamp = entityOperationSuccessMessage.lastUpdatedTimestamp();
-        final Instant expirationTimestamp = entityOperationSuccessMessage.expirationTimestamp();
+    private void callIntegerEntry(EntryCallback callback,
+                                  EntryOperationSuccessMessage entryOperationSuccessMessage)
+            throws EmptyEntryKeyException {
+        final EntryKey entryKey = new EntryKey(entryOperationSuccessMessage.key());
+        final Integer value = (Integer) entryOperationSuccessMessage.value();
+        final Instant createdTimestamp = entryOperationSuccessMessage.createdTimestamp();
+        final Instant lastUpdatedTimestamp = entryOperationSuccessMessage.lastUpdatedTimestamp();
+        final Instant expirationTimestamp = entryOperationSuccessMessage.expirationTimestamp();
 
-        final Entity entity = new IntegerEntity(entityKey, value, createdTimestamp, lastUpdatedTimestamp, expirationTimestamp);
-        callback.onSuccess(entity);
+        final Entry entry = new IntegerEntry(entryKey, value, createdTimestamp, lastUpdatedTimestamp, expirationTimestamp);
+        callback.onSuccess(entry);
     }
 
-    private void callLongEntity(EntityCallback callback,
-                                EntityOperationSuccessMessage entityOperationSuccessMessage)
-            throws EmptyEntityKeyException {
-        final EntityKey entityKey = new EntityKey(entityOperationSuccessMessage.key());
-        final Long value = (Long) entityOperationSuccessMessage.value();
-        final Instant createdTimestamp = entityOperationSuccessMessage.createdTimestamp();
-        final Instant lastUpdatedTimestamp = entityOperationSuccessMessage.lastUpdatedTimestamp();
-        final Instant expirationTimestamp = entityOperationSuccessMessage.expirationTimestamp();
+    private void callLongEntry(EntryCallback callback,
+                               EntryOperationSuccessMessage entryOperationSuccessMessage)
+            throws EmptyEntryKeyException {
+        final EntryKey entryKey = new EntryKey(entryOperationSuccessMessage.key());
+        final Long value = (Long) entryOperationSuccessMessage.value();
+        final Instant createdTimestamp = entryOperationSuccessMessage.createdTimestamp();
+        final Instant lastUpdatedTimestamp = entryOperationSuccessMessage.lastUpdatedTimestamp();
+        final Instant expirationTimestamp = entryOperationSuccessMessage.expirationTimestamp();
 
-        final Entity entity = new LongEntity(entityKey, value, createdTimestamp, lastUpdatedTimestamp, expirationTimestamp);
-        callback.onSuccess(entity);
+        final Entry entry = new LongEntry(entryKey, value, createdTimestamp, lastUpdatedTimestamp, expirationTimestamp);
+        callback.onSuccess(entry);
     }
 
-    private void callStringEntity(EntityCallback callback,
-                                  EntityOperationSuccessMessage entityOperationSuccessMessage)
-            throws EmptyEntityKeyException {
-        final EntityKey entityKey = new EntityKey(entityOperationSuccessMessage.key());
-        final String value = (String) entityOperationSuccessMessage.value();
-        final Instant createdTimestamp = entityOperationSuccessMessage.createdTimestamp();
-        final Instant lastUpdatedTimestamp = entityOperationSuccessMessage.lastUpdatedTimestamp();
-        final Instant expirationTimestamp = entityOperationSuccessMessage.expirationTimestamp();
+    private void callStringEntry(EntryCallback callback,
+                                 EntryOperationSuccessMessage entryOperationSuccessMessage)
+            throws EmptyEntryKeyException {
+        final EntryKey entryKey = new EntryKey(entryOperationSuccessMessage.key());
+        final String value = (String) entryOperationSuccessMessage.value();
+        final Instant createdTimestamp = entryOperationSuccessMessage.createdTimestamp();
+        final Instant lastUpdatedTimestamp = entryOperationSuccessMessage.lastUpdatedTimestamp();
+        final Instant expirationTimestamp = entryOperationSuccessMessage.expirationTimestamp();
 
-        final Entity entity = new StringEntity(entityKey, value, createdTimestamp, lastUpdatedTimestamp, expirationTimestamp);
-        callback.onSuccess(entity);
+        final Entry entry = new StringEntry(entryKey, value, createdTimestamp, lastUpdatedTimestamp, expirationTimestamp);
+        callback.onSuccess(entry);
     }
 }

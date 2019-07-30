@@ -5,7 +5,7 @@ import databute.databuter.network.packet.Packet;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public class EntityOperationFailMessageDeserializer implements MessageDeserializer<EntryOperationFailMessage> {
+public class EntryOperationFailMessageDeserializer implements MessageDeserializer<EntryOperationFailMessage> {
 
     @Override
     public EntryOperationFailMessage deserialize(Packet packet) {

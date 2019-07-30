@@ -1,20 +1,20 @@
-package databute.databuter.entity.expire;
+package databute.databuter.entry.expire;
 
 import com.google.common.base.MoreObjects;
-import databute.databuter.entity.EntityMessage;
+import databute.databuter.entry.EntryMessage;
 import databute.databuter.network.message.MessageCode;
 
 import java.time.Instant;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public class ExpireEntityMessage implements EntityMessage {
+public class ExpireEntryMessage implements EntryMessage {
 
     private final String id;
     private final String key;
     private final Instant expirationTimestamp;
 
-    public ExpireEntityMessage(String id, String key, Instant expirationTimestamp) {
+    public ExpireEntryMessage(String id, String key, Instant expirationTimestamp) {
         this.id = checkNotNull(id, "id");
         this.key = checkNotNull(key, "key");
         this.expirationTimestamp = expirationTimestamp;
@@ -22,7 +22,7 @@ public class ExpireEntityMessage implements EntityMessage {
 
     @Override
     public MessageCode messageCode() {
-        return MessageCode.EXPIRE_ENTITY;
+        return MessageCode.EXPIRE_ENTRY;
     }
 
     @Override

@@ -1,24 +1,24 @@
-package databute.databuter.entity.get;
+package databute.databuter.entry.get;
 
 import com.google.common.base.MoreObjects;
-import databute.databuter.entity.EntityMessage;
+import databute.databuter.entry.EntryMessage;
 import databute.databuter.network.message.MessageCode;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public class GetEntityMessage implements EntityMessage {
+public class GetEntryMessage implements EntryMessage {
 
     private final String id;
     private final String key;
 
-    public GetEntityMessage(String id, String key) {
+    public GetEntryMessage(String id, String key) {
         this.id = checkNotNull(id, "id");
         this.key = checkNotNull(key, "key");
     }
 
     @Override
     public MessageCode messageCode() {
-        return MessageCode.GET_ENTITY;
+        return MessageCode.GET_ENTRY;
     }
 
     @Override

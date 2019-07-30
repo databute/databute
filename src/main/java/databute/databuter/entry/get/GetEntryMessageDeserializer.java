@@ -1,18 +1,18 @@
-package databute.databuter.entity.get;
+package databute.databuter.entry.get;
 
 import databute.databuter.network.message.MessageDeserializer;
 import databute.databuter.network.packet.Packet;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public class GetEntityMessageDeserializer implements MessageDeserializer<GetEntityMessage> {
+public class GetEntryMessageDeserializer implements MessageDeserializer<GetEntryMessage> {
 
     @Override
-    public GetEntityMessage deserialize(Packet packet) {
+    public GetEntryMessage deserialize(Packet packet) {
         checkNotNull(packet, "packet");
 
         final String id = packet.readString();
         final String key = packet.readString();
-        return new GetEntityMessage(id, key);
+        return new GetEntryMessage(id, key);
     }
 }

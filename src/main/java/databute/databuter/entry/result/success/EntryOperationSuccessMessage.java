@@ -1,9 +1,9 @@
 package databute.databuter.entry.result.success;
 
 import com.google.common.base.MoreObjects;
-import databute.databuter.entry.Entity;
-import databute.databuter.entry.EntityMessage;
-import databute.databuter.entry.EntityValueType;
+import databute.databuter.entry.Entry;
+import databute.databuter.entry.EntryMessage;
+import databute.databuter.entry.EntryValueType;
 import databute.databuter.entry.UnsupportedValueTypeException;
 import databute.databuter.entry.type.*;
 import databute.databuter.network.message.MessageCode;
@@ -12,47 +12,47 @@ import java.time.Instant;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public class EntityOperationSuccessMessage implements EntityMessage {
+public class EntryOperationSuccessMessage implements EntryMessage {
 
-    public static EntityOperationSuccessMessage entity(String id, Entity entity) {
-        checkNotNull(entity, "entry");
+    public static EntryOperationSuccessMessage entry(String id, Entry entry) {
+        checkNotNull(entry, "entry");
 
-        if (entity instanceof IntegerEntity) {
-            final IntegerEntity integerEntity = (IntegerEntity) entity;
-            return new EntityOperationSuccessMessage(id, integerEntity.key().key(),
-                    EntityValueType.INTEGER, integerEntity.value(),
-                    integerEntity.createdTimestamp(), integerEntity.lastUpdatedTimestamp(),
-                    integerEntity.expirationTimestamp());
-        } else if (entity instanceof LongEntity) {
-            final LongEntity longEntity = (LongEntity) entity;
-            return new EntityOperationSuccessMessage(id, longEntity.key().key(),
-                    EntityValueType.LONG, longEntity.value(),
-                    longEntity.createdTimestamp(), longEntity.lastUpdatedTimestamp(),
-                    longEntity.expirationTimestamp());
-        } else if (entity instanceof StringEntity) {
-            final StringEntity stringEntity = (StringEntity) entity;
-            return new EntityOperationSuccessMessage(id, stringEntity.key().key(),
-                    EntityValueType.STRING, stringEntity.value(),
-                    stringEntity.createdTimestamp(), stringEntity.lastUpdatedTimestamp(),
-                    stringEntity.expirationTimestamp());
-        } else if (entity instanceof ListEntity) {
-            final ListEntity listEntity = (ListEntity) entity;
-            return new EntityOperationSuccessMessage(id, listEntity.key().key(),
-                    EntityValueType.LIST, listEntity.value(),
-                    listEntity.createdTimestamp(), listEntity.lastUpdatedTimestamp(),
-                    listEntity.expirationTimestamp());
-        } else if (entity instanceof SetEntity) {
-            final SetEntity setEntity = (SetEntity) entity;
-            return new EntityOperationSuccessMessage(id, setEntity.key().key(),
-                    EntityValueType.SET, setEntity.value(),
-                    setEntity.createdTimestamp(), setEntity.lastUpdatedTimestamp(),
-                    setEntity.expirationTimestamp());
-        } else if (entity instanceof DictionaryEntity) {
-            final DictionaryEntity dictionaryEntity = (DictionaryEntity) entity;
-            return new EntityOperationSuccessMessage(id, dictionaryEntity.key().key(),
-                    EntityValueType.DICTIONARY, dictionaryEntity.value(),
-                    dictionaryEntity.createdTimestamp(), dictionaryEntity.lastUpdatedTimestamp(),
-                    dictionaryEntity.expirationTimestamp());
+        if (entry instanceof IntegerEntry) {
+            final IntegerEntry integerEntry = (IntegerEntry) entry;
+            return new EntryOperationSuccessMessage(id, integerEntry.key().key(),
+                    EntryValueType.INTEGER, integerEntry.value(),
+                    integerEntry.createdTimestamp(), integerEntry.lastUpdatedTimestamp(),
+                    integerEntry.expirationTimestamp());
+        } else if (entry instanceof LongEntry) {
+            final LongEntry longEntry = (LongEntry) entry;
+            return new EntryOperationSuccessMessage(id, longEntry.key().key(),
+                    EntryValueType.LONG, longEntry.value(),
+                    longEntry.createdTimestamp(), longEntry.lastUpdatedTimestamp(),
+                    longEntry.expirationTimestamp());
+        } else if (entry instanceof StringEntry) {
+            final StringEntry stringEntry = (StringEntry) entry;
+            return new EntryOperationSuccessMessage(id, stringEntry.key().key(),
+                    EntryValueType.STRING, stringEntry.value(),
+                    stringEntry.createdTimestamp(), stringEntry.lastUpdatedTimestamp(),
+                    stringEntry.expirationTimestamp());
+        } else if (entry instanceof ListEntry) {
+            final ListEntry listEntry = (ListEntry) entry;
+            return new EntryOperationSuccessMessage(id, listEntry.key().key(),
+                    EntryValueType.LIST, listEntry.value(),
+                    listEntry.createdTimestamp(), listEntry.lastUpdatedTimestamp(),
+                    listEntry.expirationTimestamp());
+        } else if (entry instanceof SetEntry) {
+            final SetEntry setEntry = (SetEntry) entry;
+            return new EntryOperationSuccessMessage(id, setEntry.key().key(),
+                    EntryValueType.SET, setEntry.value(),
+                    setEntry.createdTimestamp(), setEntry.lastUpdatedTimestamp(),
+                    setEntry.expirationTimestamp());
+        } else if (entry instanceof DictionaryEntry) {
+            final DictionaryEntry dictionaryEntry = (DictionaryEntry) entry;
+            return new EntryOperationSuccessMessage(id, dictionaryEntry.key().key(),
+                    EntryValueType.DICTIONARY, dictionaryEntry.value(),
+                    dictionaryEntry.createdTimestamp(), dictionaryEntry.lastUpdatedTimestamp(),
+                    dictionaryEntry.expirationTimestamp());
         } else {
             throw new UnsupportedValueTypeException();
         }
@@ -60,19 +60,19 @@ public class EntityOperationSuccessMessage implements EntityMessage {
 
     private final String id;
     private final String key;
-    private final EntityValueType valueType;
+    private final EntryValueType valueType;
     private final Object value;
     private final Instant createdTimestamp;
     private final Instant lastUpdatedTimestamp;
     private final Instant expirationTimestamp;
 
-    public EntityOperationSuccessMessage(String id,
-                                         String key,
-                                         EntityValueType valueType,
-                                         Object value,
-                                         Instant createdTimestamp,
-                                         Instant lastUpdatedTimestamp,
-                                         Instant expirationTimestamp) {
+    public EntryOperationSuccessMessage(String id,
+                                        String key,
+                                        EntryValueType valueType,
+                                        Object value,
+                                        Instant createdTimestamp,
+                                        Instant lastUpdatedTimestamp,
+                                        Instant expirationTimestamp) {
         this.id = checkNotNull(id, "id");
         this.key = checkNotNull(key, "key");
         this.valueType = checkNotNull(valueType, "valueType");
@@ -84,7 +84,7 @@ public class EntityOperationSuccessMessage implements EntityMessage {
 
     @Override
     public MessageCode messageCode() {
-        return MessageCode.ENTITY_OPERATION_SUCCESS;
+        return MessageCode.ENTRY_OPERATION_SUCCESS;
     }
 
     @Override
@@ -97,7 +97,7 @@ public class EntityOperationSuccessMessage implements EntityMessage {
         return key;
     }
 
-    public EntityValueType valueType() {
+    public EntryValueType valueType() {
         return valueType;
     }
 

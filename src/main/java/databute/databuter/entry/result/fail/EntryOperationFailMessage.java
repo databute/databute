@@ -1,34 +1,34 @@
-package databute.databuter.entity.result.fail;
+package databute.databuter.entry.result.fail;
 
 import com.google.common.base.MoreObjects;
-import databute.databuter.entity.EntityMessage;
+import databute.databuter.entry.EntryMessage;
 import databute.databuter.network.message.MessageCode;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public class EntityOperationFailMessage implements EntityMessage {
+public class EntryOperationFailMessage implements EntryMessage {
 
-    public static EntityOperationFailMessage notFound(String id, String key) {
-        return new EntityOperationFailMessage(id, key, EntityOperationErrorCode.NOT_FOUND);
+    public static EntryOperationFailMessage notFound(String id, String key) {
+        return new EntryOperationFailMessage(id, key, EntryOperationErrorCode.NOT_FOUND);
     }
 
-    public static EntityOperationFailMessage emptyKey(String id, String key) {
-        return new EntityOperationFailMessage(id, key, EntityOperationErrorCode.EMPTY_KEY);
+    public static EntryOperationFailMessage emptyKey(String id, String key) {
+        return new EntryOperationFailMessage(id, key, EntryOperationErrorCode.EMPTY_KEY);
     }
 
-    public static EntityOperationFailMessage duplicateKey(String id, String key) {
-        return new EntityOperationFailMessage(id, key, EntityOperationErrorCode.DUPLICATE_KEY);
+    public static EntryOperationFailMessage duplicateKey(String id, String key) {
+        return new EntryOperationFailMessage(id, key, EntryOperationErrorCode.DUPLICATE_KEY);
     }
 
-    public static EntityOperationFailMessage unsupportedValueType(String id, String key) {
-        return new EntityOperationFailMessage(id, key, EntityOperationErrorCode.UNSUPPORTED_VALUE_TYPE);
+    public static EntryOperationFailMessage unsupportedValueType(String id, String key) {
+        return new EntryOperationFailMessage(id, key, EntryOperationErrorCode.UNSUPPORTED_VALUE_TYPE);
     }
 
     private final String id;
     private final String key;
-    private final EntityOperationErrorCode errorCode;
+    private final EntryOperationErrorCode errorCode;
 
-    public EntityOperationFailMessage(String id, String key, EntityOperationErrorCode errorCode) {
+    public EntryOperationFailMessage(String id, String key, EntryOperationErrorCode errorCode) {
         this.id = checkNotNull(id, "id");
         this.key = checkNotNull(key, "key");
         this.errorCode = checkNotNull(errorCode, "errorCode");
@@ -36,7 +36,7 @@ public class EntityOperationFailMessage implements EntityMessage {
 
     @Override
     public MessageCode messageCode() {
-        return MessageCode.ENTITY_OPERATION_FAIL;
+        return MessageCode.ENTRY_OPERATION_FAIL;
     }
 
     @Override
@@ -49,7 +49,7 @@ public class EntityOperationFailMessage implements EntityMessage {
         return key;
     }
 
-    public EntityOperationErrorCode errorCode() {
+    public EntryOperationErrorCode errorCode() {
         return errorCode;
     }
 

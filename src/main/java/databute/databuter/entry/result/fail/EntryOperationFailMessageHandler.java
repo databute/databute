@@ -7,11 +7,11 @@ import databute.databuter.network.message.AbstractMessageHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class EntityOperationFailMessageHandler extends AbstractMessageHandler<Session, EntryOperationFailMessage> {
+public class EntryOperationFailMessageHandler extends AbstractMessageHandler<Session, EntryOperationFailMessage> {
 
-    private static final Logger logger = LoggerFactory.getLogger(EntityOperationFailMessageHandler.class);
+    private static final Logger logger = LoggerFactory.getLogger(EntryOperationFailMessageHandler.class);
 
-    public EntityOperationFailMessageHandler(Session session) {
+    public EntryOperationFailMessageHandler(Session session) {
         super(session);
     }
 
@@ -19,10 +19,10 @@ public class EntityOperationFailMessageHandler extends AbstractMessageHandler<Se
     public void handle(EntryOperationFailMessage entryOperationFailMessage) {
         logger.debug("Handling entry operation fail message {}", entryOperationFailMessage);
 
-        final EntityMessageDispatcher dispatcher = Databuter.instance().entityMessageDispatcher();
+        final EntryMessageDispatcher dispatcher = Databuter.instance().entryMessageDispatcher();
 
         final String id = entryOperationFailMessage.id();
-        final EntityCallback callback = dispatcher.dequeue(id);
+        final EntryCallback callback = dispatcher.dequeue(id);
         if (callback == null) {
             logger.error("No callback found by id {}", id);
         } else {
@@ -31,10 +31,10 @@ public class EntityOperationFailMessageHandler extends AbstractMessageHandler<Se
                     callback.onFailure(new NotFoundException(entryOperationFailMessage.key()));
                     break;
                 case EMPTY_KEY:
-                    callback.onFailure(new EmptyEntityKeyException(entryOperationFailMessage.key()));
+                    callback.onFailure(new EmptyEntryKeyException(entryOperationFailMessage.key()));
                     break;
                 case DUPLICATE_KEY:
-                    callback.onFailure(new DuplicateEntityKeyException(entryOperationFailMessage.key()));
+                    callback.onFailure(new DuplicateEntryKeyException(entryOperationFailMessage.key()));
                     break;
                 case UNSUPPORTED_VALUE_TYPE:
                     callback.onFailure(new UnsupportedValueTypeException());

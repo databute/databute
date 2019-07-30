@@ -6,7 +6,7 @@ import databute.databuter.network.packet.Packet;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public class EntityOperationFailMessageSerializer implements MessageSerializer<EntryOperationFailMessage> {
+public class EntryOperationFailMessageSerializer implements MessageSerializer<EntryOperationFailMessage> {
 
     @Override
     public Packet serialize(EntryOperationFailMessage entryOperationFailMessage) {
