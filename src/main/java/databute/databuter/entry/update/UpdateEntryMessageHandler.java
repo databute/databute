@@ -34,7 +34,6 @@ public class UpdateEntryMessageHandler extends AbstractMessageHandler<Session, U
         final String id = updateEntryMessage.id();
         final String key = updateEntryMessage.key();
 
-
         try {
             final EntryKey entryKey = new EntryKey(key);
             final Bucket bucket = Databuter.instance().bucketGroup().findByKey(entryKey);
@@ -54,7 +53,7 @@ public class UpdateEntryMessageHandler extends AbstractMessageHandler<Session, U
                                     final EntryMessageDispatcher dispatcher = Databuter.instance().entryMessageDispatcher();
                                     dispatcher.enqueue(updateEntryMessage.id(), new EntryCallback() {
                                         @Override
-                                        public void onSuccess(Entry entry) {
+                                        public void onSuccess(Entry e) {
                                             updateEntry(entry, updateEntryMessage);
                                         }
 

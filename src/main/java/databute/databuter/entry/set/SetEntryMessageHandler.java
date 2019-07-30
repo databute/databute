@@ -53,7 +53,7 @@ public class SetEntryMessageHandler extends AbstractMessageHandler<Session, SetE
                                     final EntryMessageDispatcher dispatcher = Databuter.instance().entryMessageDispatcher();
                                     dispatcher.enqueue(setEntryMessage.id(), new EntryCallback() {
                                         @Override
-                                        public void onSuccess(Entry entry) {
+                                        public void onSuccess(Entry e) {
                                             updateEntry(entry, setEntryMessage);
                                         }
 
@@ -110,8 +110,6 @@ public class SetEntryMessageHandler extends AbstractMessageHandler<Session, SetE
         final EntryCallback callback = new EntryCallback() {
             @Override
             public void onSuccess(Entry entry) {
-
-                logger.error("onsuccess");
                 session().send(EntryOperationSuccessMessage.entry(id, entry));
             }
 
@@ -142,7 +140,7 @@ public class SetEntryMessageHandler extends AbstractMessageHandler<Session, SetE
                     final EntryMessageDispatcher dispatcher = Databuter.instance().entryMessageDispatcher();
                     dispatcher.enqueue(setEntryMessage.id(), new EntryCallback() {
                         @Override
-                        public void onSuccess(Entry entry) {
+                        public void onSuccess(Entry e) {
                             switch (setEntryMessage.valueType()) {
                                 case INTEGER:
                                     addIntegerEntry(bucket, setEntryMessage, callback);
@@ -231,7 +229,6 @@ public class SetEntryMessageHandler extends AbstractMessageHandler<Session, SetE
             final EntryKey entryKey = new EntryKey(setEntryMessage.key());
             final Integer integerValue = (Integer) setEntryMessage.value();
             final IntegerEntry integerEntry = new IntegerEntry(entryKey, integerValue);
-            logger.error("test {}", integerEntry);
             bucket.add(integerEntry, callback);
         } catch (EmptyEntryKeyException e) {
             callback.onFailure(e);

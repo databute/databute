@@ -45,28 +45,8 @@ public class DeleteEntryMessageHandler extends AbstractMessageHandler<Session, D
 
                             dispatcher.enqueue(deleteEntryMessage.id(), new EntryCallback() {
                                 @Override
-                                public void onSuccess(Entry entry) {
-                                    bucket.remove(entryKey, new EntryCallback() {
-                                        @Override
-                                        public void onSuccess(Entry entry) {
-                                            session().send(EntryOperationSuccessMessage.entry(id, entry));
-                                        }
-
-                                        @Override
-                                        public void onFailure(Exception e) {
-                                            if (e instanceof NotFoundException) {
-                                                session().send(EntryOperationFailMessage.notFound(id, key));
-                                            } else if (e instanceof EmptyEntryKeyException) {
-                                                session().send(EntryOperationFailMessage.emptyKey(id, key));
-                                            } else if (e instanceof DuplicateEntryKeyException) {
-                                                session().send(EntryOperationFailMessage.duplicateKey(id, key));
-                                            } else if (e instanceof UnsupportedValueTypeException) {
-                                                session().send(EntryOperationFailMessage.unsupportedValueType(id, key));
-                                            } else {
-                                                logger.error("Unknown error to remove entry {}", key, e);
-                                            }
-                                        }
-                                    });
+                                public void onSuccess(Entry e) {
+                                    deleteEntry(entryKey, bucket, deleteEntryMessage);
                                 }
 
                                 @Override
@@ -84,10 +64,15 @@ public class DeleteEntryMessageHandler extends AbstractMessageHandler<Session, D
                                     }
                                 }
                             });
-
                             remoteNode.session().send(deleteEntryMessage);
                         }
+                    } else {
+                        // 스탠바이 노드가 없는 경우
+                        deleteEntry(entryKey, bucket, deleteEntryMessage);
                     }
+                } else {
+                    // 스탠바이 노드
+                    deleteEntry(entryKey, bucket, deleteEntryMessage);
                 }
             }
         } catch (EmptyEntryKeyException e) {
@@ -95,5 +80,32 @@ public class DeleteEntryMessageHandler extends AbstractMessageHandler<Session, D
         } catch (UnsupportedValueTypeException e) {
             session().send(EntryOperationFailMessage.unsupportedValueType(id, key));
         }
+    }
+
+    private void deleteEntry(EntryKey entryKey, Bucket bucket, DeleteEntryMessage deleteEntryMessage) {
+        final String id = deleteEntryMessage.id();
+        final String key = deleteEntryMessage.key();
+
+        bucket.remove(entryKey, new EntryCallback() {
+            @Override
+            public void onSuccess(Entry entry) {
+                session().send(EntryOperationSuccessMessage.entry(id, entry));
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+                if (e instanceof NotFoundException) {
+                    session().send(EntryOperationFailMessage.notFound(id, key));
+                } else if (e instanceof EmptyEntryKeyException) {
+                    session().send(EntryOperationFailMessage.emptyKey(id, key));
+                } else if (e instanceof DuplicateEntryKeyException) {
+                    session().send(EntryOperationFailMessage.duplicateKey(id, key));
+                } else if (e instanceof UnsupportedValueTypeException) {
+                    session().send(EntryOperationFailMessage.unsupportedValueType(id, key));
+                } else {
+                    logger.error("Unknown error to remove entry {}", key, e);
+                }
+            }
+        });
     }
 }
