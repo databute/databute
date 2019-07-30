@@ -7,6 +7,8 @@ import databute.databuter.bucket.local.LocalBucket;
 import databute.databuter.bucket.notification.BucketNotificationMessage;
 import databute.databuter.bucket.remote.RemoteBucket;
 import databute.databuter.client.network.ClientSessionGroup;
+import databute.databuter.cluster.ClusterCoordinator;
+import databute.databuter.cluster.ClusterNode;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.recipes.cache.ChildData;
@@ -120,10 +122,16 @@ public class BucketCoordinator {
             } else {
                 final RemoteBucket remoteBucket = createRemoteBucket(bucketConfiguration);
                 logger.info("Added remote bucket {} because it is already high available.", remoteBucket.id());
+
+                syncActiveClusterNode(remoteBucket);
+                syncStandbyClusterNode(remoteBucket);
             }
         } else {
             final RemoteBucket remoteBucket = createRemoteBucket(bucketConfiguration);
             logger.info("Added remote bucket {} because available bucket count is zero.", remoteBucket.id());
+
+            syncActiveClusterNode(remoteBucket);
+            syncStandbyClusterNode(remoteBucket);
         }
     }
 
@@ -142,8 +150,12 @@ public class BucketCoordinator {
         }
 
         final boolean updated = bucket.configuration().update(bucketConfiguration);
+
         if (updated) {
             logger.info("Updated bucket {}.", bucket.id());
+
+            syncActiveClusterNode(bucket);
+            syncStandbyClusterNode(bucket);
 
             broadcastBucketUpdated(bucket);
         }
@@ -188,6 +200,9 @@ public class BucketCoordinator {
                 localBucket = createLocalBucket(bucketConfiguration);
                 logger.info("Created local active bucket {}.", localBucket.id());
 
+                syncActiveClusterNode(localBucket);
+                syncStandbyClusterNode(localBucket);
+
                 final int keyFactor = sharedKeyFactorCounter.getAndIncreaseSharedKeyFactor();
                 localBucket.configuration().keyFactor(keyFactor);
                 logger.info("Assigned key factor {} to bucket {}", localBucket.configuration().keyFactor(), localBucket.id());
@@ -225,6 +240,10 @@ public class BucketCoordinator {
         bucketConfiguration.standbyNodeId(nodeId);
         final LocalBucket localBucket = createLocalBucket(bucketConfiguration);
         logger.info("Created local standby bucket {}.", localBucket.id());
+        //TODO(@nono5546): bucketGroup에 localBucket 추가.
+
+        syncActiveClusterNode(localBucket);
+        syncStandbyClusterNode(localBucket);
 
         try {
             update(localBucket);
@@ -310,6 +329,40 @@ public class BucketCoordinator {
             } catch (Exception e) {
                 logger.error("Failed to release bucket mutex.", e);
             }
+        }
+    }
+
+    private void syncActiveClusterNode(Bucket bucket) {
+        if (StringUtils.isEmpty(bucket.configuration().activeNodeId())) {
+            return;
+        }
+
+        final ClusterCoordinator clusterCoordinator = Databuter.instance().clusterCoordinator();
+        if (clusterCoordinator == null) {
+            return;
+        }
+        final ClusterNode clusterNode = clusterCoordinator.find(bucket.activeNodeId());
+        if (clusterNode != null) {
+            // 현재 Cluster 노드와 연결되어있지 않더라도, Cluster 노드가 연결될 때 버킷을 찾아 연결 할 것
+            bucket.activeNode(clusterNode);
+            logger.debug("Synchronized active cluster node {} to bucket {}", clusterNode.id(), bucket.id());
+        }
+    }
+
+    private void syncStandbyClusterNode(Bucket bucket) {
+        if (StringUtils.isEmpty(bucket.configuration().standbyNodeId())) {
+            return;
+        }
+
+        final ClusterCoordinator clusterCoordinator = Databuter.instance().clusterCoordinator();
+        if (clusterCoordinator == null) {
+            return;
+        }
+        final ClusterNode clusterNode = clusterCoordinator.find(bucket.standbyNodeId());
+        if (clusterNode != null) {
+            // 현재 Cluster 노드와 연결되어있지 않더라도, Cluster 노드가 연결될 때 버킷을 찾아 연결 할 것
+            bucket.standbyNode(clusterNode);
+            logger.debug("Synchronized standby cluster node {} to bucket {}", clusterNode.id(), bucket.id());
         }
     }
 }

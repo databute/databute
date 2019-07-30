@@ -4,6 +4,8 @@ import com.google.common.base.MoreObjects;
 import com.google.gson.Gson;
 import databute.databuter.Databuter;
 import databute.databuter.ZooKeeperConfiguration;
+import databute.databuter.bucket.Bucket;
+import databute.databuter.bucket.BucketGroup;
 import databute.databuter.cluster.local.LocalClusterNode;
 import databute.databuter.cluster.network.ClusterSessionAcceptor;
 import databute.databuter.cluster.remote.RemoteClusterNode;
@@ -138,6 +140,7 @@ public class ClusterCoordinator {
 
         final boolean added = remoteNodeGroup.add(remoteNode);
         if (added) {
+            syncBucketNode(remoteNode);
             remoteNode.connect();
         }
     }
@@ -167,6 +170,30 @@ public class ClusterCoordinator {
                 clusterMutex.release();
             } catch (Exception e) {
                 logger.error("Failed to release cluster mutex.");
+            }
+        }
+    }
+
+    public ClusterNode find(String clusterNodeId) {
+        for (RemoteClusterNode remoteClusterNode : remoteNodeGroup) {
+            if (StringUtils.equals(remoteClusterNode.id(), clusterNodeId))
+                return remoteClusterNode;
+        }
+
+        return null;
+    }
+
+    private void syncBucketNode(ClusterNode clusterNode) {
+        final BucketGroup bucketGroup = Databuter.instance().bucketGroup();
+
+        for (Bucket bucket : bucketGroup) {
+            if (StringUtils.equals(bucket.activeNodeId(), clusterNode.id())) {
+                bucket.activeNode(clusterNode);
+                logger.info("Synchronized active cluster node {} to bucket {}", clusterNode.id(), bucket.id());
+            }
+            if (StringUtils.equals(bucket.standbyNodeId(), clusterNode.id())) {
+                bucket.standbyNode(clusterNode);
+                logger.info("Synchronized standby cluster node {} to bucket {}", clusterNode.id(), bucket.id());
             }
         }
     }
