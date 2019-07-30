@@ -6,7 +6,7 @@ import com.google.common.collect.Queues;
 import databute.databuter.Databuter;
 import databute.databuter.bucket.Bucket;
 import databute.databuter.bucket.BucketConfiguration;
-import databute.databuter.entity.*;
+import databute.databuter.entry.*;
 import org.apache.commons.lang3.RandomUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,7 +26,7 @@ public class LocalBucket extends Bucket {
 
     private static final Logger logger = LoggerFactory.getLogger(LocalBucket.class);
 
-    private final Map<EntityKey, Entity> entities;
+    private final Map<EntryKey, Entry> entities;
     private final PriorityQueue<Expiration> expireQueue;
     private final ScheduledExecutorService expireScheduler;
     private final ReentrantLock expireLock;
@@ -44,18 +44,18 @@ public class LocalBucket extends Bucket {
     }
 
     @Override
-    public void get(EntityKey entityKey, EntityCallback callback) {
+    public void get(EntryKey entryKey, EntryCallback callback) {
         try {
-            final Entity entity = entities.get(entityKey);
-            if (entity == null) {
-                callback.onFailure(new NotFoundException(entityKey.key()));
+            final Entry entry = entities.get(entryKey);
+            if (entry == null) {
+                callback.onFailure(new NotFoundException(entryKey.key()));
             } else {
-                if (entity.willBeExpire() && entity.expirationTimestamp().isBefore(Instant.now())) {
-                    entities.remove(entityKey);
+                if (entry.willBeExpire() && entry.expirationTimestamp().isBefore(Instant.now())) {
+                    entities.remove(entryKey);
 
-                    callback.onFailure(new NotFoundException(entityKey.key()));
+                    callback.onFailure(new NotFoundException(entryKey.key()));
                 } else {
-                    callback.onSuccess(entity);
+                    callback.onSuccess(entry);
                 }
             }
         } catch (Exception e) {
@@ -64,19 +64,19 @@ public class LocalBucket extends Bucket {
     }
 
     @Override
-    public void add(Entity entity, EntityCallback callback) {
+    public void add(Entry entry, EntryCallback callback) {
         try {
-            checkNotNull(entity, "entity");
+            checkNotNull(entry, "entry");
 
-            final EntityKey entityKey = entity.key();
-            if (entities.containsKey(entityKey)) {
-                callback.onFailure(new DuplicateEntityKeyException(entityKey.key()));
+            final EntryKey entryKey = entry.key();
+            if (entities.containsKey(entryKey)) {
+                callback.onFailure(new DuplicateEntryKeyException(entryKey.key()));
             } else {
-                final boolean added = (entities.putIfAbsent(entityKey, entity) == null);
+                final boolean added = (entities.putIfAbsent(entryKey, entry) == null);
                 if (added) {
-                    callback.onSuccess(entity);
+                    callback.onSuccess(entry);
                 } else {
-                    callback.onFailure(new DuplicateEntityKeyException(entityKey.key()));
+                    callback.onFailure(new DuplicateEntryKeyException(entryKey.key()));
                 }
             }
         } catch (Exception e) {
@@ -85,13 +85,13 @@ public class LocalBucket extends Bucket {
     }
 
     @Override
-    public void remove(EntityKey entityKey, EntityCallback callback) {
+    public void remove(EntryKey entryKey, EntryCallback callback) {
         try {
-            final Entity entity = entities.remove(entityKey);
-            if (entity == null) {
-                callback.onFailure(new NotFoundException(entityKey.key()));
+            final Entry entry = entities.remove(entryKey);
+            if (entry == null) {
+                callback.onFailure(new NotFoundException(entryKey.key()));
             } else {
-                callback.onSuccess(entity);
+                callback.onSuccess(entry);
             }
         } catch (Exception e) {
             callback.onFailure(e);
@@ -99,12 +99,12 @@ public class LocalBucket extends Bucket {
     }
 
     @Override
-    public void expire(EntityKey entityKey, Instant expirationTimestamp, EntityCallback callback) {
+    public void expire(EntryKey entryKey, Instant expirationTimestamp, EntryCallback callback) {
         try {
-            final Entity entity = entities.get(entityKey);
+            final Entry entry = entities.get(entryKey);
 
-            if (entity == null) {
-                callback.onFailure(new NotFoundException(entityKey.key()));
+            if (entry == null) {
+                callback.onFailure(new NotFoundException(entryKey.key()));
                 return;
             }
 
@@ -112,21 +112,21 @@ public class LocalBucket extends Bucket {
                 // 엔티티에 할당된 TTL을 제거하여 삭제되지 않도록 함.
                 expireLock.lock();
                 try {
-                    entity.cancelExpiration();
+                    entry.cancelExpiration();
                 } finally {
                     expireLock.unlock();
                 }
             } else {
                 expireLock.lock();
                 try {
-                    expireQueue.add(new Expiration(entityKey, expirationTimestamp));
-                    entity.expireAt(expirationTimestamp);
+                    expireQueue.add(new Expiration(entryKey, expirationTimestamp));
+                    entry.expireAt(expirationTimestamp);
                 } finally {
                     expireLock.unlock();
                 }
             }
 
-            callback.onSuccess(entity);
+            callback.onSuccess(entry);
         } catch (Exception e) {
             callback.onFailure(e);
         }
@@ -145,11 +145,11 @@ public class LocalBucket extends Bucket {
                 }
                 expireIterator.remove();
 
-                final Entity entity = entities.get(expiration.key());
-                if (entity != null) {
-                    if (entity.willBeExpire() && entity.expirationTimestamp().isBefore(Instant.now())) {
+                final Entry entry = entities.get(expiration.key());
+                if (entry != null) {
+                    if (entry.willBeExpire() && entry.expirationTimestamp().isBefore(Instant.now())) {
                         entities.remove(expiration.key());
-                        logger.debug("Expired entity {}.", expiration.key());
+                        logger.debug("Expired entry {}.", expiration.key());
 
                         count += 1;
                     }

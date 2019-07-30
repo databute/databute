@@ -3,9 +3,9 @@ package databute.databuter.bucket.remote;
 import com.google.common.base.MoreObjects;
 import databute.databuter.bucket.Bucket;
 import databute.databuter.bucket.BucketConfiguration;
-import databute.databuter.entity.Entity;
-import databute.databuter.entity.EntityCallback;
-import databute.databuter.entity.EntityKey;
+import databute.databuter.entry.Entry;
+import databute.databuter.entry.EntryCallback;
+import databute.databuter.entry.EntryKey;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.time.Instant;
@@ -17,22 +17,22 @@ public class RemoteBucket extends Bucket {
     }
 
     @Override
-    public void get(EntityKey entityKey, EntityCallback callback) {
+    public void get(EntryKey entryKey, EntryCallback callback) {
         throw new NotImplementedException();
     }
 
     @Override
-    public void add(Entity entity, EntityCallback callback) {
+    public void add(Entry entry, EntryCallback callback) {
         throw new NotImplementedException();
     }
 
     @Override
-    public void remove(EntityKey entityKey, EntityCallback callback) {
+    public void remove(EntryKey entryKey, EntryCallback callback) {
         throw new NotImplementedException();
     }
 
     @Override
-    public void expire(EntityKey entityKey, Instant expirationTimestamp, EntityCallback callback) {
+    public void expire(EntryKey entryKey, Instant expirationTimestamp, EntryCallback callback) {
         throw new NotImplementedException();
     }
 

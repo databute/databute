@@ -4,13 +4,13 @@ import com.google.common.collect.Maps;
 import databute.databuter.bucket.notification.BucketNotificationMessageSerializer;
 import databute.databuter.client.register.RegisterMessageDeserializer;
 import databute.databuter.cluster.notification.ClusterNodeNotificationMessageSerializer;
-import databute.databuter.entity.delete.DeleteEntityMessageDeserializer;
-import databute.databuter.entity.expire.ExpireEntityMessageDeserializer;
-import databute.databuter.entity.get.GetEntityMessageDeserializer;
-import databute.databuter.entity.result.fail.EntityOperationFailMessageSerializer;
-import databute.databuter.entity.result.success.EntityOperationSuccessMessageSerializer;
-import databute.databuter.entity.set.SetEntityMessageDeserializer;
-import databute.databuter.entity.update.UpdateEntityMessageDeserializer;
+import databute.databuter.entry.delete.DeleteEntryMessageDeserializer;
+import databute.databuter.entry.expire.ExpireEntryMessageDeserializer;
+import databute.databuter.entry.get.GetEntryMessageDeserializer;
+import databute.databuter.entry.result.fail.EntryOperationFailMessageSerializer;
+import databute.databuter.entry.result.success.EntryOperationSuccessMessageSerializer;
+import databute.databuter.entry.set.SetEntryMessageDeserializer;
+import databute.databuter.entry.update.UpdateEntryMessageDeserializer;
 import databute.databuter.network.AbstractSessionAcceptor;
 import databute.databuter.network.message.MessageCode;
 import databute.databuter.network.message.MessageCodeResolver;
@@ -41,16 +41,16 @@ public class ClientSessionAcceptor extends AbstractSessionAcceptor {
         this.serializers = Maps.newHashMap();
         this.serializers.put(MessageCode.CLUSTER_NODE_NOTIFICATION, new ClusterNodeNotificationMessageSerializer());
         this.serializers.put(MessageCode.BUCKET_NOTIFICATION, new BucketNotificationMessageSerializer());
-        this.serializers.put(MessageCode.ENTITY_OPERATION_SUCCESS, new EntityOperationSuccessMessageSerializer());
-        this.serializers.put(MessageCode.ENTITY_OPERATION_FAIL, new EntityOperationFailMessageSerializer());
+        this.serializers.put(MessageCode.ENTRY_OPERATION_SUCCESS, new EntryOperationSuccessMessageSerializer());
+        this.serializers.put(MessageCode.ENTRY_OPERATION_FAIL, new EntryOperationFailMessageSerializer());
 
         this.deserializers = Maps.newHashMap();
         this.deserializers.put(MessageCode.REGISTER, new RegisterMessageDeserializer());
-        this.deserializers.put(MessageCode.GET_ENTITY, new GetEntityMessageDeserializer());
-        this.deserializers.put(MessageCode.SET_ENTITY, new SetEntityMessageDeserializer());
-        this.deserializers.put(MessageCode.UPDATE_ENTITY, new UpdateEntityMessageDeserializer());
-        this.deserializers.put(MessageCode.DELETE_ENTITY, new DeleteEntityMessageDeserializer());
-        this.deserializers.put(MessageCode.EXPIRE_ENTITY, new ExpireEntityMessageDeserializer());
+        this.deserializers.put(MessageCode.GET_ENTRY, new GetEntryMessageDeserializer());
+        this.deserializers.put(MessageCode.SET_ENTRY, new SetEntryMessageDeserializer());
+        this.deserializers.put(MessageCode.UPDATE_ENTRY, new UpdateEntryMessageDeserializer());
+        this.deserializers.put(MessageCode.DELETE_ENTRY, new DeleteEntryMessageDeserializer());
+        this.deserializers.put(MessageCode.EXPIRE_ENTRY, new ExpireEntryMessageDeserializer());
     }
 
     @Override

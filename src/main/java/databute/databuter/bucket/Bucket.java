@@ -1,9 +1,9 @@
 package databute.databuter.bucket;
 
 import databute.databuter.cluster.ClusterNode;
-import databute.databuter.entity.Entity;
-import databute.databuter.entity.EntityCallback;
-import databute.databuter.entity.EntityKey;
+import databute.databuter.entry.Entry;
+import databute.databuter.entry.EntryCallback;
+import databute.databuter.entry.EntryKey;
 
 import java.time.Instant;
 
@@ -23,13 +23,13 @@ public abstract class Bucket {
         this.configuration = configuration;
     }
 
-    public abstract void get(EntityKey entityKey, EntityCallback callback);
+    public abstract void get(EntryKey entryKey, EntryCallback callback);
 
-    public abstract void add(Entity entity, EntityCallback callback);
+    public abstract void add(Entry entry, EntryCallback callback);
 
-    public abstract void remove(EntityKey entityKey, EntityCallback callback);
+    public abstract void remove(EntryKey entryKey, EntryCallback callback);
 
-    public abstract void expire(EntityKey entityKey, Instant expirationTimestamp, EntityCallback callback);
+    public abstract void expire(EntryKey entryKey, Instant expirationTimestamp, EntryCallback callback);
 
     public String id() {
         return id;
