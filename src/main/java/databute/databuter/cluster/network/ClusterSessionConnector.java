@@ -11,6 +11,10 @@ import databute.databuter.entry.expire.ExpireEntryMessageDeserializer;
 import databute.databuter.entry.expire.ExpireEntryMessageSerializer;
 import databute.databuter.entry.get.GetEntryMessageDeserializer;
 import databute.databuter.entry.get.GetEntryMessageSerializer;
+import databute.databuter.entry.result.fail.EntryOperationFailMessageDeserializer;
+import databute.databuter.entry.result.fail.EntryOperationFailMessageSerializer;
+import databute.databuter.entry.result.success.EntryOperationSuccessMessageDeserializer;
+import databute.databuter.entry.result.success.EntryOperationSuccessMessageSerializer;
 import databute.databuter.entry.set.SetEntryMessageDeserializer;
 import databute.databuter.entry.set.SetEntryMessageSerializer;
 import databute.databuter.entry.update.UpdateEntryMessageDeserializer;
@@ -55,6 +59,8 @@ public class ClusterSessionConnector extends AbstractSessionConnector {
         this.serializers.put(MessageCode.SET_ENTRY, new SetEntryMessageSerializer());
         this.serializers.put(MessageCode.UPDATE_ENTRY, new UpdateEntryMessageSerializer());
         this.serializers.put(MessageCode.DELETE_ENTRY, new DeleteEntryMessageSerializer());
+        this.serializers.put(MessageCode.ENTRY_OPERATION_SUCCESS, new EntryOperationSuccessMessageSerializer());
+        this.serializers.put(MessageCode.ENTRY_OPERATION_FAIL, new EntryOperationFailMessageSerializer());
         this.serializers.put(MessageCode.EXPIRE_ENTRY, new ExpireEntryMessageSerializer());
 
         this.deserializers = Maps.newHashMap();
@@ -63,6 +69,8 @@ public class ClusterSessionConnector extends AbstractSessionConnector {
         this.deserializers.put(MessageCode.SET_ENTRY, new SetEntryMessageDeserializer());
         this.deserializers.put(MessageCode.UPDATE_ENTRY, new UpdateEntryMessageDeserializer());
         this.deserializers.put(MessageCode.DELETE_ENTRY, new DeleteEntryMessageDeserializer());
+        this.deserializers.put(MessageCode.ENTRY_OPERATION_SUCCESS, new EntryOperationSuccessMessageDeserializer());
+        this.deserializers.put(MessageCode.ENTRY_OPERATION_FAIL, new EntryOperationFailMessageDeserializer());
         this.deserializers.put(MessageCode.EXPIRE_ENTRY, new ExpireEntryMessageDeserializer());
     }
 
