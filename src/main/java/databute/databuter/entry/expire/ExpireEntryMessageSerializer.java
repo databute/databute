@@ -15,7 +15,12 @@ public class ExpireEntryMessageSerializer implements MessageSerializer<ExpireEnt
         final Packet packet = new BufferedPacket();
         packet.writeString(expireEntryMessage.id());
         packet.writeString(expireEntryMessage.key());
-        packet.writeLong(expireEntryMessage.expirationTimestamp().toEpochMilli());
+        if (expireEntryMessage.expirationTimestamp() == null) {
+            packet.writeBoolean(false);
+        } else {
+            packet.writeBoolean(true);
+            packet.writeLong(expireEntryMessage.expirationTimestamp().toEpochMilli());
+        }
         return packet;
     }
 }
