@@ -55,6 +55,12 @@ public class EntryOperationSuccessMessageSerializer implements MessageSerializer
         }
         packet.writeLong(entryOperationSuccessMessage.createdTimestamp().toEpochMilli());
         packet.writeLong(entryOperationSuccessMessage.lastUpdatedTimestamp().toEpochMilli());
+        if (entryOperationSuccessMessage.expirationTimestamp() == null) {
+            packet.writeBoolean(false);
+        } else {
+            packet.writeBoolean(true);
+            packet.writeLong(entryOperationSuccessMessage.expirationTimestamp().toEpochMilli());
+        }
         return packet;
     }
 

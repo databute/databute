@@ -55,7 +55,10 @@ public class EntryOperationSuccessMessageDeserializer implements MessageDeserial
         }
         final Instant createdTimestamp = Instant.ofEpochMilli(packet.readLong());
         final Instant lastUpdatedTimestamp = Instant.ofEpochMilli(packet.readLong());
-        final Instant expirationTimestamp = Instant.ofEpochMilli(packet.readLong());
+        Instant expirationTimestamp = null;
+        if (packet.readBoolean()) {
+            expirationTimestamp = Instant.ofEpochMilli(packet.readLong());
+        }
         return new EntryOperationSuccessMessage(id, key, valueType, value, createdTimestamp, lastUpdatedTimestamp, expirationTimestamp);
     }
 
