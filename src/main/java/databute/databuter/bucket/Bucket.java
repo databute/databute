@@ -1,5 +1,6 @@
 package databute.databuter.bucket;
 
+import databute.databuter.cluster.ClusterNode;
 import databute.databuter.entity.Entity;
 import databute.databuter.entity.EntityCallback;
 import databute.databuter.entity.EntityKey;
@@ -9,6 +10,9 @@ import java.time.Instant;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 public abstract class Bucket {
+
+    private ClusterNode activeNode;
+    private ClusterNode standbyNode;
 
     private final String id;
     private final BucketConfiguration configuration;
@@ -45,6 +49,16 @@ public abstract class Bucket {
 
     public String standbyNodeId() {
         return configuration.standbyNodeId();
+    }
+
+    public Bucket activeNode(ClusterNode activeNode) {
+        this.activeNode = activeNode;
+        return this;
+    }
+
+    public Bucket standbyNode(ClusterNode standbyNode) {
+        this.standbyNode = standbyNode;
+        return this;
     }
 
     public void updateConfiguration(BucketConfiguration configuration) {
