@@ -35,6 +35,7 @@ public class UpdateEntryMessageSerializer implements MessageSerializer<UpdateEnt
             case STRING: {
                 final String stringValue = (String) updateEntryMessage.value();
                 serializeStringValue(packet, stringValue);
+                break;
             }
             case LIST: {
                 final List<String> listValue = (List<String>) updateEntryMessage.value();

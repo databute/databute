@@ -35,6 +35,7 @@ public class SetEntryMessageSerializer implements MessageSerializer<SetEntryMess
             case STRING: {
                 final String stringValue = (String) setEntryMessage.value();
                 serializeStringValue(packet, stringValue);
+                break;
             }
             case LIST: {
                 final List<String> listValue = (List<String>) setEntryMessage.value();
