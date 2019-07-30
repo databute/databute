@@ -11,16 +11,29 @@ repositories {
     mavenCentral()
 }
 
+jar {
+    from {
+        configurations.runtime.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+    manifest {
+        attributes(
+                'Main-Class': 'databute.databuter.Databuter',
+                'Implementation-Title': project.name,
+                'Implementation-Version': project.version
+        )
+    }
+}
+
 dependencies {
-    implementation 'com.fasterxml.jackson.core:jackson-databind:2.9.9'
-    implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.9.9'
-    implementation 'com.google.code.gson:gson:2.8.5'
-    implementation 'com.google.guava:guava:28.0-jre'
-    implementation 'io.netty:netty-all:4.1.36.Final'
-    implementation 'org.apache.commons:commons-lang3:3.9'
-    implementation 'org.apache.curator:curator-framework:2.13.0'
-    implementation 'org.apache.curator:curator-recipes:2.13.0'
-    implementation 'org.slf4j:slf4j-api:1.7.26'
+    compile 'com.fasterxml.jackson.core:jackson-databind:2.9.9'
+    compile 'com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.9.9'
+    compile 'com.google.code.gson:gson:2.8.5'
+    compile 'com.google.guava:guava:28.0-jre'
+    compile 'io.netty:netty-all:4.1.36.Final'
+    compile 'org.apache.commons:commons-lang3:3.9'
+    compile 'org.apache.curator:curator-framework:2.13.0'
+    compile 'org.apache.curator:curator-recipes:2.13.0'
+    compile 'org.slf4j:slf4j-api:1.7.26'
     runtime 'ch.qos.logback:logback-classic:1.2.3'
     testImplementation group: 'junit', name: 'junit', version: '4.12'
 }
