@@ -1,62 +1,62 @@
-package databute.databuter.entity.delete;
+package databute.databuter.entry.delete;
 
 import databute.databuter.Databuter;
 import databute.databuter.bucket.Bucket;
-import databute.databuter.entity.*;
-import databute.databuter.entity.result.fail.EntityOperationFailMessage;
-import databute.databuter.entity.result.success.EntityOperationSuccessMessage;
+import databute.databuter.entry.*;
+import databute.databuter.entry.result.fail.EntryOperationFailMessage;
+import databute.databuter.entry.result.success.EntryOperationSuccessMessage;
 import databute.databuter.network.Session;
 import databute.databuter.network.message.AbstractMessageHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class DeleteEntityMessageHandler extends AbstractMessageHandler<Session, DeleteEntityMessage> {
+public class DeleteEntryMessageHandler extends AbstractMessageHandler<Session, DeleteEntryMessage> {
 
-    private static final Logger logger = LoggerFactory.getLogger(DeleteEntityMessageHandler.class);
+    private static final Logger logger = LoggerFactory.getLogger(DeleteEntryMessageHandler.class);
 
-    public DeleteEntityMessageHandler(Session session) {
+    public DeleteEntryMessageHandler(Session session) {
         super(session);
     }
 
     @Override
-    public void handle(DeleteEntityMessage deleteEntityMessage) {
-        logger.debug("Handling delete entity message {}", deleteEntityMessage);
+    public void handle(DeleteEntryMessage deleteEntryMessage) {
+        logger.debug("Handling delete entry message {}", deleteEntryMessage);
 
-        final String id = deleteEntityMessage.id();
-        final String key = deleteEntityMessage.key();
+        final String id = deleteEntryMessage.id();
+        final String key = deleteEntryMessage.key();
 
         try {
-            final EntityKey entityKey = new EntityKey(key);
-            final Bucket bucket = Databuter.instance().bucketGroup().findByKey(entityKey);
+            final EntryKey entryKey = new EntryKey(key);
+            final Bucket bucket = Databuter.instance().bucketGroup().findByKey(entryKey);
             if (bucket == null) {
                 // TODO(@ghkim3221): 키에 해당하는 버킷을 찾을 수 없는 경우. 이 경우가 발생할 것인가...?
             } else {
-                bucket.remove(entityKey, new EntityCallback() {
+                bucket.remove(entryKey, new EntryCallback() {
                     @Override
-                    public void onSuccess(Entity entity) {
-                        session().send(EntityOperationSuccessMessage.entity(id, entity));
+                    public void onSuccess(Entry entry) {
+                        session().send(EntryOperationSuccessMessage.entry(id, entry));
                     }
 
                     @Override
                     public void onFailure(Exception e) {
                         if (e instanceof NotFoundException) {
-                            session().send(EntityOperationFailMessage.notFound(id, key));
-                        } else if (e instanceof EmptyEntityKeyException) {
-                            session().send(EntityOperationFailMessage.emptyKey(id, key));
-                        } else if (e instanceof DuplicateEntityKeyException) {
-                            session().send(EntityOperationFailMessage.duplicateKey(id, key));
+                            session().send(EntryOperationFailMessage.notFound(id, key));
+                        } else if (e instanceof EmptyEntryKeyException) {
+                            session().send(EntryOperationFailMessage.emptyKey(id, key));
+                        } else if (e instanceof DuplicateEntryKeyException) {
+                            session().send(EntryOperationFailMessage.duplicateKey(id, key));
                         } else if (e instanceof UnsupportedValueTypeException) {
-                            session().send(EntityOperationFailMessage.unsupportedValueType(id, key));
+                            session().send(EntryOperationFailMessage.unsupportedValueType(id, key));
                         } else {
-                            logger.error("Unknown error to remove entity {}", key, e);
+                            logger.error("Unknown error to remove entry {}", key, e);
                         }
                     }
                 });
             }
-        } catch (EmptyEntityKeyException e) {
-            session().send(EntityOperationFailMessage.emptyKey(id, key));
+        } catch (EmptyEntryKeyException e) {
+            session().send(EntryOperationFailMessage.emptyKey(id, key));
         } catch (UnsupportedValueTypeException e) {
-            session().send(EntityOperationFailMessage.unsupportedValueType(id, key));
+            session().send(EntryOperationFailMessage.unsupportedValueType(id, key));
         }
     }
 }

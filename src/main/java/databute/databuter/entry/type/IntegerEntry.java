@@ -1,22 +1,22 @@
 package databute.databuter.entry.type;
 
 import com.google.common.base.MoreObjects;
-import databute.databuter.entry.AbstractEntity;
-import databute.databuter.entry.EntityKey;
+import databute.databuter.entry.AbstractEntry;
+import databute.databuter.entry.EntryKey;
 
 import java.time.Instant;
 
-public class IntegerEntity extends AbstractEntity<Integer> {
+public class IntegerEntry extends AbstractEntry<Integer> {
 
-    public IntegerEntity(EntityKey key, Integer value) {
+    public IntegerEntry(EntryKey key, Integer value) {
         super(key, value);
     }
 
-    public IntegerEntity(EntityKey key,
-                         Integer value,
-                         Instant createdTimestamp,
-                         Instant lastUpdatedTimestamp,
-                         Instant expirationTimestamp) {
+    public IntegerEntry(EntryKey key,
+                        Integer value,
+                        Instant createdTimestamp,
+                        Instant lastUpdatedTimestamp,
+                        Instant expirationTimestamp) {
         super(key, value, createdTimestamp, lastUpdatedTimestamp, expirationTimestamp);
     }
 

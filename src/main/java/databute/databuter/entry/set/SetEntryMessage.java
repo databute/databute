@@ -1,20 +1,20 @@
 package databute.databuter.entry.set;
 
 import com.google.common.base.MoreObjects;
-import databute.databuter.entry.EntityMessage;
-import databute.databuter.entry.EntityValueType;
+import databute.databuter.entry.EntryMessage;
+import databute.databuter.entry.EntryValueType;
 import databute.databuter.network.message.MessageCode;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public class SetEntityMessage implements EntityMessage {
+public class SetEntryMessage implements EntryMessage {
 
     private final String id;
     private final String key;
-    private final EntityValueType valueType;
+    private final EntryValueType valueType;
     private final Object value;
 
-    public SetEntityMessage(String id, String key, EntityValueType valueType, Object value) {
+    public SetEntryMessage(String id, String key, EntryValueType valueType, Object value) {
         this.id = checkNotNull(id, "id");
         this.key = checkNotNull(key, "key");
         this.valueType = checkNotNull(valueType, "valueType");
@@ -23,7 +23,7 @@ public class SetEntityMessage implements EntityMessage {
 
     @Override
     public MessageCode messageCode() {
-        return MessageCode.SET_ENTITY;
+        return MessageCode.SET_ENTRY;
     }
 
     @Override
@@ -36,7 +36,7 @@ public class SetEntityMessage implements EntityMessage {
         return key;
     }
 
-    public EntityValueType valueType() {
+    public EntryValueType valueType() {
         return valueType;
     }
 

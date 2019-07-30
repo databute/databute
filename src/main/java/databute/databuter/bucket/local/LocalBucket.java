@@ -26,14 +26,14 @@ public class LocalBucket extends Bucket {
 
     private static final Logger logger = LoggerFactory.getLogger(LocalBucket.class);
 
-    private final Map<EntryKey, Entry> entities;
+    private final Map<EntryKey, Entry> entries;
     private final PriorityQueue<Expiration> expireQueue;
     private final ScheduledExecutorService expireScheduler;
     private final ReentrantLock expireLock;
 
     public LocalBucket(BucketConfiguration configuration) {
         super(configuration);
-        this.entities = Maps.newHashMap();
+        this.entries = Maps.newHashMap();
         this.expireQueue = Queues.newPriorityQueue();
         this.expireScheduler = Executors.newSingleThreadScheduledExecutor();
         this.expireLock = new ReentrantLock();
@@ -46,12 +46,12 @@ public class LocalBucket extends Bucket {
     @Override
     public void get(EntryKey entryKey, EntryCallback callback) {
         try {
-            final Entry entry = entities.get(entryKey);
+            final Entry entry = entries.get(entryKey);
             if (entry == null) {
                 callback.onFailure(new NotFoundException(entryKey.key()));
             } else {
                 if (entry.willBeExpire() && entry.expirationTimestamp().isBefore(Instant.now())) {
-                    entities.remove(entryKey);
+                    entries.remove(entryKey);
 
                     callback.onFailure(new NotFoundException(entryKey.key()));
                 } else {
@@ -69,10 +69,10 @@ public class LocalBucket extends Bucket {
             checkNotNull(entry, "entry");
 
             final EntryKey entryKey = entry.key();
-            if (entities.containsKey(entryKey)) {
+            if (entries.containsKey(entryKey)) {
                 callback.onFailure(new DuplicateEntryKeyException(entryKey.key()));
             } else {
-                final boolean added = (entities.putIfAbsent(entryKey, entry) == null);
+                final boolean added = (entries.putIfAbsent(entryKey, entry) == null);
                 if (added) {
                     callback.onSuccess(entry);
                 } else {
@@ -87,7 +87,7 @@ public class LocalBucket extends Bucket {
     @Override
     public void remove(EntryKey entryKey, EntryCallback callback) {
         try {
-            final Entry entry = entities.remove(entryKey);
+            final Entry entry = entries.remove(entryKey);
             if (entry == null) {
                 callback.onFailure(new NotFoundException(entryKey.key()));
             } else {
@@ -101,7 +101,7 @@ public class LocalBucket extends Bucket {
     @Override
     public void expire(EntryKey entryKey, Instant expirationTimestamp, EntryCallback callback) {
         try {
-            final Entry entry = entities.get(entryKey);
+            final Entry entry = entries.get(entryKey);
 
             if (entry == null) {
                 callback.onFailure(new NotFoundException(entryKey.key()));
@@ -145,10 +145,10 @@ public class LocalBucket extends Bucket {
                 }
                 expireIterator.remove();
 
-                final Entry entry = entities.get(expiration.key());
+                final Entry entry = entries.get(expiration.key());
                 if (entry != null) {
                     if (entry.willBeExpire() && entry.expirationTimestamp().isBefore(Instant.now())) {
-                        entities.remove(expiration.key());
+                        entries.remove(expiration.key());
                         logger.debug("Expired entry {}.", expiration.key());
 
                         count += 1;
@@ -156,7 +156,7 @@ public class LocalBucket extends Bucket {
                 }
             }
 
-            logger.debug("Expired {} entities from bucket {}. {} expirations left.", count, id(), expireQueue.size());
+            logger.debug("Expired {} entries from bucket {}. {} expirations left.", count, id(), expireQueue.size());
         } finally {
             expireLock.unlock();
         }

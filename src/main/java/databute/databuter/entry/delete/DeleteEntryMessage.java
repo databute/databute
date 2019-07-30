@@ -1,24 +1,24 @@
-package databute.databuter.entity.delete;
+package databute.databuter.entry.delete;
 
 import com.google.common.base.MoreObjects;
-import databute.databuter.entity.EntityMessage;
+import databute.databuter.entry.EntryMessage;
 import databute.databuter.network.message.MessageCode;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public class DeleteEntityMessage implements EntityMessage {
+public class DeleteEntryMessage implements EntryMessage {
 
     private final String id;
     private final String key;
 
-    public DeleteEntityMessage(String id, String key) {
+    public DeleteEntryMessage(String id, String key) {
         this.id = checkNotNull(id, "id");
         this.key = checkNotNull(key, "key");
     }
 
     @Override
     public MessageCode messageCode() {
-        return MessageCode.DELETE_ENTITY;
+        return MessageCode.DELETE_ENTRY;
     }
 
     @Override
