@@ -2,12 +2,16 @@ package databute.databuter.entry.update;
 
 import databute.databuter.Databuter;
 import databute.databuter.bucket.Bucket;
+import databute.databuter.cluster.ClusterCoordinator;
+import databute.databuter.cluster.ClusterNode;
+import databute.databuter.cluster.remote.RemoteClusterNode;
 import databute.databuter.entry.*;
 import databute.databuter.entry.result.fail.EntryOperationFailMessage;
 import databute.databuter.entry.result.success.EntryOperationSuccessMessage;
 import databute.databuter.entry.type.*;
 import databute.databuter.network.Session;
 import databute.databuter.network.message.AbstractMessageHandler;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,6 +34,7 @@ public class UpdateEntryMessageHandler extends AbstractMessageHandler<Session, U
         final String id = updateEntryMessage.id();
         final String key = updateEntryMessage.key();
 
+
         try {
             final EntryKey entryKey = new EntryKey(key);
             final Bucket bucket = Databuter.instance().bucketGroup().findByKey(entryKey);
@@ -39,7 +44,41 @@ public class UpdateEntryMessageHandler extends AbstractMessageHandler<Session, U
                 bucket.get(entryKey, new EntryCallback() {
                     @Override
                     public void onSuccess(Entry entry) {
-                        updateEntry(entry, updateEntryMessage);
+                        if (StringUtils.equals(bucket.activeNodeId(), Databuter.instance().id())) {
+                            if (StringUtils.isNotEmpty(bucket.standbyNodeId())) {
+                                final ClusterCoordinator clusterCoordinator = Databuter.instance().clusterCoordinator();
+                                final ClusterNode node = clusterCoordinator.find(bucket.standbyNodeId());
+                                if (node instanceof RemoteClusterNode) {
+                                    final RemoteClusterNode remoteNode = (RemoteClusterNode) node;
+
+                                    final EntryMessageDispatcher dispatcher = Databuter.instance().entryMessageDispatcher();
+                                    dispatcher.enqueue(updateEntryMessage.id(), new EntryCallback() {
+                                        @Override
+                                        public void onSuccess(Entry entry) {
+                                            updateEntry(entry, updateEntryMessage);
+                                        }
+
+                                        @Override
+                                        public void onFailure(Exception e) {
+                                            if (e instanceof EmptyEntryKeyException) {
+                                                session().send(EntryOperationFailMessage.emptyKey(id, key));
+                                            } else if (e instanceof DuplicateEntryKeyException) {
+                                                session().send(EntryOperationFailMessage.duplicateKey(id, key));
+                                            } else if (e instanceof UnsupportedValueTypeException) {
+                                                session().send(EntryOperationFailMessage.unsupportedValueType(id, key));
+                                            } else {
+                                                logger.error("Unknown error to update entry {}", key, e);
+                                            }
+                                        }
+                                    });
+                                    remoteNode.session().send(updateEntryMessage);
+                                }
+                            } else {
+                                updateEntry(entry, updateEntryMessage);
+                            }
+                        } else {
+                            updateEntry(entry, updateEntryMessage);
+                        }
                     }
 
                     @Override

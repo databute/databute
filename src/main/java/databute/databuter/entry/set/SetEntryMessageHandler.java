@@ -2,12 +2,16 @@ package databute.databuter.entry.set;
 
 import databute.databuter.Databuter;
 import databute.databuter.bucket.Bucket;
+import databute.databuter.cluster.ClusterCoordinator;
+import databute.databuter.cluster.ClusterNode;
+import databute.databuter.cluster.remote.RemoteClusterNode;
 import databute.databuter.entry.*;
 import databute.databuter.entry.result.fail.EntryOperationFailMessage;
 import databute.databuter.entry.result.success.EntryOperationSuccessMessage;
 import databute.databuter.entry.type.*;
 import databute.databuter.network.Session;
 import databute.databuter.network.message.AbstractMessageHandler;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,7 +43,41 @@ public class SetEntryMessageHandler extends AbstractMessageHandler<Session, SetE
                 bucket.get(entryKey, new EntryCallback() {
                     @Override
                     public void onSuccess(Entry entry) {
-                        updateEntry(entry, setEntryMessage);
+                        if (StringUtils.equals(bucket.activeNodeId(), Databuter.instance().id())) {
+                            if (StringUtils.isNotEmpty(bucket.standbyNodeId())) {
+                                final ClusterCoordinator clusterCoordinator = Databuter.instance().clusterCoordinator();
+                                final ClusterNode node = clusterCoordinator.find(bucket.standbyNodeId());
+                                if (node instanceof RemoteClusterNode) {
+                                    final RemoteClusterNode remoteNode = (RemoteClusterNode) node;
+
+                                    final EntryMessageDispatcher dispatcher = Databuter.instance().entryMessageDispatcher();
+                                    dispatcher.enqueue(setEntryMessage.id(), new EntryCallback() {
+                                        @Override
+                                        public void onSuccess(Entry entry) {
+                                            updateEntry(entry, setEntryMessage);
+                                        }
+
+                                        @Override
+                                        public void onFailure(Exception e) {
+                                            if (e instanceof EmptyEntryKeyException) {
+                                                session().send(EntryOperationFailMessage.emptyKey(id, key));
+                                            } else if (e instanceof DuplicateEntryKeyException) {
+                                                session().send(EntryOperationFailMessage.duplicateKey(id, key));
+                                            } else if (e instanceof UnsupportedValueTypeException) {
+                                                session().send(EntryOperationFailMessage.unsupportedValueType(id, key));
+                                            } else {
+                                                logger.error("Unknown error to set entry {}", key, e);
+                                            }
+                                        }
+                                    });
+                                    remoteNode.session().send(setEntryMessage);
+                                }
+                            } else {
+                                updateEntry(entry, setEntryMessage);
+                            }
+                        } else {
+                            updateEntry(entry, setEntryMessage);
+                        }
                     }
 
                     @Override
@@ -72,6 +110,8 @@ public class SetEntryMessageHandler extends AbstractMessageHandler<Session, SetE
         final EntryCallback callback = new EntryCallback() {
             @Override
             public void onSuccess(Entry entry) {
+
+                logger.error("onsuccess");
                 session().send(EntryOperationSuccessMessage.entry(id, entry));
             }
 
@@ -91,25 +131,98 @@ public class SetEntryMessageHandler extends AbstractMessageHandler<Session, SetE
             }
         };
 
-        switch (setEntryMessage.valueType()) {
-            case INTEGER:
-                addIntegerEntry(bucket, setEntryMessage, callback);
-                break;
-            case LONG:
-                addLongEntry(bucket, setEntryMessage, callback);
-                break;
-            case STRING:
-                addStringEntry(bucket, setEntryMessage, callback);
-                break;
-            case LIST:
-                addListEntry(bucket, setEntryMessage, callback);
-                break;
-            case SET:
-                addSetEntry(bucket, setEntryMessage, callback);
-                break;
-            case DICTIONARY:
-                addDictionaryEntry(bucket, setEntryMessage, callback);
-                break;
+        if (StringUtils.equals(bucket.activeNodeId(), Databuter.instance().id())) {
+            if (StringUtils.isNotEmpty(bucket.standbyNodeId())) {
+                final ClusterCoordinator clusterCoordinator = Databuter.instance().clusterCoordinator();
+                final ClusterNode node = clusterCoordinator.find(bucket.standbyNodeId());
+
+                if (node instanceof RemoteClusterNode) {
+                    final RemoteClusterNode remoteNode = (RemoteClusterNode) node;
+
+                    final EntryMessageDispatcher dispatcher = Databuter.instance().entryMessageDispatcher();
+                    dispatcher.enqueue(setEntryMessage.id(), new EntryCallback() {
+                        @Override
+                        public void onSuccess(Entry entry) {
+                            switch (setEntryMessage.valueType()) {
+                                case INTEGER:
+                                    addIntegerEntry(bucket, setEntryMessage, callback);
+                                    break;
+                                case LONG:
+                                    addLongEntry(bucket, setEntryMessage, callback);
+                                    break;
+                                case STRING:
+                                    addStringEntry(bucket, setEntryMessage, callback);
+                                    break;
+                                case LIST:
+                                    addListEntry(bucket, setEntryMessage, callback);
+                                    break;
+                                case SET:
+                                    addSetEntry(bucket, setEntryMessage, callback);
+                                    break;
+                                case DICTIONARY:
+                                    addDictionaryEntry(bucket, setEntryMessage, callback);
+                                    break;
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Exception e) {
+                            if (e instanceof EmptyEntryKeyException) {
+                                session().send(EntryOperationFailMessage.emptyKey(id, key));
+                            } else if (e instanceof DuplicateEntryKeyException) {
+                                session().send(EntryOperationFailMessage.duplicateKey(id, key));
+                            } else if (e instanceof UnsupportedValueTypeException) {
+                                session().send(EntryOperationFailMessage.unsupportedValueType(id, key));
+                            } else {
+                                logger.error("Unknown error to set entry {}", key, e);
+                            }
+                        }
+                    });
+                    remoteNode.session().send(setEntryMessage);
+                }
+            } else {
+                switch (setEntryMessage.valueType()) {
+                    case INTEGER:
+                        addIntegerEntry(bucket, setEntryMessage, callback);
+                        break;
+                    case LONG:
+                        addLongEntry(bucket, setEntryMessage, callback);
+                        break;
+                    case STRING:
+                        addStringEntry(bucket, setEntryMessage, callback);
+                        break;
+                    case LIST:
+                        addListEntry(bucket, setEntryMessage, callback);
+                        break;
+                    case SET:
+                        addSetEntry(bucket, setEntryMessage, callback);
+                        break;
+                    case DICTIONARY:
+                        addDictionaryEntry(bucket, setEntryMessage, callback);
+                        break;
+                }
+            }
+        } else {
+            switch (setEntryMessage.valueType()) {
+                case INTEGER:
+                    addIntegerEntry(bucket, setEntryMessage, callback);
+                    break;
+                case LONG:
+                    addLongEntry(bucket, setEntryMessage, callback);
+                    break;
+                case STRING:
+                    addStringEntry(bucket, setEntryMessage, callback);
+                    break;
+                case LIST:
+                    addListEntry(bucket, setEntryMessage, callback);
+                    break;
+                case SET:
+                    addSetEntry(bucket, setEntryMessage, callback);
+                    break;
+                case DICTIONARY:
+                    addDictionaryEntry(bucket, setEntryMessage, callback);
+                    break;
+            }
         }
     }
 
@@ -118,6 +231,7 @@ public class SetEntryMessageHandler extends AbstractMessageHandler<Session, SetE
             final EntryKey entryKey = new EntryKey(setEntryMessage.key());
             final Integer integerValue = (Integer) setEntryMessage.value();
             final IntegerEntry integerEntry = new IntegerEntry(entryKey, integerValue);
+            logger.error("test {}", integerEntry);
             bucket.add(integerEntry, callback);
         } catch (EmptyEntryKeyException e) {
             callback.onFailure(e);
