@@ -2,15 +2,16 @@ package databute.databuter.entry.result.success;
 
 import databute.databuter.Databuter;
 import databute.databuter.entry.*;
-import databute.databuter.entry.type.IntegerEntry;
-import databute.databuter.entry.type.LongEntry;
-import databute.databuter.entry.type.StringEntry;
+import databute.databuter.entry.type.*;
 import databute.databuter.network.Session;
 import databute.databuter.network.message.AbstractMessageHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.Instant;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class EntryOperationSuccessMessageHandler extends AbstractMessageHandler<Session, EntryOperationSuccessMessage> {
 
@@ -46,6 +47,15 @@ public class EntryOperationSuccessMessageHandler extends AbstractMessageHandler<
                     break;
                 case STRING:
                     callStringEntry(callback, entryOperationSuccessMessage);
+                    break;
+                case LIST:
+                    callListEntry(callback, entryOperationSuccessMessage);
+                    break;
+                case SET:
+                    callSetEntry(callback, entryOperationSuccessMessage);
+                    break;
+                case DICTIONARY:
+                    callDictionaryEntry(callback, entryOperationSuccessMessage);
                     break;
             }
         } catch (EmptyEntryKeyException e) {
@@ -89,6 +99,48 @@ public class EntryOperationSuccessMessageHandler extends AbstractMessageHandler<
         final Instant expirationTimestamp = entryOperationSuccessMessage.expirationTimestamp();
 
         final Entry entry = new StringEntry(entryKey, value, createdTimestamp, lastUpdatedTimestamp, expirationTimestamp);
+        callback.onSuccess(entry);
+    }
+
+    @SuppressWarnings("unchecked")
+    private void callListEntry(EntryCallback callback,
+                               EntryOperationSuccessMessage entryOperationSuccessMessage)
+            throws EmptyEntryKeyException {
+        final EntryKey entryKey = new EntryKey(entryOperationSuccessMessage.key());
+        final List<String> value = (List<String>) entryOperationSuccessMessage.value();
+        final Instant createdTimestamp = entryOperationSuccessMessage.createdTimestamp();
+        final Instant lastUpdatedTimestamp = entryOperationSuccessMessage.lastUpdatedTimestamp();
+        final Instant expirationTimestamp = entryOperationSuccessMessage.expirationTimestamp();
+
+        final Entry entry = new ListEntry(entryKey, value, createdTimestamp, lastUpdatedTimestamp, expirationTimestamp);
+        callback.onSuccess(entry);
+    }
+
+    @SuppressWarnings("unchecked")
+    private void callSetEntry(EntryCallback callback,
+                              EntryOperationSuccessMessage entryOperationSuccessMessage)
+            throws EmptyEntryKeyException {
+        final EntryKey entryKey = new EntryKey(entryOperationSuccessMessage.key());
+        final Set<String> value = (Set<String>) entryOperationSuccessMessage.value();
+        final Instant createdTimeStamp = entryOperationSuccessMessage.createdTimestamp();
+        final Instant lastUpdatedTimestamp = entryOperationSuccessMessage.lastUpdatedTimestamp();
+        final Instant expirationTimestamp = entryOperationSuccessMessage.expirationTimestamp();
+
+        final Entry entry = new SetEntry(entryKey, value, createdTimeStamp, lastUpdatedTimestamp, expirationTimestamp);
+        callback.onSuccess(entry);
+    }
+
+    @SuppressWarnings("unchecked")
+    private void callDictionaryEntry(EntryCallback callback,
+                                     EntryOperationSuccessMessage entryOperationSuccessMessage)
+            throws EmptyEntryKeyException {
+        final EntryKey entryKey = new EntryKey(entryOperationSuccessMessage.key());
+        final Map<String, String> value = (Map<String, String>) entryOperationSuccessMessage.value();
+        final Instant createdTimeStamp = entryOperationSuccessMessage.createdTimestamp();
+        final Instant lastUpdatedTimestamp = entryOperationSuccessMessage.lastUpdatedTimestamp();
+        final Instant expirationTimestamp = entryOperationSuccessMessage.expirationTimestamp();
+
+        final Entry entry = new DictionaryEntry(entryKey, value, createdTimeStamp, lastUpdatedTimestamp, expirationTimestamp);
         callback.onSuccess(entry);
     }
 }
