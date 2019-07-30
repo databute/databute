@@ -15,7 +15,10 @@ public class ExpireEntryMessageDeserializer implements MessageDeserializer<Expir
 
         final String id = packet.readString();
         final String key = packet.readString();
-        final Instant expirationTimestamp = Instant.ofEpochMilli(packet.readLong());
+        Instant expirationTimestamp = null;
+        if (packet.readBoolean()) {
+            expirationTimestamp = Instant.ofEpochMilli(packet.readLong());
+        }
         return new ExpireEntryMessage(id, key, expirationTimestamp);
     }
 }
