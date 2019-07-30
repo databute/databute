@@ -55,7 +55,8 @@ public class EntityOperationSuccessMessageDeserializer implements MessageDeseria
         }
         final Instant createdTimestamp = Instant.ofEpochMilli(packet.readLong());
         final Instant lastUpdatedTimestamp = Instant.ofEpochMilli(packet.readLong());
-        return new EntityOperationSuccessMessage(id, key, valueType, value, createdTimestamp, lastUpdatedTimestamp);
+        final Instant expirationTimestamp = Instant.ofEpochMilli(packet.readLong());
+        return new EntityOperationSuccessMessage(id, key, valueType, value, createdTimestamp, lastUpdatedTimestamp, expirationTimestamp);
     }
 
     private Integer deserializeIntegerValue(Packet packet) {

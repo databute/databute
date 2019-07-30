@@ -9,6 +9,7 @@ public abstract class AbstractEntity<T> implements Entity<T> {
 
     private T value;
     private Instant lastUpdatedTimestamp;
+    private Instant expirationTimestamp;
 
     private final EntityKey key;
     private final Instant createdTimestamp;
@@ -19,14 +20,19 @@ public abstract class AbstractEntity<T> implements Entity<T> {
     }
 
     protected AbstractEntity(EntityKey key, T value, Instant createdTimestamp) {
-        this(key, value, createdTimestamp, createdTimestamp);
+        this(key, value, createdTimestamp, createdTimestamp, null);
     }
 
-    protected AbstractEntity(EntityKey key, T value, Instant createdTimestamp, Instant lastUpdatedTimestamp) {
+    protected AbstractEntity(EntityKey key,
+                             T value,
+                             Instant createdTimestamp,
+                             Instant lastUpdatedTimestamp,
+                             Instant expirationTimestamp) {
         this.key = checkNotNull(key, "key");
         this.value = checkNotNull(value, "value");
         this.createdTimestamp = checkNotNull(createdTimestamp, "createdTimestamp ");
         this.lastUpdatedTimestamp = checkNotNull(lastUpdatedTimestamp, "lastUpdatedTimestamp");
+        this.expirationTimestamp = expirationTimestamp;
         this.lock = new ReentrantLock();
     }
 
@@ -67,5 +73,30 @@ public abstract class AbstractEntity<T> implements Entity<T> {
     @Override
     public final Instant lastUpdatedTimestamp() {
         return lastUpdatedTimestamp;
+    }
+
+    @Override
+    public void expireAt(Instant expirationTimestamp) {
+        lock.lock();
+        try {
+            this.expirationTimestamp = expirationTimestamp;
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    @Override
+    public void cancelExpiration() {
+        expireAt(null);
+    }
+
+    @Override
+    public boolean willBeExpire() {
+        return (expirationTimestamp != null);
+    }
+
+    @Override
+    public final Instant expirationTimestamp() {
+        return expirationTimestamp;
     }
 }

@@ -19,29 +19,40 @@ public class EntityOperationSuccessMessage implements EntityMessage {
 
         if (entity instanceof IntegerEntity) {
             final IntegerEntity integerEntity = (IntegerEntity) entity;
-            return new EntityOperationSuccessMessage(id, integerEntity.key().key(), EntityValueType.INTEGER,
-                    integerEntity.value(), integerEntity.createdTimestamp(), integerEntity.lastUpdatedTimestamp());
+            return new EntityOperationSuccessMessage(id, integerEntity.key().key(),
+                    EntityValueType.INTEGER, integerEntity.value(),
+                    integerEntity.createdTimestamp(), integerEntity.lastUpdatedTimestamp(),
+                    integerEntity.expirationTimestamp());
         } else if (entity instanceof LongEntity) {
             final LongEntity longEntity = (LongEntity) entity;
-            return new EntityOperationSuccessMessage(id, longEntity.key().key(), EntityValueType.LONG,
-                    longEntity.value(), longEntity.createdTimestamp(), longEntity.lastUpdatedTimestamp());
+            return new EntityOperationSuccessMessage(id, longEntity.key().key(),
+                    EntityValueType.LONG, longEntity.value(),
+                    longEntity.createdTimestamp(), longEntity.lastUpdatedTimestamp(),
+                    longEntity.expirationTimestamp());
         } else if (entity instanceof StringEntity) {
             final StringEntity stringEntity = (StringEntity) entity;
-            return new EntityOperationSuccessMessage(id, stringEntity.key().key(), EntityValueType.STRING,
-                    stringEntity.value(), stringEntity.createdTimestamp(), stringEntity.lastUpdatedTimestamp());
+            return new EntityOperationSuccessMessage(id, stringEntity.key().key(),
+                    EntityValueType.STRING, stringEntity.value(),
+                    stringEntity.createdTimestamp(), stringEntity.lastUpdatedTimestamp(),
+                    stringEntity.expirationTimestamp());
         } else if (entity instanceof ListEntity) {
             final ListEntity listEntity = (ListEntity) entity;
-            return new EntityOperationSuccessMessage(id, listEntity.key().key(), EntityValueType.LIST,
-                    listEntity.value(), listEntity.createdTimestamp(), listEntity.lastUpdatedTimestamp());
+            return new EntityOperationSuccessMessage(id, listEntity.key().key(),
+                    EntityValueType.LIST, listEntity.value(),
+                    listEntity.createdTimestamp(), listEntity.lastUpdatedTimestamp(),
+                    listEntity.expirationTimestamp());
         } else if (entity instanceof SetEntity) {
             final SetEntity setEntity = (SetEntity) entity;
-            return new EntityOperationSuccessMessage(id, setEntity.key().key(), EntityValueType.SET,
-                    setEntity.value(), setEntity.createdTimestamp(), setEntity.lastUpdatedTimestamp());
+            return new EntityOperationSuccessMessage(id, setEntity.key().key(),
+                    EntityValueType.SET, setEntity.value(),
+                    setEntity.createdTimestamp(), setEntity.lastUpdatedTimestamp(),
+                    setEntity.expirationTimestamp());
         } else if (entity instanceof DictionaryEntity) {
             final DictionaryEntity dictionaryEntity = (DictionaryEntity) entity;
-            return new EntityOperationSuccessMessage(id, dictionaryEntity.key().key(), EntityValueType.DICTIONARY,
-                    dictionaryEntity.value(), dictionaryEntity.createdTimestamp(),
-                    dictionaryEntity.lastUpdatedTimestamp());
+            return new EntityOperationSuccessMessage(id, dictionaryEntity.key().key(),
+                    EntityValueType.DICTIONARY, dictionaryEntity.value(),
+                    dictionaryEntity.createdTimestamp(), dictionaryEntity.lastUpdatedTimestamp(),
+                    dictionaryEntity.expirationTimestamp());
         } else {
             throw new UnsupportedValueTypeException();
         }
@@ -53,19 +64,22 @@ public class EntityOperationSuccessMessage implements EntityMessage {
     private final Object value;
     private final Instant createdTimestamp;
     private final Instant lastUpdatedTimestamp;
+    private final Instant expirationTimestamp;
 
     public EntityOperationSuccessMessage(String id,
                                          String key,
                                          EntityValueType valueType,
                                          Object value,
                                          Instant createdTimestamp,
-                                         Instant lastUpdatedTimestamp) {
+                                         Instant lastUpdatedTimestamp,
+                                         Instant expirationTimestamp) {
         this.id = checkNotNull(id, "id");
         this.key = checkNotNull(key, "key");
         this.valueType = checkNotNull(valueType, "valueType");
         this.value = checkNotNull(value, "value");
         this.createdTimestamp = checkNotNull(createdTimestamp, "createdTimestamp");
         this.lastUpdatedTimestamp = checkNotNull(lastUpdatedTimestamp, "lastUpdatedTimestamp");
+        this.expirationTimestamp = expirationTimestamp;
     }
 
     @Override
@@ -99,6 +113,10 @@ public class EntityOperationSuccessMessage implements EntityMessage {
         return lastUpdatedTimestamp;
     }
 
+    public Instant expirationTimestamp() {
+        return expirationTimestamp;
+    }
+
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
@@ -109,6 +127,7 @@ public class EntityOperationSuccessMessage implements EntityMessage {
                 .add("value", value)
                 .add("createdTimestamp", createdTimestamp)
                 .add("lastUpdatedTimestamp", lastUpdatedTimestamp)
+                .add("expirationTimestamp", expirationTimestamp)
                 .toString();
     }
 }

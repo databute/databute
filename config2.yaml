@@ -1,5 +1,6 @@
 guardMemorySize: 32
 bucketMemorySize: 32
+expireSchedulePeriod: 60
 client:
   endpoint:
     address: 'localhost'

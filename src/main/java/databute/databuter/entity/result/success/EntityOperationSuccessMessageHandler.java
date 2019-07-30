@@ -60,8 +60,9 @@ public class EntityOperationSuccessMessageHandler extends AbstractMessageHandler
         final Integer value = (Integer) entityOperationSuccessMessage.value();
         final Instant createdTimestamp = entityOperationSuccessMessage.createdTimestamp();
         final Instant lastUpdatedTimestamp = entityOperationSuccessMessage.lastUpdatedTimestamp();
+        final Instant expirationTimestamp = entityOperationSuccessMessage.expirationTimestamp();
 
-        final Entity entity = new IntegerEntity(entityKey, value, createdTimestamp, lastUpdatedTimestamp);
+        final Entity entity = new IntegerEntity(entityKey, value, createdTimestamp, lastUpdatedTimestamp, expirationTimestamp);
         callback.onSuccess(entity);
     }
 
@@ -72,8 +73,9 @@ public class EntityOperationSuccessMessageHandler extends AbstractMessageHandler
         final Long value = (Long) entityOperationSuccessMessage.value();
         final Instant createdTimestamp = entityOperationSuccessMessage.createdTimestamp();
         final Instant lastUpdatedTimestamp = entityOperationSuccessMessage.lastUpdatedTimestamp();
+        final Instant expirationTimestamp = entityOperationSuccessMessage.expirationTimestamp();
 
-        final Entity entity = new LongEntity(entityKey, value, createdTimestamp, lastUpdatedTimestamp);
+        final Entity entity = new LongEntity(entityKey, value, createdTimestamp, lastUpdatedTimestamp, expirationTimestamp);
         callback.onSuccess(entity);
     }
 
@@ -84,8 +86,9 @@ public class EntityOperationSuccessMessageHandler extends AbstractMessageHandler
         final String value = (String) entityOperationSuccessMessage.value();
         final Instant createdTimestamp = entityOperationSuccessMessage.createdTimestamp();
         final Instant lastUpdatedTimestamp = entityOperationSuccessMessage.lastUpdatedTimestamp();
+        final Instant expirationTimestamp = entityOperationSuccessMessage.expirationTimestamp();
 
-        final Entity entity = new StringEntity(entityKey, value, createdTimestamp, lastUpdatedTimestamp);
+        final Entity entity = new StringEntity(entityKey, value, createdTimestamp, lastUpdatedTimestamp, expirationTimestamp);
         callback.onSuccess(entity);
     }
 }

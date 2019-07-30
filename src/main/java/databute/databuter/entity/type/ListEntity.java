@@ -13,8 +13,12 @@ public class ListEntity extends AbstractEntity<List<String>> {
         super(key, value);
     }
 
-    public ListEntity(EntityKey key, List<String> value, Instant createdTimestamp, Instant lastUpdatedTimestamp) {
-        super(key, value, createdTimestamp, lastUpdatedTimestamp);
+    public ListEntity(EntityKey key,
+                      List<String> value,
+                      Instant createdTimestamp,
+                      Instant lastUpdatedTimestamp,
+                      Instant expirationTimestamp) {
+        super(key, value, createdTimestamp, lastUpdatedTimestamp, expirationTimestamp);
     }
 
     @Override
@@ -24,6 +28,7 @@ public class ListEntity extends AbstractEntity<List<String>> {
                 .add("value", value())
                 .add("createdTimestamp", createdTimestamp())
                 .add("lastUpdatedTimestamp", lastUpdatedTimestamp())
+                .add("expirationTimestamp", expirationTimestamp())
                 .toString();
     }
 }

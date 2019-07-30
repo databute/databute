@@ -12,8 +12,12 @@ public class StringEntity extends AbstractEntity<String> {
         super(key, value);
     }
 
-    public StringEntity(EntityKey key, String value, Instant createdTimestamp, Instant lastUpdatedTimestamp) {
-        super(key, value, createdTimestamp, lastUpdatedTimestamp);
+    public StringEntity(EntityKey key,
+                        String value,
+                        Instant createdTimestamp,
+                        Instant lastUpdatedTimestamp,
+                        Instant expirationTimestamp) {
+        super(key, value, createdTimestamp, lastUpdatedTimestamp, expirationTimestamp);
     }
 
     @Override
@@ -23,6 +27,7 @@ public class StringEntity extends AbstractEntity<String> {
                 .add("value", value())
                 .add("createdTimestamp", createdTimestamp())
                 .add("lastUpdatedTimestamp", lastUpdatedTimestamp())
+                .add("expirationTimestamp", expirationTimestamp())
                 .toString();
     }
 }

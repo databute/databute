@@ -14,4 +14,12 @@ public interface Entity<T> {
 
     Instant lastUpdatedTimestamp();
 
+    void expireAt(Instant expirationTimestamp);
+
+    void cancelExpiration();
+
+    boolean willBeExpire();
+
+    Instant expirationTimestamp();
+
 }

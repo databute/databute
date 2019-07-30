@@ -17,6 +17,9 @@ public class DatabuterConfiguration {
     @JsonProperty("bucketMemorySize")
     private long bucketMemorySize;
 
+    @JsonProperty("expireSchedulePeriod")
+    private long expireSchedulePeriod;
+
     @JsonProperty("client")
     private ClientConfiguration client;
 
@@ -32,6 +35,10 @@ public class DatabuterConfiguration {
 
     public long bucketMemorySize() {
         return (bucketMemorySize * MEGABYTE);
+    }
+
+    public long expireSchedulePeriod() {
+        return expireSchedulePeriod;
     }
 
     public ClientConfiguration client() {
@@ -51,6 +58,7 @@ public class DatabuterConfiguration {
         return MoreObjects.toStringHelper(this)
                 .add("bucketMemorySize", bucketMemorySize)
                 .add("gaurdMemorySize", guardMemorySize)
+                .add("expireSchedulePeriod", expireSchedulePeriod)
                 .add("client", client)
                 .add("zooKeeper", zooKeeper)
                 .add("cluster", cluster)
