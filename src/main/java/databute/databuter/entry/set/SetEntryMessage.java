@@ -1,9 +1,12 @@
 package databute.databuter.entry.set;
 
 import com.google.common.base.MoreObjects;
+import databute.databuter.entry.Entry;
 import databute.databuter.entry.EntryMessage;
 import databute.databuter.entry.EntryValueType;
 import databute.databuter.network.message.MessageCode;
+
+import java.util.UUID;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -13,6 +16,10 @@ public class SetEntryMessage implements EntryMessage {
     private final String key;
     private final EntryValueType valueType;
     private final Object value;
+
+    public SetEntryMessage(Entry entry, EntryValueType valueType) {
+        this(UUID.randomUUID().toString(), entry.key().key(), valueType, entry.value());
+    }
 
     public SetEntryMessage(String id, String key, EntryValueType valueType, Object value) {
         this.id = checkNotNull(id, "id");

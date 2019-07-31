@@ -4,12 +4,18 @@ import com.google.common.base.MoreObjects;
 import databute.databuter.entry.EntryMessage;
 import databute.databuter.network.message.MessageCode;
 
+import java.util.UUID;
+
 import static com.google.common.base.Preconditions.checkNotNull;
 
 public class GetEntryMessage implements EntryMessage {
 
     private final String id;
     private final String key;
+
+    public GetEntryMessage(String key) {
+        this(UUID.randomUUID().toString(), key);
+    }
 
     public GetEntryMessage(String id, String key) {
         this.id = checkNotNull(id, "id");

@@ -61,6 +61,10 @@ public abstract class Bucket {
         return this;
     }
 
+    public ClusterNode activeNode() {
+        return activeNode;
+    }
+
     public void updateConfiguration(BucketConfiguration configuration) {
         this.configuration.update(checkNotNull(configuration, "configuration"));
     }
