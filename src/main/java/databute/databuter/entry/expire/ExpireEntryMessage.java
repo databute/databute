@@ -5,6 +5,7 @@ import databute.databuter.entry.EntryMessage;
 import databute.databuter.network.message.MessageCode;
 
 import java.time.Instant;
+import java.util.UUID;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -13,6 +14,10 @@ public class ExpireEntryMessage implements EntryMessage {
     private final String id;
     private final String key;
     private final Instant expirationTimestamp;
+
+    public ExpireEntryMessage(String key, Instant expirationTimestamp) {
+        this(UUID.randomUUID().toString(), key, expirationTimestamp);
+    }
 
     public ExpireEntryMessage(String id, String key, Instant expirationTimestamp) {
         this.id = checkNotNull(id, "id");
