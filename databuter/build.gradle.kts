@@ -22,13 +22,32 @@
  * SOFTWARE.
  */
 
-allprojects {
-    apply(plugin = "idea")
+plugins {
+    java
+    application
+}
 
-    group = "databute"
-    version = "1.0-SNAPSHOT"
+dependencies {
+    implementation("com.fasterxml.jackson.core:jackson-databind:2.9.9")
+    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.9.9")
+    implementation("com.google.code.gson:gson:2.8.5")
+    implementation("com.google.guava:guava:28.0-jre")
+    implementation("io.netty:netty-all:4.1.36.Final")
+    implementation("org.apache.commons:commons-lang3:3.9")
+    implementation("org.apache.curator:curator-framework:2.13.0")
+    implementation("org.apache.curator:curator-recipes:2.13.0")
+    implementation("org.slf4j:slf4j-api:1.7.26")
 
-    repositories {
-        mavenCentral()
-    }
+    runtimeOnly("ch.qos.logback:logback-classic:1.2.3")
+
+    testImplementation("junit:junit:4.12")
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+}
+
+application {
+    mainClass.set("databute.databuter.Databuter")
 }
