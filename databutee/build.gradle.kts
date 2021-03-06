@@ -22,7 +22,29 @@
  * SOFTWARE.
  */
 
-rootProject.name = "databute"
+plugins {
+    java
+    application
+}
 
-include("databuter")
-include("databutee")
+dependencies {
+    implementation("com.google.code.gson:gson:2.8.5")
+    implementation("com.google.guava:guava:28.0-jre")
+    implementation("io.netty:netty-all:4.1.36.Final")
+    implementation("io.reactivex.rxjava2:rxjava:2.2.10")
+    implementation("org.apache.commons:commons-lang3:3.9")
+    implementation("org.slf4j:slf4j-api:1.7.26")
+
+    runtimeOnly("ch.qos.logback:logback-classic:1.2.3")
+
+    testImplementation("junit:junit:4.12")
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+}
+
+application {
+    mainClass.set("databute.databutee.console.Console")
+}
