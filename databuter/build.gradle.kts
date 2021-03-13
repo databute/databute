@@ -32,16 +32,14 @@ plugins {
 dependencies {
     implementation(Dependency.netty)
 
-    implementation(Dependency.rxJava)
-
     implementation(Dependency.commonsLang)
     implementation(Dependency.curatorFramework)
     implementation(Dependency.curatorRecipes)
     implementation(Dependency.gson)
     implementation(Dependency.guava)
-    implementation(Dependency.slf4j)
     implementation(Dependency.jacksonDatabind)
     implementation(Dependency.jacksonDataformatYaml)
+    implementation(Dependency.slf4j)
 
     runtimeOnly(Dependency.logback)
 

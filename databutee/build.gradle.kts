@@ -32,11 +32,10 @@ plugins {
 dependencies {
     implementation(Dependency.netty)
 
-    implementation(Dependency.rxJava)
-
     implementation(Dependency.commonsLang)
     implementation(Dependency.gson)
     implementation(Dependency.guava)
+    implementation(Dependency.rxJava)
     implementation(Dependency.slf4j)
 
     runtimeOnly(Dependency.logback)
