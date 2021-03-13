@@ -25,18 +25,15 @@
 package databute
 
 object Version {
-    const val netty = "4.1.36.Final"
-
-    const val rxJava = "2.2.10"
-
     const val commonsLang = "3.9"
     const val curator = "2.13.0"
     const val gson = "2.8.5"
     const val guava = "28.0-jre"
     const val jackson = "2.9.9"
-
-    const val slf4j = "1.7.26"
     const val logback = "1.2.3"
+    const val netty = "4.1.36.Final"
+    const val rxJava = "2.2.10"
+    const val slf4j = "1.7.26"
 
     const val junit = "4.12"
 }

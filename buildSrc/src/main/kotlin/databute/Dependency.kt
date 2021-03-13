@@ -25,10 +25,6 @@
 package databute
 
 object Dependency {
-    const val netty = "io.netty:netty-all:${Version.netty}"
-
-    const val rxJava = "io.reactivex.rxjava2:rxjava:${Version.rxJava}"
-
     const val commonsLang = "org.apache.commons:commons-lang3:${Version.commonsLang}"
     const val curatorFramework = "org.apache.curator:curator-framework:${Version.curator}"
     const val curatorRecipes = "org.apache.curator:curator-recipes:${Version.curator}"
@@ -37,9 +33,10 @@ object Dependency {
     const val jacksonDatabind = "com.fasterxml.jackson.core:jackson-databind:${Version.jackson}"
     const val jacksonDataformatYaml =
         "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:${Version.jackson}"
-
-    const val slf4j = "org.slf4j:slf4j-api:${Version.slf4j}"
     const val logback = "ch.qos.logback:logback-classic:${Version.logback}"
+    const val netty = "io.netty:netty-all:${Version.netty}"
+    const val rxJava = "io.reactivex.rxjava2:rxjava:${Version.rxJava}"
+    const val slf4j = "org.slf4j:slf4j-api:${Version.slf4j}"
 
     const val junit = "junit:junit:${Version.junit}"
 }
