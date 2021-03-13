@@ -22,37 +22,24 @@
  * SOFTWARE.
  */
 
-import databute.Dependency
+package databute
 
-plugins {
-    java
-    application
-}
+object Dependency {
+    const val netty = "io.netty:netty-all:${Version.netty}"
 
-dependencies {
-    implementation(Dependency.netty)
+    const val rxJava = "io.reactivex.rxjava2:rxjava:${Version.rxJava}"
 
-    implementation(Dependency.rxJava)
+    const val commonsLang = "org.apache.commons:commons-lang3:${Version.commonsLang}"
+    const val curatorFramework = "org.apache.curator:curator-framework:${Version.curator}"
+    const val curatorRecipes = "org.apache.curator:curator-recipes:${Version.curator}"
+    const val gson = "com.google.code.gson:gson:${Version.gson}"
+    const val guava = "com.google.guava:guava:${Version.guava}"
+    const val jacksonDatabind = "com.fasterxml.jackson.core:jackson-databind:${Version.jackson}"
+    const val jacksonDataformatYaml =
+        "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:${Version.jackson}"
 
-    implementation(Dependency.commonsLang)
-    implementation(Dependency.curatorFramework)
-    implementation(Dependency.curatorRecipes)
-    implementation(Dependency.gson)
-    implementation(Dependency.guava)
-    implementation(Dependency.slf4j)
-    implementation(Dependency.jacksonDatabind)
-    implementation(Dependency.jacksonDataformatYaml)
+    const val slf4j = "org.slf4j:slf4j-api:${Version.slf4j}"
+    const val logback = "ch.qos.logback:logback-classic:${Version.logback}"
 
-    runtimeOnly(Dependency.logback)
-
-    testImplementation(Dependency.junit)
-}
-
-java {
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
-}
-
-application {
-    mainClass.set("databute.databuter.Databuter")
+    const val junit = "junit:junit:${Version.junit}"
 }

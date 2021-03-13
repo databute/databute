@@ -22,37 +22,10 @@
  * SOFTWARE.
  */
 
-import databute.Dependency
-
 plugins {
-    java
-    application
+    `kotlin-dsl`
 }
 
-dependencies {
-    implementation(Dependency.netty)
-
-    implementation(Dependency.rxJava)
-
-    implementation(Dependency.commonsLang)
-    implementation(Dependency.curatorFramework)
-    implementation(Dependency.curatorRecipes)
-    implementation(Dependency.gson)
-    implementation(Dependency.guava)
-    implementation(Dependency.slf4j)
-    implementation(Dependency.jacksonDatabind)
-    implementation(Dependency.jacksonDataformatYaml)
-
-    runtimeOnly(Dependency.logback)
-
-    testImplementation(Dependency.junit)
-}
-
-java {
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
-}
-
-application {
-    mainClass.set("databute.databuter.Databuter")
+repositories {
+    mavenCentral()
 }

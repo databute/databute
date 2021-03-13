@@ -22,22 +22,26 @@
  * SOFTWARE.
  */
 
+import databute.Dependency
+
 plugins {
     java
     application
 }
 
 dependencies {
-    implementation("com.google.code.gson:gson:2.8.5")
-    implementation("com.google.guava:guava:28.0-jre")
-    implementation("io.netty:netty-all:4.1.36.Final")
-    implementation("io.reactivex.rxjava2:rxjava:2.2.10")
-    implementation("org.apache.commons:commons-lang3:3.9")
-    implementation("org.slf4j:slf4j-api:1.7.26")
+    implementation(Dependency.netty)
 
-    runtimeOnly("ch.qos.logback:logback-classic:1.2.3")
+    implementation(Dependency.rxJava)
 
-    testImplementation("junit:junit:4.12")
+    implementation(Dependency.commonsLang)
+    implementation(Dependency.gson)
+    implementation(Dependency.guava)
+    implementation(Dependency.slf4j)
+
+    runtimeOnly(Dependency.logback)
+
+    testImplementation(Dependency.junit)
 }
 
 java {

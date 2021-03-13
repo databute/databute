@@ -22,37 +22,21 @@
  * SOFTWARE.
  */
 
-import databute.Dependency
+package databute
 
-plugins {
-    java
-    application
-}
+object Version {
+    const val netty = "4.1.36.Final"
 
-dependencies {
-    implementation(Dependency.netty)
+    const val rxJava = "2.2.10"
 
-    implementation(Dependency.rxJava)
+    const val commonsLang = "3.9"
+    const val curator = "2.13.0"
+    const val gson = "2.8.5"
+    const val guava = "28.0-jre"
+    const val jackson = "2.9.9"
 
-    implementation(Dependency.commonsLang)
-    implementation(Dependency.curatorFramework)
-    implementation(Dependency.curatorRecipes)
-    implementation(Dependency.gson)
-    implementation(Dependency.guava)
-    implementation(Dependency.slf4j)
-    implementation(Dependency.jacksonDatabind)
-    implementation(Dependency.jacksonDataformatYaml)
+    const val slf4j = "1.7.26"
+    const val logback = "1.2.3"
 
-    runtimeOnly(Dependency.logback)
-
-    testImplementation(Dependency.junit)
-}
-
-java {
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
-}
-
-application {
-    mainClass.set("databute.databuter.Databuter")
+    const val junit = "4.12"
 }
