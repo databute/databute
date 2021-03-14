@@ -22,25 +22,28 @@
  * SOFTWARE.
  */
 
+import databute.Dependency
+
 plugins {
     java
     application
 }
 
 dependencies {
-    implementation("com.fasterxml.jackson.core:jackson-databind:2.9.9")
-    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.9.9")
-    implementation("com.google.code.gson:gson:2.8.5")
-    implementation("com.google.guava:guava:28.0-jre")
-    implementation("io.netty:netty-all:4.1.36.Final")
-    implementation("org.apache.commons:commons-lang3:3.9")
-    implementation("org.apache.curator:curator-framework:2.13.0")
-    implementation("org.apache.curator:curator-recipes:2.13.0")
-    implementation("org.slf4j:slf4j-api:1.7.26")
+    implementation(Dependency.netty)
 
-    runtimeOnly("ch.qos.logback:logback-classic:1.2.3")
+    implementation(Dependency.commonsLang)
+    implementation(Dependency.curatorFramework)
+    implementation(Dependency.curatorRecipes)
+    implementation(Dependency.gson)
+    implementation(Dependency.guava)
+    implementation(Dependency.jacksonDatabind)
+    implementation(Dependency.jacksonDataformatYaml)
+    implementation(Dependency.slf4j)
 
-    testImplementation("junit:junit:4.12")
+    runtimeOnly(Dependency.logback)
+
+    testImplementation(Dependency.junit)
 }
 
 java {

@@ -22,32 +22,10 @@
  * SOFTWARE.
  */
 
-import databute.Dependency
-
 plugins {
-    java
-    application
+    `kotlin-dsl`
 }
 
-dependencies {
-    implementation(Dependency.netty)
-
-    implementation(Dependency.commonsLang)
-    implementation(Dependency.gson)
-    implementation(Dependency.guava)
-    implementation(Dependency.rxJava)
-    implementation(Dependency.slf4j)
-
-    runtimeOnly(Dependency.logback)
-
-    testImplementation(Dependency.junit)
-}
-
-java {
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
-}
-
-application {
-    mainClass.set("databute.databutee.console.Console")
+repositories {
+    mavenCentral()
 }
