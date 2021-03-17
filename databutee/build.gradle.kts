@@ -30,7 +30,7 @@ plugins {
 }
 
 dependencies {
-    implementation(Dependency.netty)
+    implementation(project(":network"))
 
     implementation(Dependency.commonsLang)
     implementation(Dependency.gson)

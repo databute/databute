@@ -7,12 +7,12 @@ import databute.databutee.entry.DuplicateEntryKeyException;
 import databute.databutee.entry.EmptyEntryKeyException;
 import databute.databutee.entry.NotFoundException;
 import databute.databutee.entry.UnsupportedValueTypeException;
+import databute.databutee.network.DatabuterMessageHandler;
 import databute.databutee.network.DatabuterSession;
-import databute.databutee.network.message.MessageHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class EntryOperationFailMessageHandler extends MessageHandler<EntryOperationFailMessage> {
+public class EntryOperationFailMessageHandler extends DatabuterMessageHandler<EntryOperationFailMessage> {
 
     private static final Logger logger = LoggerFactory.getLogger(EntryOperationFailMessageHandler.class);
 

@@ -37,7 +37,7 @@ import java.util.Map;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public class ClusterSessionConnector extends AbstractSessionConnector {
+public class ClusterSessionConnector extends AbstractSessionConnector<ClusterSession> {
 
     private final ClusterCoordinator clusterCoordinator;
     private final RemoteClusterNode remoteNode;
@@ -84,7 +84,7 @@ public class ClusterSessionConnector extends AbstractSessionConnector {
                 pipeline.addLast(new MessageToPacketEncoder(serializers));
                 pipeline.addLast(new PacketToMessageDecoder(deserializers));
 
-                pipeline.addLast(new OutboundClusterChannelHandler(clusterCoordinator, remoteNode));
+                pipeline.addLast(new OutboundClusterChannelHandler(clusterCoordinator, remoteNode, sessionFuture()));
             }
         };
     }

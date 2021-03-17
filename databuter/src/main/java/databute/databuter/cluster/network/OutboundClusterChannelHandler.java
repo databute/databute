@@ -17,6 +17,8 @@ import io.netty.channel.socket.SocketChannel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.concurrent.CompletableFuture;
+
 import static com.google.common.base.Preconditions.checkNotNull;
 
 public class OutboundClusterChannelHandler extends ChannelInboundHandlerAdapter {
@@ -27,16 +29,21 @@ public class OutboundClusterChannelHandler extends ChannelInboundHandlerAdapter 
 
     private final ClusterCoordinator clusterCoordinator;
     private final RemoteClusterNode remoteNode;
+    private final CompletableFuture<ClusterSession> sessionFuture;
 
-    public OutboundClusterChannelHandler(ClusterCoordinator clusterCoordinator, RemoteClusterNode remoteNode) {
+    public OutboundClusterChannelHandler(ClusterCoordinator clusterCoordinator,
+                                         RemoteClusterNode remoteNode,
+                                         CompletableFuture<ClusterSession> sessionFuture) {
         this.clusterCoordinator = checkNotNull(clusterCoordinator, "clusterCoordinator");
         this.remoteNode = checkNotNull(remoteNode, "remoteNode");
+        this.sessionFuture = checkNotNull(sessionFuture, "sessionFuture");
     }
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) {
         final SocketChannel channel = (SocketChannel) ctx.channel();
         session = new ClusterSession(channel, clusterCoordinator);
+        sessionFuture.complete(session);
         logger.info("Active new cluster outbound session {}", session);
 
         remoteNode.session(session);

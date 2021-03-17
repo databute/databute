@@ -6,14 +6,14 @@ import databute.databutee.Dispatcher;
 import databute.databutee.entry.EmptyEntryKeyException;
 import databute.databutee.entry.Entry;
 import databute.databutee.entry.EntryKey;
+import databute.databutee.network.DatabuterMessageHandler;
 import databute.databutee.network.DatabuterSession;
-import databute.databutee.network.message.MessageHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.Instant;
 
-public class EntryOperationSuccessMessageHandler extends MessageHandler<EntryOperationSuccessMessage> {
+public class EntryOperationSuccessMessageHandler extends DatabuterMessageHandler<EntryOperationSuccessMessage> {
 
     private static final Logger logger = LoggerFactory.getLogger(EntryOperationSuccessMessageHandler.class);
 

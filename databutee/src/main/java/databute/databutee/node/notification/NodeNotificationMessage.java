@@ -1,8 +1,8 @@
 package databute.databutee.node.notification;
 
 import com.google.common.base.MoreObjects;
-import databute.databutee.network.message.Message;
-import databute.databutee.network.message.MessageCode;
+import databute.network.message.Message;
+import databute.network.message.MessageCode;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -22,7 +22,7 @@ public class NodeNotificationMessage implements Message {
 
     @Override
     public MessageCode messageCode() {
-        return MessageCode.NODE_NOTIFICATION;
+        return MessageCode.CLUSTER_NODE_NOTIFICATION;
     }
 
     public NodeNotificationType type() {

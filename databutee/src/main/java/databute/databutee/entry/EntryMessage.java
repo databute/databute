@@ -1,6 +1,6 @@
 package databute.databutee.entry;
 
-import databute.databutee.network.message.Message;
+import databute.network.message.Message;
 
 public interface EntryMessage extends Message {
 

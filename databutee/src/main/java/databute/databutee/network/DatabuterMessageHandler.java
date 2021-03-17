@@ -22,17 +22,14 @@
  * SOFTWARE.
  */
 
-package databute.network;
+package databute.databutee.network;
 
-import java.net.InetSocketAddress;
-import java.util.concurrent.CompletableFuture;
+import databute.network.message.AbstractMessageHandler;
+import databute.network.message.Message;
 
-public interface SessionConnector<S extends Session> {
+public abstract class DatabuterMessageHandler<M extends Message> extends AbstractMessageHandler<DatabuterSession, M> {
 
-    InetSocketAddress localAddress();
-
-    InetSocketAddress remoteAddress();
-
-    CompletableFuture<S> connect(InetSocketAddress remoteAddress);
-
+    protected DatabuterMessageHandler(DatabuterSession session) {
+        super(session);
+    }
 }

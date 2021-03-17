@@ -4,7 +4,7 @@ import com.google.common.base.MoreObjects;
 import databute.databutee.entry.EntryKey;
 import databute.databutee.entry.EntryMessage;
 import databute.databutee.entry.EntryValueType;
-import databute.databutee.network.message.MessageCode;
+import databute.network.message.MessageCode;
 
 import java.util.List;
 import java.util.Map;

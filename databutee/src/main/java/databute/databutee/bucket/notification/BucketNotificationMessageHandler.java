@@ -1,15 +1,15 @@
 package databute.databutee.bucket.notification;
 
 import databute.databutee.bucket.Bucket;
+import databute.databutee.network.DatabuterMessageHandler;
 import databute.databutee.network.DatabuterSession;
-import databute.databutee.network.message.MessageHandler;
 import databute.databutee.node.DatabuterNode;
 import databute.databutee.node.DatabuterNodeGroup;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class BucketNotificationMessageHandler extends MessageHandler<BucketNotificationMessage> {
+public class BucketNotificationMessageHandler extends DatabuterMessageHandler<BucketNotificationMessage> {
 
     private static final Logger logger = LoggerFactory.getLogger(BucketNotificationMessageHandler.class);
 

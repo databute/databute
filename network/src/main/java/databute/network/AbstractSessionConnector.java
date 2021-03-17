@@ -36,13 +36,15 @@ import java.util.concurrent.CompletableFuture;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public abstract class AbstractSessionConnector implements SessionConnector {
+public abstract class AbstractSessionConnector<S extends Session> implements SessionConnector<S> {
 
     private SocketChannel channel;
     private InetSocketAddress localAddress;
     private InetSocketAddress remoteAddress;
 
     private final EventLoopGroup loopGroup;
+    private final CompletableFuture<S> sessionFuture = new CompletableFuture<>();
+
 
     protected AbstractSessionConnector(EventLoopGroup loopGroup) {
         this.loopGroup = checkNotNull(loopGroup, "loopGroup");
@@ -50,8 +52,12 @@ public abstract class AbstractSessionConnector implements SessionConnector {
 
     protected abstract ChannelHandler handler();
 
-    protected SocketChannel channel() {
+    protected final SocketChannel channel() {
         return channel;
+    }
+
+    protected final CompletableFuture<S> sessionFuture() {
+        return sessionFuture;
     }
 
     @Override
@@ -65,10 +71,9 @@ public abstract class AbstractSessionConnector implements SessionConnector {
     }
 
     @Override
-    public CompletableFuture<Void> connect(InetSocketAddress remoteAddress) {
+    public CompletableFuture<S> connect(InetSocketAddress remoteAddress) {
         this.remoteAddress = checkNotNull(remoteAddress, "remoteAddress");
 
-        final CompletableFuture<Void> future = new CompletableFuture<>();
         new Bootstrap()
                 .group(loopGroup)
                 .channel(NioSocketChannel.class)
@@ -76,7 +81,7 @@ public abstract class AbstractSessionConnector implements SessionConnector {
                 .connect(remoteAddress)
                 .addListener((ChannelFutureListener) channelFuture -> {
                     if (!channelFuture.isSuccess()) {
-                        future.completeExceptionally(channelFuture.cause());
+                        sessionFuture.completeExceptionally(channelFuture.cause());
                         return;
                     }
 
@@ -85,12 +90,10 @@ public abstract class AbstractSessionConnector implements SessionConnector {
                         this.channel = channel;
                         localAddress = channel.localAddress();
                         this.remoteAddress = channel.remoteAddress();
-
-                        future.complete(null);
                     } catch (Exception e) {
-                        future.completeExceptionally(e);
+                        sessionFuture.completeExceptionally(e);
                     }
                 });
-        return future;
+        return sessionFuture;
     }
 }
