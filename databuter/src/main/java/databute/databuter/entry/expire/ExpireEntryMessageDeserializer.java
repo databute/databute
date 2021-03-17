@@ -1,7 +1,7 @@
 package databute.databuter.entry.expire;
 
-import databute.databuter.network.message.MessageDeserializer;
-import databute.databuter.network.packet.Packet;
+import databute.network.message.MessageDeserializer;
+import databute.network.packet.Packet;
 
 import java.time.Instant;
 

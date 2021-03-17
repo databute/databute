@@ -1,8 +1,8 @@
 package databute.databuter.entry.update;
 
-import databute.databuter.network.message.MessageSerializer;
-import databute.databuter.network.packet.BufferedPacket;
-import databute.databuter.network.packet.Packet;
+import databute.network.message.MessageSerializer;
+import databute.network.packet.BufferedPacket;
+import databute.network.packet.Packet;
 
 import java.util.List;
 import java.util.Map;

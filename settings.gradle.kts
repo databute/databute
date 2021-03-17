@@ -26,3 +26,4 @@ rootProject.name = "databute"
 
 include("databuter")
 include("databutee")
+include("network")

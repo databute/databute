@@ -6,7 +6,7 @@ import databute.databuter.entry.EntryMessage;
 import databute.databuter.entry.EntryValueType;
 import databute.databuter.entry.UnsupportedValueTypeException;
 import databute.databuter.entry.type.*;
-import databute.databuter.network.message.MessageCode;
+import databute.network.message.MessageCode;
 
 import java.time.Instant;
 
