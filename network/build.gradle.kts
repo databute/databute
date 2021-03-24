@@ -33,7 +33,6 @@ dependencies {
 
     implementation(Dependency.commonsLang)
     implementation(Dependency.guava)
-    implementation(Dependency.slf4j)
 }
 
 java {
