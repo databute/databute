@@ -2,7 +2,7 @@ package databute.databutee.entry.result.fail;
 
 import com.google.common.base.MoreObjects;
 import databute.databutee.entry.EntryMessage;
-import databute.databutee.network.message.MessageCode;
+import databute.network.message.MessageCode;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 

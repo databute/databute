@@ -1,7 +1,7 @@
 package databute.databuter.entry.result.fail;
 
-import databute.databuter.network.message.MessageDeserializer;
-import databute.databuter.network.packet.Packet;
+import databute.network.message.MessageDeserializer;
+import databute.network.packet.Packet;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 

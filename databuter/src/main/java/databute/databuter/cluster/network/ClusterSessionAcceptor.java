@@ -18,15 +18,14 @@ import databute.databuter.entry.set.SetEntryMessageDeserializer;
 import databute.databuter.entry.set.SetEntryMessageSerializer;
 import databute.databuter.entry.update.UpdateEntryMessageDeserializer;
 import databute.databuter.entry.update.UpdateEntryMessageSerializer;
-import databute.databuter.network.AbstractSessionAcceptor;
-import databute.databuter.network.message.MessageCode;
-import databute.databuter.network.message.MessageCodeResolver;
-import databute.databuter.network.message.MessageDeserializer;
-import databute.databuter.network.message.MessageSerializer;
-import databute.databuter.network.message.codec.MessageToPacketEncoder;
-import databute.databuter.network.message.codec.PacketToMessageDecoder;
-import databute.databuter.network.packet.codec.ByteToPacketDecoder;
-import databute.databuter.network.packet.codec.PacketToByteEncoder;
+import databute.network.AbstractSessionAcceptor;
+import databute.network.message.MessageCode;
+import databute.network.message.MessageDeserializer;
+import databute.network.message.MessageSerializer;
+import databute.network.message.codec.MessageToPacketEncoder;
+import databute.network.message.codec.PacketToMessageDecoder;
+import databute.network.packet.codec.ByteToPacketDecoder;
+import databute.network.packet.codec.PacketToByteEncoder;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
@@ -41,34 +40,33 @@ public class ClusterSessionAcceptor extends AbstractSessionAcceptor {
 
     private final ClusterCoordinator clusterCoordinator;
 
-    private final MessageCodeResolver resolver;
     private final Map<MessageCode, MessageSerializer> serializers;
     private final Map<MessageCode, MessageDeserializer> deserializers;
 
     public ClusterSessionAcceptor(EventLoopGroup loopGroup, ClusterCoordinator clusterCoordinator) {
         super(loopGroup, loopGroup);
         this.clusterCoordinator = checkNotNull(clusterCoordinator, "clusterCoordinator");
-        this.resolver = new MessageCodeResolver();
 
-        this.serializers = Maps.newHashMap();
-        this.serializers.put(MessageCode.HANDSHAKE_RESPONSE, new HandshakeResponseMessageSerializer());
-        this.serializers.put(MessageCode.GET_ENTRY, new GetEntryMessageSerializer());
-        this.serializers.put(MessageCode.SET_ENTRY, new SetEntryMessageSerializer());
-        this.serializers.put(MessageCode.UPDATE_ENTRY, new UpdateEntryMessageSerializer());
-        this.serializers.put(MessageCode.DELETE_ENTRY, new DeleteEntryMessageSerializer());
-        this.serializers.put(MessageCode.ENTRY_OPERATION_SUCCESS, new EntryOperationSuccessMessageSerializer());
-        this.serializers.put(MessageCode.ENTRY_OPERATION_FAIL, new EntryOperationFailMessageSerializer());
-        this.serializers.put(MessageCode.EXPIRE_ENTRY, new ExpireEntryMessageSerializer());
+        serializers = Maps.newHashMap();
+        serializers.put(MessageCode.HANDSHAKE_RESPONSE, new HandshakeResponseMessageSerializer());
+        serializers.put(MessageCode.GET_ENTRY, new GetEntryMessageSerializer());
+        serializers.put(MessageCode.SET_ENTRY, new SetEntryMessageSerializer());
+        serializers.put(MessageCode.UPDATE_ENTRY, new UpdateEntryMessageSerializer());
+        serializers.put(MessageCode.DELETE_ENTRY, new DeleteEntryMessageSerializer());
+        serializers.put(MessageCode.ENTRY_OPERATION_SUCCESS, new EntryOperationSuccessMessageSerializer());
+        serializers.put(MessageCode.ENTRY_OPERATION_FAIL, new EntryOperationFailMessageSerializer());
+        serializers.put(MessageCode.EXPIRE_ENTRY, new ExpireEntryMessageSerializer());
 
-        this.deserializers = Maps.newHashMap();
-        this.deserializers.put(MessageCode.HANDSHAKE_REQUEST, new HandshakeRequestMessageDeserializer());
-        this.deserializers.put(MessageCode.GET_ENTRY, new GetEntryMessageDeserializer());
-        this.deserializers.put(MessageCode.SET_ENTRY, new SetEntryMessageDeserializer());
-        this.deserializers.put(MessageCode.UPDATE_ENTRY, new UpdateEntryMessageDeserializer());
-        this.deserializers.put(MessageCode.DELETE_ENTRY, new DeleteEntryMessageDeserializer());
-        this.deserializers.put(MessageCode.ENTRY_OPERATION_SUCCESS, new EntryOperationSuccessMessageDeserializer());
-        this.deserializers.put(MessageCode.ENTRY_OPERATION_FAIL, new EntryOperationFailMessageDeserializer());
-        this.deserializers.put(MessageCode.EXPIRE_ENTRY, new ExpireEntryMessageDeserializer());
+        deserializers = Maps.newHashMap();
+        deserializers.put(MessageCode.HANDSHAKE_REQUEST, new HandshakeRequestMessageDeserializer());
+        deserializers.put(MessageCode.GET_ENTRY, new GetEntryMessageDeserializer());
+        deserializers.put(MessageCode.SET_ENTRY, new SetEntryMessageDeserializer());
+        deserializers.put(MessageCode.UPDATE_ENTRY, new UpdateEntryMessageDeserializer());
+        deserializers.put(MessageCode.DELETE_ENTRY, new DeleteEntryMessageDeserializer());
+        deserializers.put(MessageCode.ENTRY_OPERATION_SUCCESS,
+                new EntryOperationSuccessMessageDeserializer());
+        deserializers.put(MessageCode.ENTRY_OPERATION_FAIL, new EntryOperationFailMessageDeserializer());
+        deserializers.put(MessageCode.EXPIRE_ENTRY, new ExpireEntryMessageDeserializer());
     }
 
     @Override
@@ -82,7 +80,7 @@ public class ClusterSessionAcceptor extends AbstractSessionAcceptor {
                 pipeline.addLast(new ByteToPacketDecoder());
 
                 pipeline.addLast(new MessageToPacketEncoder(serializers));
-                pipeline.addLast(new PacketToMessageDecoder(resolver, deserializers));
+                pipeline.addLast(new PacketToMessageDecoder(deserializers));
 
                 pipeline.addLast(new InboundClusterChannelHandler(clusterCoordinator));
             }

@@ -1,8 +1,8 @@
 package databute.databutee.bucket.notification;
 
 import com.google.common.base.MoreObjects;
-import databute.databutee.network.message.Message;
-import databute.databutee.network.message.MessageCode;
+import databute.network.message.Message;
+import databute.network.message.MessageCode;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 

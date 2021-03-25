@@ -1,8 +1,8 @@
 package databute.databuter.client.register;
 
 import com.google.common.base.MoreObjects;
-import databute.databuter.network.message.Message;
-import databute.databuter.network.message.MessageCode;
+import databute.network.message.Message;
+import databute.network.message.MessageCode;
 
 public class RegisterMessage implements Message {
 

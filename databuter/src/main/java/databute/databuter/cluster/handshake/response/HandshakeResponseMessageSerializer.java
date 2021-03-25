@@ -1,8 +1,8 @@
 package databute.databuter.cluster.handshake.response;
 
-import databute.databuter.network.message.MessageSerializer;
-import databute.databuter.network.packet.BufferedPacket;
-import databute.databuter.network.packet.Packet;
+import databute.network.message.MessageSerializer;
+import databute.network.packet.BufferedPacket;
+import databute.network.packet.Packet;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -12,7 +12,6 @@ public class HandshakeResponseMessageSerializer implements MessageSerializer<Han
     public Packet serialize(HandshakeResponseMessage handshakeResponse) {
         checkNotNull(handshakeResponse, handshakeResponse);
 
-        final Packet packet = new BufferedPacket();
-        return packet;
+        return new BufferedPacket();
     }
 }

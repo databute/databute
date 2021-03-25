@@ -1,7 +1,7 @@
 package databute.databuter.client.network;
 
 import com.google.common.base.MoreObjects;
-import databute.databuter.network.AbstractSession;
+import databute.network.AbstractSession;
 import io.netty.channel.socket.SocketChannel;
 
 public class ClientSession extends AbstractSession {

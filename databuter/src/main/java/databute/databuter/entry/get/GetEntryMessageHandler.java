@@ -5,8 +5,8 @@ import databute.databuter.bucket.Bucket;
 import databute.databuter.entry.*;
 import databute.databuter.entry.result.fail.EntryOperationFailMessage;
 import databute.databuter.entry.result.success.EntryOperationSuccessMessage;
-import databute.databuter.network.Session;
-import databute.databuter.network.message.AbstractMessageHandler;
+import databute.network.Session;
+import databute.network.message.AbstractMessageHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

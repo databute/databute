@@ -2,7 +2,7 @@ package databute.databuter.entry.expire;
 
 import com.google.common.base.MoreObjects;
 import databute.databuter.entry.EntryMessage;
-import databute.databuter.network.message.MessageCode;
+import databute.network.message.MessageCode;
 
 import java.time.Instant;
 import java.util.UUID;

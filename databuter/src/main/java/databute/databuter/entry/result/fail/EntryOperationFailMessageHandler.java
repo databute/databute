@@ -2,8 +2,8 @@ package databute.databuter.entry.result.fail;
 
 import databute.databuter.Databuter;
 import databute.databuter.entry.*;
-import databute.databuter.network.Session;
-import databute.databuter.network.message.AbstractMessageHandler;
+import databute.network.Session;
+import databute.network.message.AbstractMessageHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

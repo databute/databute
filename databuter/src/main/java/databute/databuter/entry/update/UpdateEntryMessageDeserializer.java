@@ -5,8 +5,8 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import databute.databuter.entry.EntryValueType;
 import databute.databuter.entry.UnsupportedValueTypeException;
-import databute.databuter.network.message.MessageDeserializer;
-import databute.databuter.network.packet.Packet;
+import databute.network.message.MessageDeserializer;
+import databute.network.packet.Packet;
 
 import java.util.List;
 import java.util.Map;

@@ -3,9 +3,9 @@ package databute.databutee.node.notification;
 import databute.databutee.Databutee;
 import databute.databutee.bucket.Bucket;
 import databute.databutee.bucket.BucketGroup;
+import databute.databutee.network.DatabuterMessageHandler;
 import databute.databutee.network.DatabuterSession;
 import databute.databutee.network.DatabuterSessionConnector;
-import databute.databutee.network.message.MessageHandler;
 import databute.databutee.node.DatabuterNode;
 import io.netty.channel.EventLoopGroup;
 import org.slf4j.Logger;
@@ -13,7 +13,7 @@ import org.slf4j.LoggerFactory;
 
 import java.net.InetSocketAddress;
 
-public class NodeNotificationMessageHandler extends MessageHandler<NodeNotificationMessage> {
+public class NodeNotificationMessageHandler extends DatabuterMessageHandler<NodeNotificationMessage> {
 
     private static final Logger logger = LoggerFactory.getLogger(NodeNotificationMessageHandler.class);
 

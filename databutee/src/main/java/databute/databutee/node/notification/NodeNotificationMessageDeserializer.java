@@ -1,7 +1,7 @@
 package databute.databutee.node.notification;
 
-import databute.databutee.network.message.MessageDeserializer;
-import databute.databutee.network.packet.Packet;
+import databute.network.message.MessageDeserializer;
+import databute.network.packet.Packet;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 

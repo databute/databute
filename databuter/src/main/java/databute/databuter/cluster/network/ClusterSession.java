@@ -2,7 +2,7 @@ package databute.databuter.cluster.network;
 
 import com.google.common.base.MoreObjects;
 import databute.databuter.cluster.ClusterCoordinator;
-import databute.databuter.network.AbstractSession;
+import databute.network.AbstractSession;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.util.concurrent.Future;
 
@@ -23,7 +23,7 @@ public class ClusterSession extends AbstractSession {
         return clusterCoordinator;
     }
 
-    public Future<?> submit(Callable callable) {
+    public <T> Future<T> submit(Callable<T> callable) {
         checkNotNull(callable, "callable");
         return channel().eventLoop().submit(callable);
     }

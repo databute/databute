@@ -1,7 +1,7 @@
 package databute.databuter.client.network;
 
 import com.google.common.collect.Maps;
-import databute.databuter.network.message.Message;
+import databute.network.message.Message;
 import io.netty.channel.ChannelId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
